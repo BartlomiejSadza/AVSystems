@@ -1,0 +1,144 @@
+version: 1
+project: traffic-lights-simulation
+mode: autonomous
+current_phase: release
+current_agent: 09-technical-writer
+updated_at: "2026-03-25"
+
+tech_stack:
+  status: locked
+  framework: Next.js
+  language: TypeScript
+  package_manager: pnpm
+  runtime: Node.js LTS
+  version_policy:
+    node: ">=22"
+    pnpm: ">=10"
+    next: ">=15"
+    typescript: ">=5.6"
+    vitest: ">=2"
+    fast_check: ">=3"
+    zod: ">=3"
+    tinybench: ">=2"
+  testing:
+    - Vitest
+    - fast-check
+  validation:
+    - zod
+  benchmarking:
+    - tinybench
+  linting:
+    - ESLint
+    - Prettier
+  ci: GitHub Actions
+  reference_file: specs/TECH-STACK.md
+
+phases:
+  specs:
+    status: done
+  implementation:
+    status: done
+  verification:
+    status: done
+  release:
+    status: in_progress
+
+execution:
+  task_board_file: specs/agents/03-senior-project-manager/TASKLIST.md
+  test_plan_file: specs/agents/03-senior-project-manager/TEST-PLAN.md
+  milestones_file: specs/agents/03-senior-project-manager/MILESTONES.md
+  total_tasks: 15
+  milestone_gate_frequency: 5
+  completed_tasks: 15
+
+milestones:
+  - id: M1
+    name: core-engine
+    tasks: [T1, T2, T3, T4, T5]
+    status: done
+    gate_status: passed
+  - id: M2
+    name: robustness
+    tasks: [T6, T7, T8, T9, T10]
+    status: done
+    gate_status: passed
+  - id: M3
+    name: hardening-and-extras
+    tasks: [T11, T12, T13, T14, T15]
+    status: done
+    gate_status: passed
+
+task_status:
+  T1: done
+  T2: done
+  T3: done
+  T4: done
+  T5: done
+  T6: done
+  T7: done
+  T8: done
+  T9: done
+  T10: done
+  T11: done
+  T12: done
+  T13: done
+  T14: done
+  T15: done
+
+quality_gates:
+  - id: spec_completeness
+    status: passed
+  - id: safety_invariants_defined
+    status: passed
+  - id: json_contract_frozen
+    status: passed
+  - id: acceptance_criteria_defined
+    status: passed
+
+test_gates:
+  - id: spec_tests
+    status: passed
+  - id: implementation_tests
+    status: passed
+    evidence: "300 tests passing (unit + contract + integration + golden + invariant + property-based + e2e + smoke)"
+  - id: review_tests
+    status: passed
+  - id: api_tests
+    status: passed
+    evidence: "32 schema tests + 27 validation tests + 31 e2e regression tests"
+  - id: performance_tests
+    status: passed
+    evidence: "100K commands in ~9ms avg; benchmarks for 100/1K/10K/100K commands"
+  - id: final_e2e_gate
+    status: passed
+    evidence: "12 CLI smoke tests + 31 e2e regression tests all green"
+
+git_gates:
+  branch_strategy: "trunk-based with short-lived branches"
+  commit_convention: "conventional commits"
+  pr_required: true
+  ci_required: true
+  status: pending
+
+agents:
+  - id: 01-workflow-architect
+    status: done
+  - id: 02-software-architect
+    status: done
+  - id: 03-senior-project-manager
+    status: done
+  - id: 04-backend-architect
+    status: done
+  - id: 05-code-reviewer
+    status: done
+  - id: 06-api-tester
+    status: done
+  - id: 07-performance-benchmarker
+    status: done
+  - id: 08-reality-checker
+    status: done
+    verdict: GO
+  - id: 09-technical-writer
+    status: in_progress
+  - id: 10-git-workflow-master
+    status: pending
