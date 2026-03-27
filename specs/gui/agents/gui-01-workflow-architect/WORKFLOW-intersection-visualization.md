@@ -3,7 +3,7 @@
 ## Status
 
 | Pole       | Wartosc                   |
-|------------|---------------------------|
+| ---------- | ------------------------- |
 | ID         | GWF-1                     |
 | Status     | Accepted                  |
 | Data       | 2026-03-25                |
@@ -55,20 +55,20 @@ West         INTERSECTION        East
 
 ## 3. Component Responsibilities
 
-| Komponent          | Odpowiedzialnosc                                                     |
-|--------------------|----------------------------------------------------------------------|
-| `IntersectionView` | Kontener SVG, uklad 4 wlotow, przekazuje `activePhase` i `queues`   |
-| `TrafficLight`     | Jeden wskaznik swiatla — props: `road`, `phase`, `isActive`         |
-| `VehicleQueue`     | Rzad markerow pojazdow per droga — props: `road`, `vehicles`        |
-| `VehicleMarker`    | Pojedynczy pojazd — props: `vehicleId`, `isLeaving` (animacja)      |
+| Komponent          | Odpowiedzialnosc                                                  |
+| ------------------ | ----------------------------------------------------------------- |
+| `IntersectionView` | Kontener SVG, uklad 4 wlotow, przekazuje `activePhase` i `queues` |
+| `TrafficLight`     | Jeden wskaznik swiatla — props: `road`, `phase`, `isActive`       |
+| `VehicleQueue`     | Rzad markerow pojazdow per droga — props: `road`, `vehicles`      |
+| `VehicleMarker`    | Pojedynczy pojazd — props: `vehicleId`, `isLeaving` (animacja)    |
 
 ### Props `IntersectionView`
 
 ```typescript
 interface IntersectionViewProps {
-  activePhase: PhaseId | null;      // z aktualnego StepStatus
-  queues: Record<Road, string[]>;   // vehicleId[] per road
-  leavingVehicles: string[];        // vehicleId[] opuszczajace w tym kroku
+  activePhase: PhaseId | null; // z aktualnego StepStatus
+  queues: Record<Road, string[]>; // vehicleId[] per road
+  leavingVehicles: string[]; // vehicleId[] opuszczajace w tym kroku
 }
 ```
 
@@ -83,8 +83,8 @@ interface TrafficLightProps {
 
 ### Mapowanie `activePhase` -> kolor swiatla
 
-| PhaseId        | North  | South  | East   | West   |
-|---------------|--------|--------|--------|--------|
+| PhaseId       | North  | South  | East   | West   |
+| ------------- | ------ | ------ | ------ | ------ |
 | NS_STRAIGHT   | green  | green  | red    | red    |
 | EW_STRAIGHT   | red    | red    | green  | green  |
 | null (init)   | red    | red    | red    | red    |
@@ -143,11 +143,11 @@ Argumenty przeciw (i mitygacje):
 
 ### Timing animacji
 
-| Zdarzenie              | Czas CSS   | Efekt                              |
-|-----------------------|------------|------------------------------------|
-| Pojazd opuszcza       | 300ms      | opacity 1->0, translateY -20px     |
-| Zmiana swiatla        | 200ms      | background-color transition        |
-| Nowy pojazd w kolejce | 150ms      | opacity 0->1 (fade in)             |
+| Zdarzenie             | Czas CSS | Efekt                          |
+| --------------------- | -------- | ------------------------------ |
+| Pojazd opuszcza       | 300ms    | opacity 1->0, translateY -20px |
+| Zmiana swiatla        | 200ms    | background-color transition    |
+| Nowy pojazd w kolejce | 150ms    | opacity 0->1 (fade in)         |
 
 ---
 
@@ -164,10 +164,10 @@ Argumenty przeciw (i mitygacje):
 
 ## 7. Edge Cases
 
-| Scenario                          | Zachowanie                                          |
-|-----------------------------------|-----------------------------------------------------|
-| Queue > 8 vehicles                | Pokazuje pierwsze 8 + indicator "+N more"           |
-| Very long vehicleId               | Truncate z tooltip                                  |
-| activePhase undefined             | All-red (stan bezpieczny)                           |
-| leavingVehicles z nieznanym ID    | Animacja jest pomijana (defensive render)           |
-| Brak CSS transition support       | Zmiana natychmiastowa (graceful degradation)        |
+| Scenario                       | Zachowanie                                   |
+| ------------------------------ | -------------------------------------------- |
+| Queue > 8 vehicles             | Pokazuje pierwsze 8 + indicator "+N more"    |
+| Very long vehicleId            | Truncate z tooltip                           |
+| activePhase undefined          | All-red (stan bezpieczny)                    |
+| leavingVehicles z nieznanym ID | Animacja jest pomijana (defensive render)    |
+| Brak CSS transition support    | Zmiana natychmiastowa (graceful degradation) |

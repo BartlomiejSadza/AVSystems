@@ -7,7 +7,7 @@ Accepted
 ## Metadata
 
 | Pole       | Wartosc             |
-|------------|---------------------|
+| ---------- | ------------------- |
 | Data       | 2026-03-25          |
 | Wersja     | 1.0                 |
 | Wlasciciel | gui-02-ui-architect |
@@ -68,20 +68,20 @@ app/
 
 ### Component Responsibility Summary
 
-| Component              | Reads from context        | Dispatches actions                      |
-|------------------------|---------------------------|----------------------------------------|
-| SimulationProvider     | —                         | —  (provides context)                  |
-| IntersectionView       | stepStatuses, commands    | —  (display only)                      |
-| TrafficLight           | props from IntersectionView | —                                    |
-| VehicleQueue           | props from IntersectionView | —                                    |
-| VehicleMarker          | props from VehicleQueue   | —                                      |
-| ControlPanel           | isPlaying, speed          | STEP, TOGGLE_AUTO_PLAY, SET_SPEED, RESET |
-| AddVehicleForm         | error                     | ADD_VEHICLE                            |
-| ConfigPanel            | options                   | SET_ROAD_PRIORITIES, SET_OPTIONS       |
-| TelemetryDashboard     | telemetry, stepStatuses   | —                                      |
-| CommandLog             | commands, stepStatuses    | —                                      |
-| JsonPanel              | commands                  | IMPORT_COMMANDS                        |
-| ErrorBanner            | error                     | CLEAR_ERROR                            |
+| Component          | Reads from context          | Dispatches actions                       |
+| ------------------ | --------------------------- | ---------------------------------------- |
+| SimulationProvider | —                           | — (provides context)                     |
+| IntersectionView   | stepStatuses, commands      | — (display only)                         |
+| TrafficLight       | props from IntersectionView | —                                        |
+| VehicleQueue       | props from IntersectionView | —                                        |
+| VehicleMarker      | props from VehicleQueue     | —                                        |
+| ControlPanel       | isPlaying, speed            | STEP, TOGGLE_AUTO_PLAY, SET_SPEED, RESET |
+| AddVehicleForm     | error                       | ADD_VEHICLE                              |
+| ConfigPanel        | options                     | SET_ROAD_PRIORITIES, SET_OPTIONS         |
+| TelemetryDashboard | telemetry, stepStatuses     | —                                        |
+| CommandLog         | commands, stepStatuses      | —                                        |
+| JsonPanel          | commands                    | IMPORT_COMMANDS                          |
+| ErrorBanner        | error                       | CLEAR_ERROR                              |
 
 ---
 
@@ -122,7 +122,15 @@ export type AdapterResult =
   | { ok: false; error: string };
 
 export function runSimulation(commands: Command[], options: SimulateOptions): AdapterResult;
-export type { Command, Road, StepStatus, PhaseId, TelemetryData, SimulateOptions, SimulationResult };
+export type {
+  Command,
+  Road,
+  StepStatus,
+  PhaseId,
+  TelemetryData,
+  SimulateOptions,
+  SimulationResult,
+};
 ```
 
 All other files in `app/` import types and the adapter function from `'@/app/lib/simulation-adapter'`, never from `'@/src/simulator'`.
@@ -164,12 +172,14 @@ G12: Polish (animations, responsive, a11y audit fixes, error handling)
 ## Consequences
 
 **Easier because of this decision:**
+
 - Server/client boundary is explicit and minimal — only one `'use client'` at the root of the simulation subtree.
 - Simulation adapter pattern makes it trivial to swap the engine or mock it in tests.
 - Component tree maps 1:1 to GWF workflows — easy to trace from spec to code.
 - No prop drilling beyond 2 levels — context provides shared state.
 
 **Harder because of this decision:**
+
 - All interactive components must be Client Components — they cannot use async Server Component patterns.
 - React Context re-renders all consumers on every dispatch — mitigated by `React.memo` on leaf components (`TrafficLight`, `VehicleMarker`) if profiling shows issues.
 - The `useEffect` in `useSimulation` runs synchronously after every `commands` change — for very long sessions (>5K commands) this may be slow. Profiling required at GM2 gate.
@@ -178,13 +188,13 @@ G12: Polish (animations, responsive, a11y audit fixes, error handling)
 
 ## GWF Traceability
 
-| GWF   | Primary Component(s)                          |
-|-------|-----------------------------------------------|
+| GWF   | Primary Component(s)                           |
+| ----- | ---------------------------------------------- |
 | GWF-1 | IntersectionView, TrafficLight, VehicleQueue   |
-| GWF-2 | AddVehicleForm, ErrorBanner                   |
-| GWF-3 | ControlPanel (Step), VehicleMarker (animation)|
+| GWF-2 | AddVehicleForm, ErrorBanner                    |
+| GWF-3 | ControlPanel (Step), VehicleMarker (animation) |
 | GWF-4 | ControlPanel (Play/Pause, Speed), useAutoPlay  |
-| GWF-5 | TelemetryDashboard                            |
-| GWF-6 | ConfigPanel                                   |
-| GWF-7 | JsonPanel                                     |
-| GWF-8 | ErrorBanner                                   |
+| GWF-5 | TelemetryDashboard                             |
+| GWF-6 | ConfigPanel                                    |
+| GWF-7 | JsonPanel                                      |
+| GWF-8 | ErrorBanner                                    |

@@ -17,9 +17,7 @@ function StatCard({ label, value, description }: StatCardProps) {
     >
       <span className="text-xs text-sim-text-muted uppercase tracking-wide">{label}</span>
       <span className="text-2xl font-semibold text-sim-text font-mono">{value}</span>
-      {description && (
-        <span className="text-xs text-sim-text-dim">{description}</span>
-      )}
+      {description && <span className="text-xs text-sim-text-dim">{description}</span>}
     </div>
   );
 }
@@ -45,8 +43,7 @@ export function TelemetryDashboard() {
   const nsSteps = telemetry.phaseDistribution.NS_STRAIGHT ?? 0;
   const ewSteps = telemetry.phaseDistribution.EW_STRAIGHT ?? 0;
   const totalPhaseSteps = nsSteps + ewSteps;
-  const nsPercent =
-    totalPhaseSteps > 0 ? Math.round((nsSteps / totalPhaseSteps) * 100) : 0;
+  const nsPercent = totalPhaseSteps > 0 ? Math.round((nsSteps / totalPhaseSteps) * 100) : 0;
   const ewPercent = totalPhaseSteps > 0 ? 100 - nsPercent : 0;
 
   const avgQueue = telemetry.averageQueueLength.toFixed(2);

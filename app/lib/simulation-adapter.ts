@@ -5,8 +5,22 @@ import type { PhaseId } from '../../src/simulator/phase';
 import type { Road } from '../../src/simulator/types';
 import { z } from 'zod';
 
-export type { Command, StepStatus, SimulateOptions, TelemetryData, SimulationResult, PhaseId, Road };
-export type { AddVehicleCommand, StepCommand, Vehicle, RoadPriorities, VehiclePriority } from '../../src/simulator/types';
+export type {
+  Command,
+  StepStatus,
+  SimulateOptions,
+  TelemetryData,
+  SimulationResult,
+  PhaseId,
+  Road,
+};
+export type {
+  AddVehicleCommand,
+  StepCommand,
+  Vehicle,
+  RoadPriorities,
+  VehiclePriority,
+} from '../../src/simulator/types';
 export { ROADS } from '../../src/simulator/types';
 export { PHASES } from '../../src/simulator/phase';
 
@@ -29,10 +43,7 @@ const stepCommandSchema = z.object({
   type: z.literal('step'),
 });
 
-const commandSchema = z.discriminatedUnion('type', [
-  addVehicleCommandSchema,
-  stepCommandSchema,
-]);
+const commandSchema = z.discriminatedUnion('type', [addVehicleCommandSchema, stepCommandSchema]);
 
 /** Validates an array of commands parsed from JSON (for file import). */
 export const commandArraySchema = z.array(commandSchema);

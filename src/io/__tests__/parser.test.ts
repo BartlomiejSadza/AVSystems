@@ -17,9 +17,7 @@ describe('parseInput — valid JSON', () => {
 
   it('parses a single addVehicle command', () => {
     const raw = JSON.stringify({
-      commands: [
-        { type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' },
-      ],
+      commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' }],
     });
     const result = parseInput(raw);
     expect(result).toHaveLength(1);
@@ -109,9 +107,7 @@ describe('parseInput — schema violations', () => {
 
   it('throws ParseError when addVehicle has an invalid startRoad', () => {
     const raw = JSON.stringify({
-      commands: [
-        { type: 'addVehicle', vehicleId: 'V1', startRoad: 'diagonal', endRoad: 'north' },
-      ],
+      commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'diagonal', endRoad: 'north' }],
     });
     expect(() => parseInput(raw)).toThrow(ParseError);
   });

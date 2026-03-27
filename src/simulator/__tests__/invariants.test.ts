@@ -230,10 +230,11 @@ describe('property-based invariant tests', () => {
   it('adding unique vehicles with matching startRoad never violates invariants', () => {
     fc.assert(
       fc.property(
-        fc.uniqueArray(
-          fc.record({ id: arbVehicleId, road: arbRoad }),
-          { selector: (v) => v.id, minLength: 0, maxLength: 20 }
-        ),
+        fc.uniqueArray(fc.record({ id: arbVehicleId, road: arbRoad }), {
+          selector: (v) => v.id,
+          minLength: 0,
+          maxLength: 20,
+        }),
         (entries) => {
           const state = makeValidState();
           for (const { id, road } of entries) {
@@ -286,7 +287,9 @@ describe('property-based invariant tests', () => {
         (vehicles, extraSteps) => {
           const commands = [
             ...vehicles.map((v) => ({ type: 'addVehicle' as const, ...v })),
-            ...Array.from({ length: vehicles.length + extraSteps }, () => ({ type: 'step' as const })),
+            ...Array.from({ length: vehicles.length + extraSteps }, () => ({
+              type: 'step' as const,
+            })),
           ];
           const results = simulate(commands);
           const allLeft = results.flatMap((s: { leftVehicles: string[] }) => s.leftVehicles);
@@ -345,10 +348,30 @@ describe('T8 — transition phase safety', () => {
    */
   it('vehicles only depart on roads belonging to their active phase', () => {
     const commands = [
-      { type: 'addVehicle' as const, vehicleId: 'N1', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'S1', startRoad: 'south' as Road, endRoad: 'north' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'E1', startRoad: 'east' as Road, endRoad: 'west' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'W1', startRoad: 'west' as Road, endRoad: 'east' as Road },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N1',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'S1',
+        startRoad: 'south' as Road,
+        endRoad: 'north' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'E1',
+        startRoad: 'east' as Road,
+        endRoad: 'west' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'W1',
+        startRoad: 'west' as Road,
+        endRoad: 'east' as Road,
+      },
       { type: 'step' as const },
       { type: 'step' as const },
     ];
@@ -380,10 +403,11 @@ describe('T8 — transition phase safety', () => {
   it('no vehicle appears in leftVehicles more than once across all steps (no phantom dequeues)', () => {
     fc.assert(
       fc.property(
-        fc.uniqueArray(
-          fc.record({ id: arbVehicleId, road: arbRoad }),
-          { selector: (v) => v.id, minLength: 0, maxLength: 15 }
-        ),
+        fc.uniqueArray(fc.record({ id: arbVehicleId, road: arbRoad }), {
+          selector: (v) => v.id,
+          minLength: 0,
+          maxLength: 15,
+        }),
         fc.nat({ max: 20 }),
         (entries, extraSteps) => {
           const commands = [
@@ -393,7 +417,9 @@ describe('T8 — transition phase safety', () => {
               startRoad: road,
               endRoad: 'north' as Road,
             })),
-            ...Array.from({ length: entries.length + extraSteps }, () => ({ type: 'step' as const })),
+            ...Array.from({ length: entries.length + extraSteps }, () => ({
+              type: 'step' as const,
+            })),
           ];
           const results = simulate(commands, { enableInvariantChecks: true });
           const allLeft = results.flatMap((s) => s.leftVehicles);
@@ -423,8 +449,18 @@ describe('T8 — transition phase safety', () => {
 
   it('phase transitions are deterministic — same input produces same phase sequence', () => {
     const commands = [
-      { type: 'addVehicle' as const, vehicleId: 'A', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'B', startRoad: 'east' as Road, endRoad: 'west' as Road },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'A',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'B',
+        startRoad: 'east' as Road,
+        endRoad: 'west' as Road,
+      },
       { type: 'step' as const },
       { type: 'step' as const },
       { type: 'step' as const },

@@ -2,11 +2,11 @@
 
 ## Status
 
-| Pole       | Wartosc                     |
-|------------|-----------------------------|
-| Etap       | PENDING (szablon handoffu)  |
-| Data       | 2026-03-25                  |
-| Wlasciciel | gui-04-frontend-developer   |
+| Pole       | Wartosc                    |
+| ---------- | -------------------------- |
+| Etap       | PENDING (szablon handoffu) |
+| Data       | 2026-03-25                 |
+| Wlasciciel | gui-04-frontend-developer  |
 
 ---
 
@@ -28,7 +28,7 @@ Ten plik jest wypelniany przez `gui-04-frontend-developer` po zakonczeniu kazdeg
 ### Wyniki testow
 
 | Suite              | Testy | PASS | FAIL | Pokrycie |
-|--------------------|-------|------|------|----------|
+| ------------------ | ----- | ---- | ---- | -------- |
 | simulation-adapter | 6     | ?    | ?    | ?        |
 | reducer (unit)     | 11    | ?    | ?    | ?        |
 | IntersectionView   | 5     | ?    | ?    | ?        |
@@ -63,12 +63,12 @@ Ten plik jest wypelniany przez `gui-04-frontend-developer` po zakonczeniu kazdeg
 
 ### Wyniki testow
 
-| Suite              | Testy | PASS | FAIL | Pokrycie |
-|--------------------|-------|------|------|----------|
-| VehicleQueue       | 5     | ?    | ?    | ?        |
-| ControlPanel       | 5     | ?    | ?    | ?        |
-| AddVehicleForm     | 5     | ?    | ?    | ?        |
-| Integration IT-*   | 8     | ?    | ?    | ?        |
+| Suite             | Testy | PASS | FAIL | Pokrycie |
+| ----------------- | ----- | ---- | ---- | -------- |
+| VehicleQueue      | 5     | ?    | ?    | ?        |
+| ControlPanel      | 5     | ?    | ?    | ?        |
+| AddVehicleForm    | 5     | ?    | ?    | ?        |
+| Integration IT-\* | 8     | ?    | ?    | ?        |
 
 ### Zakres dla gui-06 (E2E po GM2)
 
@@ -91,13 +91,13 @@ Ten plik jest wypelniany przez `gui-04-frontend-developer` po zakonczeniu kazdeg
 
 ### Wyniki testow
 
-| Suite             | Testy | PASS | FAIL | Pokrycie |
-|-------------------|-------|------|------|----------|
-| TelemetryDashboard| 3     | ?    | ?    | ?        |
-| JsonPanel         | 4     | ?    | ?    | ?        |
-| ErrorBanner       | 2     | ?    | ?    | ?        |
-| Integration IT-*  | 8     | ?    | ?    | ?        |
-| TOTAL             | ?     | ?    | ?    | ?        |
+| Suite              | Testy | PASS | FAIL | Pokrycie |
+| ------------------ | ----- | ---- | ---- | -------- |
+| TelemetryDashboard | 3     | ?    | ?    | ?        |
+| JsonPanel          | 4     | ?    | ?    | ?        |
+| ErrorBanner        | 2     | ?    | ?    | ?        |
+| Integration IT-\*  | 8     | ?    | ?    | ?        |
+| TOTAL              | ?     | ?    | ?    | ?        |
 
 ### Final build status
 

@@ -4,7 +4,11 @@ import { useEffect, useRef } from 'react';
 import { useSimulationContext } from './SimulationProvider';
 import type { Command } from '../lib/simulation-adapter';
 
-function formatCommand(cmd: Command, stepIndex: number, stepStatuses: { leftVehicles: string[] }[]): string {
+function formatCommand(
+  cmd: Command,
+  stepIndex: number,
+  stepStatuses: { leftVehicles: string[] }[]
+): string {
   if (cmd.type === 'addVehicle') {
     const priority = cmd.priority === 'emergency' ? ' [EMERGENCY]' : '';
     return `addVehicle: ${cmd.vehicleId}${priority} ${cmd.startRoad} → ${cmd.endRoad}`;

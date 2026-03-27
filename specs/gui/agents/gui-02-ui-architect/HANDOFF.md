@@ -2,11 +2,11 @@
 
 ## Status
 
-| Pole       | Wartosc              |
-|------------|----------------------|
-| Etap       | DONE                 |
-| Data       | 2026-03-25           |
-| Wlasciciel | gui-02-ui-architect  |
+| Pole       | Wartosc             |
+| ---------- | ------------------- |
+| Etap       | DONE                |
+| Data       | 2026-03-25          |
+| Wlasciciel | gui-02-ui-architect |
 
 ---
 
@@ -20,22 +20,22 @@
 
 ## Wyniki testow etapu
 
-| Test                        | Status | Uzasadnienie                                                                              |
-|-----------------------------|--------|------------------------------------------------------------------------------------------|
-| Test spojnosci drzewa       | PASS   | Kazdy GWF-1..8 ma pokrycie w min. jednym komponencie — tabela traceability w ADR-GUI-001 |
-| Test kompletnosci stanu     | PASS   | Wszystkie 11 akcji z WORKFLOW-user-interaction.md sa w katalogu ADR-GUI-002              |
-| Test trade-offow            | PASS   | Kazde ADR zawiera sekcje Consequences z kosztami i korzysciami                           |
-| Test importow               | PASS   | ADR-GUI-001 explicite wskazuje `simulation-adapter.ts` jako jedyne miejsce importu       |
+| Test                    | Status | Uzasadnienie                                                                             |
+| ----------------------- | ------ | ---------------------------------------------------------------------------------------- |
+| Test spojnosci drzewa   | PASS   | Kazdy GWF-1..8 ma pokrycie w min. jednym komponencie — tabela traceability w ADR-GUI-001 |
+| Test kompletnosci stanu | PASS   | Wszystkie 11 akcji z WORKFLOW-user-interaction.md sa w katalogu ADR-GUI-002              |
+| Test trade-offow        | PASS   | Kazde ADR zawiera sekcje Consequences z kosztami i korzysciami                           |
+| Test importow           | PASS   | ADR-GUI-001 explicite wskazuje `simulation-adapter.ts` jako jedyne miejsce importu       |
 
 ---
 
 ## Ryzyka i luki
 
-| Ryzyko                                   | Prawdopodobienstwo | Mitygacja                                                     |
-|------------------------------------------|--------------------|---------------------------------------------------------------|
-| Reactywne przeliczanie przy dlugich sesjach | Niskie          | Benchmark w G2 — jesli > 100ms dla 500 komend, dodac memoizacje |
-| SVG accessibility na starszych czytnikach ekranu | Srednie   | Testowane przez gui-07-accessibility-auditor                  |
-| Tailwind purge usuwa dynamiczne klasy    | Niskie             | Uzywac safelist lub stalych string zamiast dynamicznego concat |
+| Ryzyko                                           | Prawdopodobienstwo | Mitygacja                                                       |
+| ------------------------------------------------ | ------------------ | --------------------------------------------------------------- |
+| Reactywne przeliczanie przy dlugich sesjach      | Niskie             | Benchmark w G2 — jesli > 100ms dla 500 komend, dodac memoizacje |
+| SVG accessibility na starszych czytnikach ekranu | Srednie            | Testowane przez gui-07-accessibility-auditor                    |
+| Tailwind purge usuwa dynamiczne klasy            | Niskie             | Uzywac safelist lub stalych string zamiast dynamicznego concat  |
 
 ---
 

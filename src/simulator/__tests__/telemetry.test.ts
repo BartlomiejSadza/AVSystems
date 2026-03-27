@@ -11,11 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { simulate, simulateWithTelemetry } from '../engine.js';
-import {
-  createAccumulator,
-  finalizeTelemetry,
-  recordStep,
-} from '../telemetry.js';
+import { createAccumulator, finalizeTelemetry, recordStep } from '../telemetry.js';
 import type { Command } from '../types.js';
 import { createInitialState } from '../engine.js';
 
@@ -144,12 +140,7 @@ describe('simulateWithTelemetry — basic', () => {
   });
 
   it('totalSteps equals number of step commands', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      step,
-      step,
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), step, step, step];
     const { telemetry } = simulateWithTelemetry(commands);
     expect(telemetry.totalSteps).toBe(3);
   });
@@ -158,9 +149,9 @@ describe('simulateWithTelemetry — basic', () => {
     const commands: Command[] = [
       addVehicle('N1', 'north'),
       addVehicle('S1', 'south'),
-      step,  // 2 vehicles depart
+      step, // 2 vehicles depart
       addVehicle('E1', 'east'),
-      step,  // 1 vehicle departs
+      step, // 1 vehicle departs
     ];
     const { telemetry } = simulateWithTelemetry(commands);
     expect(telemetry.totalVehiclesProcessed).toBe(3);
@@ -185,22 +176,14 @@ describe('simulateWithTelemetry — basic', () => {
 
 describe('simulateWithTelemetry — phaseDistribution', () => {
   it('records NS_STRAIGHT when NS is active', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
     const { telemetry } = simulateWithTelemetry(commands);
     expect(telemetry.phaseDistribution['NS_STRAIGHT']).toBe(1);
     expect(telemetry.phaseDistribution['EW_STRAIGHT']).toBe(0);
   });
 
   it('records EW_STRAIGHT when EW is active', () => {
-    const commands: Command[] = [
-      addVehicle('E1', 'east'),
-      addVehicle('W1', 'west'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step];
     const { telemetry } = simulateWithTelemetry(commands);
     expect(telemetry.phaseDistribution['EW_STRAIGHT']).toBe(1);
     expect(telemetry.phaseDistribution['NS_STRAIGHT']).toBe(0);
@@ -240,11 +223,7 @@ describe('simulateWithTelemetry — averageQueueLength', () => {
     // Add 2 north vehicles; step: N1 departs, N2 stays.
     // Queue snapshot for step 1 (after dequeue):
     //   north=1 (N2 remains), south=0, east=0, west=0 → sum=1, samples=4, avg=0.25
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('N2', 'north'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('N2', 'north'), step];
     const { telemetry } = simulateWithTelemetry(commands);
     // After the dequeue, north queue has 1 vehicle remaining.
     // 4 roads sampled: north=1, others=0 → avg = 1/4 = 0.25
@@ -275,12 +254,7 @@ describe('simulate — enableTelemetry option', () => {
   });
 
   it('returns same StepStatus[] whether telemetry is enabled or not', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      step,
-      addVehicle('E1', 'east'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), step, addVehicle('E1', 'east'), step];
     const withTel = simulate(commands, { enableTelemetry: true });
     const withoutTel = simulate(commands, { enableTelemetry: false });
     expect(withTel).toEqual(withoutTel);
@@ -293,19 +267,19 @@ describe('simulate — enableTelemetry option', () => {
 
 describe('simulateWithTelemetry — combined options', () => {
   it('works with road priorities', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('E1', 'east'),
-      step,
-    ];
-    expect(() =>
-      simulateWithTelemetry(commands, { roadPriorities: { east: 2.0 } })
-    ).not.toThrow();
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('E1', 'east'), step];
+    expect(() => simulateWithTelemetry(commands, { roadPriorities: { east: 2.0 } })).not.toThrow();
   });
 
   it('works with emergency vehicles', () => {
     const commands: Command[] = [
-      { type: 'addVehicle', vehicleId: 'EMG', startRoad: 'east', endRoad: 'west', priority: 'emergency' },
+      {
+        type: 'addVehicle',
+        vehicleId: 'EMG',
+        startRoad: 'east',
+        endRoad: 'west',
+        priority: 'emergency',
+      },
       addVehicle('N1', 'north'),
       step,
     ];
@@ -316,9 +290,7 @@ describe('simulateWithTelemetry — combined options', () => {
 
   it('works with invariant checks enabled', () => {
     const commands: Command[] = [addVehicle('V1', 'north'), step];
-    expect(() =>
-      simulateWithTelemetry(commands, { enableInvariantChecks: true })
-    ).not.toThrow();
+    expect(() => simulateWithTelemetry(commands, { enableInvariantChecks: true })).not.toThrow();
   });
 });
 

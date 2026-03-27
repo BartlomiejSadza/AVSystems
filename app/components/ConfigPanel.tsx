@@ -76,10 +76,7 @@ export function ConfigPanel() {
               const inputId = `priority-${road}`;
               return (
                 <div key={road} className="flex items-center gap-3">
-                  <label
-                    htmlFor={inputId}
-                    className="w-14 text-sm text-sim-text capitalize"
-                  >
+                  <label htmlFor={inputId} className="w-14 text-sm text-sim-text capitalize">
                     {road}
                   </label>
                   <input
@@ -92,9 +89,6 @@ export function ConfigPanel() {
                     onChange={(e) => handlePriorityChange(road, e.target.value)}
                     className="w-20 bg-sim-surface-alt border border-sim-border rounded px-2 py-1 text-sm text-sim-text focus:outline-none focus:ring-2 focus:ring-traffic-green"
                     aria-label={`Priority weight for ${road} road`}
-                    aria-valuemin={0}
-                    aria-valuemax={10}
-                    aria-valuenow={currentValue}
                   />
                   <span className="text-xs text-sim-text-dim flex-1">
                     {currentValue === 1 ? 'default' : currentValue > 1 ? 'boosted' : 'suppressed'}
@@ -110,10 +104,7 @@ export function ConfigPanel() {
 
             {/* Invariant Checks */}
             <div className="flex items-center justify-between">
-              <label
-                htmlFor="toggle-invariants"
-                className="text-sm text-sim-text cursor-pointer"
-              >
+              <label htmlFor="toggle-invariants" className="text-sm text-sim-text cursor-pointer">
                 Enable Invariant Checks
               </label>
               <button
@@ -141,10 +132,7 @@ export function ConfigPanel() {
 
             {/* Telemetry */}
             <div className="flex items-center justify-between">
-              <label
-                htmlFor="toggle-telemetry"
-                className="text-sm text-sim-text cursor-pointer"
-              >
+              <label htmlFor="toggle-telemetry" className="text-sm text-sim-text cursor-pointer">
                 Enable Telemetry
               </label>
               <button

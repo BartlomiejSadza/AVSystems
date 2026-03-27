@@ -150,11 +150,36 @@ describe('T7 — adaptive selection integration scenarios', () => {
     // Steps 1–2: NS wins (load 4 > 1, then load 2 > 1).
     // Step 3: NS has 0, EW has 1 — EW wins.
     const commands = [
-      { type: 'addVehicle' as const, vehicleId: 'N1', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'N2', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'S1', startRoad: 'south' as Road, endRoad: 'north' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'S2', startRoad: 'south' as Road, endRoad: 'north' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'E1', startRoad: 'east' as Road, endRoad: 'west' as Road },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N1',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N2',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'S1',
+        startRoad: 'south' as Road,
+        endRoad: 'north' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'S2',
+        startRoad: 'south' as Road,
+        endRoad: 'north' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'E1',
+        startRoad: 'east' as Road,
+        endRoad: 'west' as Road,
+      },
       { type: 'step' as const },
       { type: 'step' as const },
       { type: 'step' as const },
@@ -178,13 +203,38 @@ describe('T7 — adaptive selection integration scenarios', () => {
     // Start with EW advantage (one vehicle on each EW road), add more NS vehicles mid-stream.
     // E1 is on east, E2 is on west — EW phase clears both simultaneously.
     const commands = [
-      { type: 'addVehicle' as const, vehicleId: 'E1', startRoad: 'east' as Road, endRoad: 'west' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'E2', startRoad: 'west' as Road, endRoad: 'east' as Road },
-      { type: 'step' as const },                // EW wins (load 2 vs 0); E1+E2 depart
-      { type: 'addVehicle' as const, vehicleId: 'N1', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'N2', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'addVehicle' as const, vehicleId: 'N3', startRoad: 'north' as Road, endRoad: 'south' as Road },
-      { type: 'step' as const },                // NS wins (load 3 vs 0)
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'E1',
+        startRoad: 'east' as Road,
+        endRoad: 'west' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'E2',
+        startRoad: 'west' as Road,
+        endRoad: 'east' as Road,
+      },
+      { type: 'step' as const }, // EW wins (load 2 vs 0); E1+E2 depart
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N1',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N2',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'N3',
+        startRoad: 'north' as Road,
+        endRoad: 'south' as Road,
+      },
+      { type: 'step' as const }, // NS wins (load 3 vs 0)
     ];
     const result = simulate(commands);
 
@@ -206,7 +256,12 @@ describe('T7 — adaptive selection integration scenarios', () => {
   it('single vehicle in one road — correct phase wins every time', () => {
     // Only one west vehicle; EW should always win
     const commands = [
-      { type: 'addVehicle' as const, vehicleId: 'W1', startRoad: 'west' as Road, endRoad: 'east' as Road },
+      {
+        type: 'addVehicle' as const,
+        vehicleId: 'W1',
+        startRoad: 'west' as Road,
+        endRoad: 'east' as Road,
+      },
       { type: 'step' as const },
       { type: 'step' as const }, // now empty — should not crash
     ];
@@ -246,8 +301,8 @@ describe('T7 — property-based adaptive selection', () => {
   it('when one phase clearly dominates, selectPhase always picks it', () => {
     fc.assert(
       fc.property(
-        fc.nat({ max: 5 }),           // EW total (0..5)
-        fc.integer({ min: 1, max: 5 }),// extra margin above EW
+        fc.nat({ max: 5 }), // EW total (0..5)
+        fc.integer({ min: 1, max: 5 }), // extra margin above EW
         fc.constantFrom(-1, 0, 1),
         (ewBase, margin, lastPhaseIndex) => {
           // NS load = ewBase + margin (strictly greater)

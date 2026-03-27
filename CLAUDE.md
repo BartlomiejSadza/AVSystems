@@ -49,12 +49,12 @@ Key constraint: simulation logic in `src/simulator/` must be completely independ
 
 ### Agent Pipeline (sequential, gated)
 
-| Phase | Agents | Cadence |
-|-------|--------|---------|
-| A: SPEC_FOUNDATION | 01-workflow-architect → 02-software-architect → 03-senior-project-manager | Once at start |
-| B: TASK_LOOP | 04-backend-architect → tests → 05-code-reviewer | Per task (T1–T15) |
-| C: MILESTONE_GATE | 06-api-tester → 07-performance-benchmarker → 08-reality-checker | After every 5 tasks |
-| D: RELEASE | 09-technical-writer → 10-git-workflow-master | Once at end |
+| Phase              | Agents                                                                    | Cadence             |
+| ------------------ | ------------------------------------------------------------------------- | ------------------- |
+| A: SPEC_FOUNDATION | 01-workflow-architect → 02-software-architect → 03-senior-project-manager | Once at start       |
+| B: TASK_LOOP       | 04-backend-architect → tests → 05-code-reviewer                           | Per task (T1–T15)   |
+| C: MILESTONE_GATE  | 06-api-tester → 07-performance-benchmarker → 08-reality-checker           | After every 5 tasks |
+| D: RELEASE         | 09-technical-writer → 10-git-workflow-master                              | Once at end         |
 
 Each agent: reads `STATUS.yaml` → checks `depends_on` → executes `TASK.md` → writes `HANDOFF.md` → runs tests → updates `STATUS.yaml`.
 

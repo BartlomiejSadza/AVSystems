@@ -70,13 +70,13 @@ Przeprowadzic przeglad kodu dla kazdego tasku po implementacji przez `gui-04-fro
 
 ## Severity levels
 
-| Severity  | Definicja                                          | Akcja                           |
-|-----------|----------------------------------------------------|---------------------------------|
-| BLOCKER   | Naruszenie kontraktu adaptera / inwariantu         | Musi byc naprawione przed merge |
-| CRITICAL  | Blad TypeScript / brak testu dla AC               | Musi byc naprawione przed merge |
-| MAJOR     | Brak ARIA / CSS Modules / `any` bez uzasadnienia  | Musi byc naprawione przed merge |
-| MINOR     | Stylistic / dokumentacja / naming                 | Opcjonalne do naprawy           |
-| SUGGESTION| Refactor lub ulepszenie                           | Nie blokuje                     |
+| Severity   | Definicja                                        | Akcja                           |
+| ---------- | ------------------------------------------------ | ------------------------------- |
+| BLOCKER    | Naruszenie kontraktu adaptera / inwariantu       | Musi byc naprawione przed merge |
+| CRITICAL   | Blad TypeScript / brak testu dla AC              | Musi byc naprawione przed merge |
+| MAJOR      | Brak ARIA / CSS Modules / `any` bez uzasadnienia | Musi byc naprawione przed merge |
+| MINOR      | Stylistic / dokumentacja / naming                | Opcjonalne do naprawy           |
+| SUGGESTION | Refactor lub ulepszenie                          | Nie blokuje                     |
 
 ---
 
@@ -103,6 +103,7 @@ Etap przechodzi dalej tylko gdy:
 ## Handoff
 
 Wypelnij `HANDOFF.md` z:
+
 - Lista findings per severity.
 - Status: APPROVED / CHANGES REQUESTED.
 - Dla CHANGES REQUESTED: lista elementow do poprawy.

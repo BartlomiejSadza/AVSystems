@@ -42,7 +42,8 @@ function parseArgs(argv: string[]): { input: string; output: string } | null {
 }
 
 function printUsage(): void {
-  console.error(`
+  console.error(
+    `
 Traffic Lights Simulation CLI
 
 Usage:
@@ -55,7 +56,8 @@ Options:
 
 Example:
   pnpm simulate --input ./input.json --output ./output.json
-`.trim());
+`.trim()
+  );
 }
 
 // ---------------------------------------------------------------------------

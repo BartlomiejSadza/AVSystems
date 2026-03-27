@@ -61,10 +61,7 @@ describe('derivePhasePerStep', () => {
       { type: 'step' },
       { type: 'step' },
     ];
-    const statuses: StepStatus[] = [
-      { leftVehicles: ['N1'] },
-      { leftVehicles: ['E1'] },
-    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['N1'] }, { leftVehicles: ['E1'] }];
     const result = derivePhasePerStep(commands, statuses);
     expect(result).toEqual(['NS_STRAIGHT', 'EW_STRAIGHT']);
   });
@@ -143,10 +140,7 @@ describe('deriveQueuesAtStep', () => {
       { type: 'step' },
     ];
     // Only N1 departs in step 0; E1 departs in step 1
-    const statuses: StepStatus[] = [
-      { leftVehicles: ['N1'] },
-      { leftVehicles: ['E1'] },
-    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['N1'] }, { leftVehicles: ['E1'] }];
     // At step 0: N1 departed, E1 still queued
     const queues0 = deriveQueuesAtStep(commands, statuses, 0);
     expect(queues0.north).not.toContain('N1');
@@ -174,10 +168,7 @@ describe('deriveQueuesAtStep', () => {
       { type: 'step' },
       { type: 'step' },
     ];
-    const statuses: StepStatus[] = [
-      { leftVehicles: [] },
-      { leftVehicles: ['V1'] },
-    ];
+    const statuses: StepStatus[] = [{ leftVehicles: [] }, { leftVehicles: ['V1'] }];
     // At step 0, V1 has not departed yet
     const queues0 = deriveQueuesAtStep(commands, statuses, 0);
     expect(queues0.north).toContain('V1');

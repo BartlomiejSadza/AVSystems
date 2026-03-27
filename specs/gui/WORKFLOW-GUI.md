@@ -8,27 +8,27 @@ Warstwa GUI jest rozwijana rownolegle do silnika symulacji ale z zaleznoscia jed
 
 ## Status
 
-| Pole        | Wartosc                          |
-|-------------|----------------------------------|
-| Status      | In Progress                      |
-| Data        | 2026-03-25                       |
-| Wersja      | 1.0                              |
-| Wlasciciel  | gui-01-workflow-architect        |
+| Pole       | Wartosc                   |
+| ---------- | ------------------------- |
+| Status     | In Progress               |
+| Data       | 2026-03-25                |
+| Wersja     | 1.0                       |
+| Wlasciciel | gui-01-workflow-architect |
 
 ---
 
 ## 1. Kolejnosc agentow GUI
 
-| Nr  | ID agenta                  | Rola                                   | Cadence          |
-|-----|---------------------------|----------------------------------------|------------------|
-| 1   | gui-01-workflow-architect  | Projektowanie przeplywow uzytkownika   | Jednorazowo      |
-| 2   | gui-02-ui-architect        | Architektura komponentow i stanu       | Jednorazowo      |
-| 3   | gui-03-project-manager     | Backlog, milestony, plan testow        | Jednorazowo      |
-| 4   | gui-04-frontend-developer  | Implementacja taskow G1-G12            | Per task         |
-| 5   | gui-05-code-reviewer       | Przeglad kodu i weryfikacja AC         | Per task         |
-| 6   | gui-06-e2e-tester          | Testy end-to-end Playwright            | Per milestone    |
-| 7   | gui-07-accessibility-auditor | Audyt dostepnosci WCAG 2.1 AA        | Per milestone    |
-| 8   | gui-08-reality-checker     | Gate GO/NO-GO dla milestonu            | Per milestone    |
+| Nr  | ID agenta                    | Rola                                 | Cadence       |
+| --- | ---------------------------- | ------------------------------------ | ------------- |
+| 1   | gui-01-workflow-architect    | Projektowanie przeplywow uzytkownika | Jednorazowo   |
+| 2   | gui-02-ui-architect          | Architektura komponentow i stanu     | Jednorazowo   |
+| 3   | gui-03-project-manager       | Backlog, milestony, plan testow      | Jednorazowo   |
+| 4   | gui-04-frontend-developer    | Implementacja taskow G1-G12          | Per task      |
+| 5   | gui-05-code-reviewer         | Przeglad kodu i weryfikacja AC       | Per task      |
+| 6   | gui-06-e2e-tester            | Testy end-to-end Playwright          | Per milestone |
+| 7   | gui-07-accessibility-auditor | Audyt dostepnosci WCAG 2.1 AA        | Per milestone |
+| 8   | gui-08-reality-checker       | Gate GO/NO-GO dla milestonu          | Per milestone |
 
 ---
 
@@ -160,13 +160,13 @@ Wtedy:
 
 Warstwa GUI jest konsumentem publicznego API silnika. Wszystkie zaleznosci sa jednostronne.
 
-| Element GUI                 | Zaleznosc od silnika              | Typ zaleznosci  |
-|-----------------------------|-----------------------------------|-----------------|
-| `simulation-adapter.ts`     | `simulate()`, `simulateWithTelemetry()` | Import bezposredni (jedyne miejsce) |
-| `SimulationProvider.tsx`    | `Command`, `StepStatus`, `SimulationResult` | Typy TypeScript |
-| `IntersectionView.tsx`      | `PhaseId`, `Road`                 | Typy TypeScript |
-| `TelemetryDashboard.tsx`    | `TelemetryData`                   | Typy TypeScript |
-| `ConfigPanel.tsx`           | `SimulateOptions`                 | Typy TypeScript |
+| Element GUI              | Zaleznosc od silnika                        | Typ zaleznosci                      |
+| ------------------------ | ------------------------------------------- | ----------------------------------- |
+| `simulation-adapter.ts`  | `simulate()`, `simulateWithTelemetry()`     | Import bezposredni (jedyne miejsce) |
+| `SimulationProvider.tsx` | `Command`, `StepStatus`, `SimulationResult` | Typy TypeScript                     |
+| `IntersectionView.tsx`   | `PhaseId`, `Road`                           | Typy TypeScript                     |
+| `TelemetryDashboard.tsx` | `TelemetryData`                             | Typy TypeScript                     |
+| `ConfigPanel.tsx`        | `SimulateOptions`                           | Typy TypeScript                     |
 
 Zablokowane jest:
 

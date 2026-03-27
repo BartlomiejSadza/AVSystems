@@ -76,7 +76,9 @@ describe('E2E — empty commands', () => {
 describe('E2E — single addVehicle, no step', () => {
   it('produces no step statuses when there is no step command', () => {
     const output = pipeline(
-      json({ commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' }] })
+      json({
+        commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' }],
+      })
     );
     expect(output.stepStatuses).toEqual([]);
   });

@@ -1,9 +1,11 @@
 # ADR-001: Control Algorithm — Adaptive Round-Robin with Traffic Density Priority
 
 ## Status
+
 Accepted
 
 ## Date
+
 2026-03-25
 
 ---
@@ -72,14 +74,14 @@ function selectPhase(state: SimulationState): Phase {
 
 ### Properties
 
-| Property          | Value                              |
-|-------------------|------------------------------------|
-| Time complexity   | O(1) per step                      |
-| Space complexity  | O(1) additional                    |
-| Deterministic     | YES — no random elements           |
-| Minimum phase     | 1 step per activation              |
-| Maximum phase     | Unbounded — serves until outbid    |
-| Initial phase     | P1 (NS-straight)                   |
+| Property         | Value                           |
+| ---------------- | ------------------------------- |
+| Time complexity  | O(1) per step                   |
+| Space complexity | O(1) additional                 |
+| Deterministic    | YES — no random elements        |
+| Minimum phase    | 1 step per activation           |
+| Maximum phase    | Unbounded — serves until outbid |
+| Initial phase    | P1 (NS-straight)                |
 
 ### Tie-breaker priority order
 
@@ -130,12 +132,12 @@ becomes dominant on the next step. This is by design — maximum responsiveness.
 
 ## Spec-to-ADR traceability
 
-| Workflow section                          | Covered here |
-|-------------------------------------------|--------------|
-| WF-4: Phase Selection algorithm           | YES          |
-| WF-3: step uses phase result              | YES          |
-| WORKFLOW-traffic-light-cycle.md Phase Table| YES         |
-| Tie-breaker from REGISTRY.md WF-4        | YES          |
+| Workflow section                            | Covered here |
+| ------------------------------------------- | ------------ |
+| WF-4: Phase Selection algorithm             | YES          |
+| WF-3: step uses phase result                | YES          |
+| WORKFLOW-traffic-light-cycle.md Phase Table | YES          |
+| Tie-breaker from REGISTRY.md WF-4           | YES          |
 
 ---
 

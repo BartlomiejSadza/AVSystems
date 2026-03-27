@@ -3,7 +3,7 @@
 ## Status
 
 | Pole       | Wartosc                   |
-|------------|---------------------------|
+| ---------- | ------------------------- |
 | Etap       | DONE                      |
 | Data       | 2026-03-25                |
 | Wlasciciel | gui-01-workflow-architect |
@@ -21,22 +21,22 @@
 
 ## Wyniki testow etapu
 
-| Test                     | Status | Uzasadnienie                                                                                   |
-|--------------------------|--------|-----------------------------------------------------------------------------------------------|
-| Test kompletnosci        | PASS   | Wszystkie 8 GWF maja zdefiniowane trigger, happy path, edge cases i recovery path w REGISTRY  |
+| Test                     | Status | Uzasadnienie                                                                                      |
+| ------------------------ | ------ | ------------------------------------------------------------------------------------------------- |
+| Test kompletnosci        | PASS   | Wszystkie 8 GWF maja zdefiniowane trigger, happy path, edge cases i recovery path w REGISTRY      |
 | Test spojnosci stanu     | PASS   | Kazda akcja z WORKFLOW-user-interaction.md ma odpowiadajacy Action w WORKFLOW-state-management.md |
-| Test granic wizualizacji | PASS   | WORKFLOW-intersection-visualization.md pokrywa stany: red/green/yellow i kolejki 0/1/wiele    |
-| Test mapowania API       | PASS   | GWF-3/4/5 jawnie wskazuja `simulate()` / `simulateWithTelemetry()` i mapowanie typow          |
+| Test granic wizualizacji | PASS   | WORKFLOW-intersection-visualization.md pokrywa stany: red/green/yellow i kolejki 0/1/wiele        |
+| Test mapowania API       | PASS   | GWF-3/4/5 jawnie wskazuja `simulate()` / `simulateWithTelemetry()` i mapowanie typow              |
 
 ---
 
 ## Ryzyka i luki
 
-| Ryzyko                              | Prawdopodobienstwo | Mitygacja                                                           |
-|-------------------------------------|--------------------|---------------------------------------------------------------------|
-| Animacja SVG moze byc zbyt wolna    | Srednie            | Zadanie G4 zawiera weryfikacje wydajnosci; fallback do CSS transition |
-| Stan auto-play na tle React Strict Mode | Niskie         | `useAutoPlay` hook z cleanup w `useEffect` — opisane w WORKFLOW-state-management.md |
-| Dwustronna zaleznosc app <-> simulator | Wyeliminowane | Adapter jest jedynym punktem importu — opisane w sekcji 3           |
+| Ryzyko                                  | Prawdopodobienstwo | Mitygacja                                                                           |
+| --------------------------------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| Animacja SVG moze byc zbyt wolna        | Srednie            | Zadanie G4 zawiera weryfikacje wydajnosci; fallback do CSS transition               |
+| Stan auto-play na tle React Strict Mode | Niskie             | `useAutoPlay` hook z cleanup w `useEffect` — opisane w WORKFLOW-state-management.md |
+| Dwustronna zaleznosc app <-> simulator  | Wyeliminowane      | Adapter jest jedynym punktem importu — opisane w sekcji 3                           |
 
 ---
 

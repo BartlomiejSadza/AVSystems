@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { simulate, createInitialState } from '../engine.js';
-import type { Command, StepStatus } from '../types.js';
+import type { Command } from '../types.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -93,11 +93,7 @@ describe('simulate — edge cases', () => {
 
 describe('simulate — FIFO ordering', () => {
   it('dequeues the first vehicle added to a road, not the last', () => {
-    const commands: Command[] = [
-      addVehicle('FIRST', 'north'),
-      addVehicle('SECOND', 'north'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('FIRST', 'north'), addVehicle('SECOND', 'north'), step];
     const result = simulate(commands);
     expect(result[0]?.leftVehicles).toContain('FIRST');
     expect(result[0]?.leftVehicles).not.toContain('SECOND');
@@ -127,11 +123,7 @@ describe('simulate — FIFO ordering', () => {
 describe('simulate — adaptive phase selection', () => {
   it('gives green to NS when north/south have more vehicles', () => {
     // 2 NS vehicles vs 0 EW vehicles → NS wins
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
     const result = simulate(commands);
     const left = result[0]!.leftVehicles;
     expect(left).toContain('N1');
@@ -140,11 +132,7 @@ describe('simulate — adaptive phase selection', () => {
 
   it('gives green to EW when east/west have more vehicles', () => {
     // 2 EW vehicles vs 0 NS vehicles → EW wins
-    const commands: Command[] = [
-      addVehicle('E1', 'east'),
-      addVehicle('W1', 'west'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step];
     const result = simulate(commands);
     const left = result[0]!.leftVehicles;
     expect(left).toContain('E1');
@@ -182,11 +170,7 @@ describe('simulate — adaptive phase selection', () => {
 
 describe('simulate — simultaneous clearing', () => {
   it('clears both north and south in the same step', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
     const result = simulate(commands);
     expect(result[0]?.leftVehicles).toHaveLength(2);
     expect(result[0]?.leftVehicles).toContain('N1');
@@ -194,11 +178,7 @@ describe('simulate — simultaneous clearing', () => {
   });
 
   it('clears both east and west in the same step', () => {
-    const commands: Command[] = [
-      addVehicle('E1', 'east'),
-      addVehicle('W1', 'west'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step];
     const result = simulate(commands);
     expect(result[0]?.leftVehicles).toHaveLength(2);
     expect(result[0]?.leftVehicles).toContain('E1');
@@ -265,12 +245,7 @@ describe('simulate — many steps', () => {
 
 describe('simulate — with invariant checks enabled', () => {
   it('does not throw for valid input when invariant checks are on', () => {
-    const commands: Command[] = [
-      addVehicle('V1', 'north'),
-      step,
-      addVehicle('V2', 'east'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('V1', 'north'), step, addVehicle('V2', 'east'), step];
     expect(() => simulate(commands, true)).not.toThrow();
   });
 });

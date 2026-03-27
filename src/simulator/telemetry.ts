@@ -69,9 +69,7 @@ export interface TelemetryAccumulator {
  * Create a fresh accumulator with all counters at zero.
  */
 export function createAccumulator(): TelemetryAccumulator {
-  const phaseDistribution = Object.fromEntries(
-    PHASES.map((p) => [p.id, 0])
-  ) as PhaseDistribution;
+  const phaseDistribution = Object.fromEntries(PHASES.map((p) => [p.id, 0])) as PhaseDistribution;
 
   return {
     totalSteps: 0,
@@ -123,9 +121,7 @@ export function recordStep(
  */
 export function finalizeTelemetry(acc: TelemetryAccumulator): TelemetryData {
   const averageQueueLength =
-    acc.queueLengthSampleCount > 0
-      ? acc.queueLengthSum / acc.queueLengthSampleCount
-      : 0;
+    acc.queueLengthSampleCount > 0 ? acc.queueLengthSum / acc.queueLengthSampleCount : 0;
 
   return {
     totalSteps: acc.totalSteps,

@@ -14,9 +14,11 @@ Plan testow jest obowiazkowy dla kazdego tasku i kazdego milestone.
 ### Unit tests
 
 Cel:
+
 - logika domenowa i algorytmiczna bez I/O.
 
 Pokrycie:
+
 - model domeny,
 - kolejki i `addVehicle`,
 - planowanie faz,
@@ -25,9 +27,11 @@ Pokrycie:
 ### Contract tests
 
 Cel:
+
 - zgodnosc formatu JSON input/output.
 
 Pokrycie:
+
 - schema komend (`addVehicle`, `step`),
 - schema odpowiedzi (`stepStatuses.leftVehicles`),
 - bledne dane i komunikaty bledow.
@@ -35,9 +39,11 @@ Pokrycie:
 ### Integration tests
 
 Cel:
+
 - poprawne dzialanie przeplywu CLI `input.json -> output.json`.
 
 Pokrycie:
+
 - uruchomienie jedna komenda,
 - poprawny zapis pliku wyjsciowego,
 - scenariusze wielokrokowe.
@@ -45,26 +51,32 @@ Pokrycie:
 ### Golden tests
 
 Cel:
+
 - gwarancja zgodnosci z przykladem z tresci zadania.
 
 Pokrycie:
+
 - referencyjny zestaw komend i oczekiwane `stepStatuses`.
 
 ### Invariant tests
 
 Cel:
+
 - bezpieczenstwo ruchu i brak konfliktow.
 
 Pokrycie:
+
 - brak kolizyjnych zielonych,
 - stabilnosc przejsc faz.
 
 ### Performance tests
 
 Cel:
+
 - potwierdzenie wydajnosci dla wiekszych inputow.
 
 Pokrycie:
+
 - 1k, 10k, 100k komend,
 - czas wykonania i zuzycie pamieci.
 
@@ -73,12 +85,14 @@ Pokrycie:
 ### Gate per task
 
 Warunek PASS:
+
 - testy przypisane do tasku sa zielone,
 - review (`05`) nie ma blockerow.
 
 ### Gate per milestone
 
 Warunek PASS:
+
 - `06` API tests: PASS,
 - `07` Performance: PASS,
 - `08` Reality checker: GO.
@@ -86,6 +100,7 @@ Warunek PASS:
 ### Gate final
 
 Warunek PASS:
+
 - full regression PASS,
 - finalny report `08` bez krytycznych otwartych ryzyk,
 - smoke-test README PASS.

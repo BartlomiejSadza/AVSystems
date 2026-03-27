@@ -7,7 +7,7 @@ Accepted
 ## Metadata
 
 | Pole       | Wartosc             |
-|------------|---------------------|
+| ---------- | ------------------- |
 | Data       | 2026-03-25          |
 | Wersja     | 1.0                 |
 | Wlasciciel | gui-02-ui-architect |
@@ -38,18 +38,18 @@ All colors are defined as Tailwind config extensions in `tailwind.config.ts`.
 
 ### Traffic Light Colors
 
-| Token                     | Hex       | Usage                              | Contrast on bg-sim-base |
-|---------------------------|-----------|------------------------------------|--------------------------|
-| `traffic-red`             | `#EF4444` | Red traffic light indicator        | 4.7:1 (AA pass)          |
-| `traffic-green`           | `#22C55E` | Green traffic light indicator      | 5.1:1 (AA pass)          |
-| `traffic-yellow`          | `#EAB308` | Yellow / transitioning indicator   | 6.2:1 (AA pass)          |
-| `traffic-red-dim`         | `#7F1D1D` | Inactive red light (unlit state)   | —                        |
-| `traffic-green-dim`       | `#14532D` | Inactive green light (unlit state) | —                        |
+| Token               | Hex       | Usage                              | Contrast on bg-sim-base |
+| ------------------- | --------- | ---------------------------------- | ----------------------- |
+| `traffic-red`       | `#EF4444` | Red traffic light indicator        | 4.7:1 (AA pass)         |
+| `traffic-green`     | `#22C55E` | Green traffic light indicator      | 5.1:1 (AA pass)         |
+| `traffic-yellow`    | `#EAB308` | Yellow / transitioning indicator   | 6.2:1 (AA pass)         |
+| `traffic-red-dim`   | `#7F1D1D` | Inactive red light (unlit state)   | —                       |
+| `traffic-green-dim` | `#14532D` | Inactive green light (unlit state) | —                       |
 
 ### Background and Surface Colors
 
 | Token             | Hex       | Usage                                     |
-|-------------------|-----------|-------------------------------------------|
+| ----------------- | --------- | ----------------------------------------- |
 | `sim-base`        | `#111827` | Page background (gray-900)                |
 | `sim-surface`     | `#1F2937` | Panel backgrounds (gray-800)              |
 | `sim-surface-alt` | `#374151` | Elevated surface, hover states (gray-700) |
@@ -57,19 +57,19 @@ All colors are defined as Tailwind config extensions in `tailwind.config.ts`.
 
 ### Text Colors
 
-| Token           | Hex       | Usage                          | Contrast on sim-surface |
-|-----------------|-----------|--------------------------------|--------------------------|
-| `sim-text`      | `#F9FAFB` | Primary text (gray-50)         | 14.5:1 (AAA pass)        |
-| `sim-text-muted`| `#9CA3AF` | Secondary / label text (gray-400) | 5.3:1 (AA pass)       |
-| `sim-text-dim`  | `#6B7280` | Disabled / placeholder (gray-500) | 3.5:1 (AA large text) |
+| Token            | Hex       | Usage                             | Contrast on sim-surface |
+| ---------------- | --------- | --------------------------------- | ----------------------- |
+| `sim-text`       | `#F9FAFB` | Primary text (gray-50)            | 14.5:1 (AAA pass)       |
+| `sim-text-muted` | `#9CA3AF` | Secondary / label text (gray-400) | 5.3:1 (AA pass)         |
+| `sim-text-dim`   | `#6B7280` | Disabled / placeholder (gray-500) | 3.5:1 (AA large text)   |
 
 ### Semantic Colors
 
-| Token          | Hex       | Usage                           |
-|----------------|-----------|----------------------------------|
-| `status-error` | `#FCA5A5` | Error banner text (red-300)      |
+| Token             | Hex       | Usage                          |
+| ----------------- | --------- | ------------------------------ |
+| `status-error`    | `#FCA5A5` | Error banner text (red-300)    |
 | `status-error-bg` | `#450A0A` | Error banner background        |
-| `status-success` | `#86EFAC` | Success indicators (green-300) |
+| `status-success`  | `#86EFAC` | Success indicators (green-300) |
 
 ---
 
@@ -85,14 +85,14 @@ fontFamily: {
 
 ### Type Scale (Tailwind classes)
 
-| Usage               | Class              | Size    |
-|---------------------|--------------------|---------|
-| Page title          | `text-xl font-semibold` | 20px |
-| Panel heading       | `text-base font-semibold` | 16px |
-| Label               | `text-sm font-medium` | 14px  |
-| Body / value        | `text-sm`          | 14px    |
-| Caption / muted     | `text-xs`          | 12px    |
-| vehicleId in queue  | `text-xs font-mono`| 12px    |
+| Usage              | Class                     | Size |
+| ------------------ | ------------------------- | ---- |
+| Page title         | `text-xl font-semibold`   | 20px |
+| Panel heading      | `text-base font-semibold` | 16px |
+| Label              | `text-sm font-medium`     | 14px |
+| Body / value       | `text-sm`                 | 14px |
+| Caption / muted    | `text-xs`                 | 12px |
+| vehicleId in queue | `text-xs font-mono`       | 12px |
 
 ---
 
@@ -194,9 +194,11 @@ Applied to the `VehicleMarker` when `isLeaving = true`:
 
 ```css
 .vehicle-marker-leaving {
-  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  transition:
+    opacity 300ms ease-out,
+    transform 300ms ease-out;
   opacity: 0;
-  transform: translateY(-20px);  /* north/south */
+  transform: translateY(-20px); /* north/south */
   /* translateX(20px) for east, translateX(-20px) for west */
 }
 ```
@@ -211,8 +213,14 @@ After transition ends (`onTransitionEnd`), the marker is removed from the DOM.
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 ```
 
@@ -220,24 +228,26 @@ After transition ends (`onTransitionEnd`), the marker is removed from the DOM.
 
 ## Responsive Breakpoints
 
-| Breakpoint | Width      | Changes                                          |
-|------------|------------|--------------------------------------------------|
-| Default    | < 768px    | Not officially supported; layout may overflow    |
-| `md`       | 768–1279px | Single column, IntersectionView max-w-500px      |
-| `lg`       | 1280px+    | Two-column grid (primary target)                 |
-| `xl`       | 1536px+    | Larger SVG (max-w-600px) + wider right panel     |
+| Breakpoint | Width      | Changes                                       |
+| ---------- | ---------- | --------------------------------------------- |
+| Default    | < 768px    | Not officially supported; layout may overflow |
+| `md`       | 768–1279px | Single column, IntersectionView max-w-500px   |
+| `lg`       | 1280px+    | Two-column grid (primary target)              |
+| `xl`       | 1536px+    | Larger SVG (max-w-600px) + wider right panel  |
 
 ---
 
 ## Consequences
 
 **Easier because of this decision:**
+
 - Tailwind utility classes eliminate specificity conflicts and dead CSS.
 - Color tokens in `tailwind.config.ts` are a single source of truth — changing a token updates the whole UI.
 - Dark theme is the only theme — no theme switching complexity.
 - SVG geometry is fixed and documented — no runtime layout calculations needed.
 
 **Harder because of this decision:**
+
 - Dynamic Tailwind class names (e.g., `bg-${color}`) are not purged correctly by Tailwind's content scanner. Rule: always use complete class names (`bg-traffic-red`, not `bg-traffic-${state}`). Use a lookup object instead.
 - No UI component library means writing all UI primitives from scratch (buttons, selects, sliders). These must be accessible by design.
 - Animations in SVG with CSS transitions require careful handling of `transform-origin` — SVG uses different coordinate spaces than HTML.

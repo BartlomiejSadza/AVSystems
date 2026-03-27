@@ -1,9 +1,11 @@
 # ADR-002: Safety Invariants — Collision-Free Traffic Light Logic
 
 ## Status
+
 Accepted
 
 ## Date
+
 2026-03-25
 
 ---
@@ -41,6 +43,7 @@ For any active phase P, for all pairs of roads (r1, r2) included in P,
 conflict(r1, r2) must be false.
 
 **Formally:**
+
 ```
 forall step s, forall phase P = activePhase(s):
   forall r1, r2 in P.greenRoads:
@@ -48,6 +51,7 @@ forall step s, forall phase P = activePhase(s):
 ```
 
 **Conflict pairs** (from WORKFLOW-traffic-light-cycle.md):
+
 - (north, east), (north, west)
 - (south, east), (south, west)
 - (north-left, south), (north-left, east)
@@ -56,6 +60,7 @@ forall step s, forall phase P = activePhase(s):
 - (west-left, east), (west-left, south)
 
 For the base implementation (P1/P2 only):
+
 - P1 green set: {north, south} — no conflict pair. SAFE.
 - P2 green set: {east, west} — no conflict pair. SAFE.
 
@@ -75,12 +80,14 @@ instantaneous — a step that ends P1 immediately begins P2 in the next step wit
 intermediate all-red step.
 
 **Rationale for gap = 0:**
+
 - The simulation uses discrete logical steps, not time-continuous ticks.
 - A single step already represents a quanta of time in which one phase is active.
 - The transition happens between steps, which is an implicit all-red boundary.
 - T8 may extend this with a configurable gap > 0.
 
 **Formally:**
+
 ```
 forall consecutive steps (s, s+1):
   if activePhase(s) != activePhase(s+1):
@@ -100,6 +107,7 @@ A vehicle V with V.startRoad = R may only appear in leftVehicles during a step i
 R is part of the active phase's green roads.
 
 **Formally:**
+
 ```
 forall step s, forall vehicleId v in stepStatus(s).leftVehicles:
   let V = findVehicle(v)
@@ -119,6 +127,7 @@ For any road R, if vehicle V1 was enqueued before vehicle V2, then V1 departs be
 No vehicle is skipped, reordered, or bypassed.
 
 **Formally:**
+
 ```
 forall road R:
   forall vehicles V1, V2 enqueued on R where enqueue_time(V1) < enqueue_time(V2):
@@ -141,6 +150,7 @@ Each vehicle, identified by vehicleId, appears in leftVehicles at most once acro
 entire simulation.
 
 **Formally:**
+
 ```
 let allDeparted = union of leftVehicles across all steps
 forall v1, v2 in allDeparted where v1.vehicleId == v2.vehicleId:
@@ -157,13 +167,13 @@ any queue. The dequeue operation is final.
 
 ## Invariant Test Matrix
 
-| Invariant | Test type            | Tool         | Priority |
-|-----------|----------------------|--------------|----------|
-| INV-1     | Property-based       | fast-check   | CRITICAL |
-| INV-2     | Structural / type    | TypeScript   | LOW (gap=0) |
-| INV-3     | Property-based       | fast-check   | CRITICAL |
-| INV-4     | Unit test            | Vitest       | HIGH     |
-| INV-5     | Property-based       | fast-check   | HIGH     |
+| Invariant | Test type         | Tool       | Priority    |
+| --------- | ----------------- | ---------- | ----------- |
+| INV-1     | Property-based    | fast-check | CRITICAL    |
+| INV-2     | Structural / type | TypeScript | LOW (gap=0) |
+| INV-3     | Property-based    | fast-check | CRITICAL    |
+| INV-4     | Unit test         | Vitest     | HIGH        |
+| INV-5     | Property-based    | fast-check | HIGH        |
 
 ---
 
@@ -208,10 +218,10 @@ This is a future concern and does not affect the base implementation.
 
 ## Spec-to-ADR traceability
 
-| Workflow / requirement                       | Covered by invariant |
-|----------------------------------------------|----------------------|
-| WF-1: conflict matrix                        | INV-1                |
-| WF-3: vehicle departure rules                | INV-3                |
-| WF-2: FIFO queue constraint                  | INV-4                |
-| WF-5: one departure per vehicle              | INV-5                |
-| WF-1: phase transition safety                | INV-2                |
+| Workflow / requirement          | Covered by invariant |
+| ------------------------------- | -------------------- |
+| WF-1: conflict matrix           | INV-1                |
+| WF-3: vehicle departure rules   | INV-3                |
+| WF-2: FIFO queue constraint     | INV-4                |
+| WF-5: one departure per vehicle | INV-5                |
+| WF-1: phase transition safety   | INV-2                |

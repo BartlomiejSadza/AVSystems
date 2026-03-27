@@ -184,10 +184,10 @@ describe('selectPhase — emergency vehicle phase forcing', () => {
 describe('simulate — emergency vehicle end-to-end', () => {
   it('emergency vehicle departs before normal vehicles on the same road', () => {
     const commands: Command[] = [
-      addVehicle('N1', 'north'),   // normal, enqueued first
-      addVehicle('N2', 'north'),   // normal, enqueued second
+      addVehicle('N1', 'north'), // normal, enqueued first
+      addVehicle('N2', 'north'), // normal, enqueued second
       addEmergency('NE', 'north'), // emergency — should jump to front
-      step,                        // NS phase: NE should depart (not N1)
+      step, // NS phase: NE should depart (not N1)
     ];
 
     const result = simulate(commands);
@@ -200,7 +200,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
     const commands: Command[] = [
       addVehicle('N1', 'north'),
       addVehicle('N2', 'north'),
-      addVehicle('S1', 'south'),   // NS total = 3 (would normally win)
+      addVehicle('S1', 'south'), // NS total = 3 (would normally win)
       addEmergency('E_EMG', 'east'), // emergency on east → EW forced
       step,
     ];
@@ -217,8 +217,8 @@ describe('simulate — emergency vehicle end-to-end', () => {
       addVehicle('N1', 'north'),
       addVehicle('N2', 'north'), // NS total = 2
       addEmergency('E_EMG', 'east'), // EW forced for step 1
-      step,   // step 1: EW forced → E_EMG departs
-      step,   // step 2: no emergency → NS wins (2 vs 0) → N1 departs
+      step, // step 1: EW forced → E_EMG departs
+      step, // step 2: no emergency → NS wins (2 vs 0) → N1 departs
     ];
 
     const result = simulate(commands);
@@ -229,8 +229,8 @@ describe('simulate — emergency vehicle end-to-end', () => {
   it('handles emergency vehicles on both opposing phases — picks heavier phase', () => {
     const commands: Command[] = [
       addEmergency('NE', 'north'), // NS emergency
-      addEmergency('EE', 'east'),  // EW emergency — tie on emergency phases
-      addVehicle('S1', 'south'),   // extra vehicle on NS
+      addEmergency('EE', 'east'), // EW emergency — tie on emergency phases
+      addVehicle('S1', 'south'), // extra vehicle on NS
       step,
     ];
 
@@ -246,8 +246,8 @@ describe('simulate — emergency vehicle end-to-end', () => {
   it('emergency vehicle on an otherwise empty phase still forces that phase', () => {
     const commands: Command[] = [
       addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),   // NS has 2, EW has 0 except emergency
-      addEmergency('WE', 'west'),  // EW emergency
+      addVehicle('S1', 'south'), // NS has 2, EW has 0 except emergency
+      addEmergency('WE', 'west'), // EW emergency
       step,
     ];
 
@@ -258,7 +258,13 @@ describe('simulate — emergency vehicle end-to-end', () => {
   it('accepts priority field through Zod parser path (schema accepts optional priority)', () => {
     // This test exercises the full pipeline: addVehicle with priority field
     const commands: Command[] = [
-      { type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south', priority: 'emergency' },
+      {
+        type: 'addVehicle',
+        vehicleId: 'V1',
+        startRoad: 'north',
+        endRoad: 'south',
+        priority: 'emergency',
+      },
       { type: 'addVehicle', vehicleId: 'V2', startRoad: 'north', endRoad: 'south' }, // no priority field
       step,
     ];
@@ -285,8 +291,8 @@ describe('simulate — emergency vehicle end-to-end', () => {
     const commands: Command[] = [
       addEmergency('EA', 'north'),
       addEmergency('EB', 'north'),
-      step,  // EA departs (first emergency)
-      step,  // EB departs (second emergency)
+      step, // EA departs (first emergency)
+      step, // EB departs (second emergency)
     ];
 
     const result = simulate(commands);

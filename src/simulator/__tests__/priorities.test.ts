@@ -33,11 +33,7 @@ function makeState(lastPhaseIndex = -1): SimulationState {
   };
 }
 
-function addVehicleToState(
-  state: SimulationState,
-  id: string,
-  road: Vehicle['startRoad']
-): void {
+function addVehicleToState(state: SimulationState, id: string, road: Vehicle['startRoad']): void {
   enqueueVehicle(state, {
     vehicleId: id,
     startRoad: road,
@@ -130,7 +126,7 @@ describe('selectPhase — priority weights influence selection', () => {
   it('falls through to tie-breaking when weighted loads are exactly equal', () => {
     const state = makeState(-1);
     addVehicleToState(state, 'N1', 'north'); // NS=1
-    addVehicleToState(state, 'E1', 'east');  // EW=1
+    addVehicleToState(state, 'E1', 'east'); // EW=1
 
     // weight east=1.0, north=1.0 → tie → lastPhaseIndex=-1 → NS default
     expect(selectPhase(state, { north: 1.0, east: 1.0 }).id).toBe('NS_STRAIGHT');
@@ -143,25 +139,15 @@ describe('selectPhase — priority weights influence selection', () => {
 
 describe('simulate — roadPriorities option', () => {
   it('accepts roadPriorities via SimulateOptions without error', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('E1', 'east'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('E1', 'east'), step];
 
-    expect(() =>
-      simulate(commands, { roadPriorities: { north: 2.0, east: 0.5 } })
-    ).not.toThrow();
+    expect(() => simulate(commands, { roadPriorities: { north: 2.0, east: 0.5 } })).not.toThrow();
   });
 
   it('higher-weighted road wins phase selection over an otherwise tied road', () => {
     // N and E each have 1 vehicle — normally a tie → NS wins (Phase 0).
     // With north weight 0.5 and east weight 2.0, EW load > NS load → EW wins.
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('E1', 'east'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('E1', 'east'), step];
 
     const resultDefault = simulate(commands);
     // Default: tie → NS wins → N1 departs
@@ -194,11 +180,7 @@ describe('simulate — roadPriorities option', () => {
   });
 
   it('works with invariant checks enabled alongside road priorities', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
 
     expect(() =>
       simulate(commands, {
@@ -209,11 +191,7 @@ describe('simulate — roadPriorities option', () => {
   });
 
   it('handles all-zero weights gracefully (no division-by-zero)', () => {
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('E1', 'east'),
-      step,
-    ];
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('E1', 'east'), step];
 
     // All loads become 0 — falls through to tie-break → Phase 0 by default
     expect(() =>

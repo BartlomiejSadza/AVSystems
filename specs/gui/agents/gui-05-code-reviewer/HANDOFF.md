@@ -3,7 +3,7 @@
 ## Status
 
 | Pole       | Wartosc                    |
-|------------|----------------------------|
+| ---------- | -------------------------- |
 | Etap       | PENDING (szablon handoffu) |
 | Data       | 2026-03-25                 |
 | Wlasciciel | gui-05-code-reviewer       |
@@ -20,20 +20,20 @@ Ten plik jest wypelniany przez `gui-05-code-reviewer` po przeglądzie kazdego mi
 
 ### Wyniki checklist
 
-| Kategoria                    | Items | PASS | FAIL |
-|------------------------------|-------|------|------|
-| Architektura i zaleznosci    | 4     | ?    | ?    |
-| TypeScript                   | 5     | ?    | ?    |
-| React i hooki                | 5     | ?    | ?    |
-| Tailwind i styling           | 4     | ?    | ?    |
-| Dostepnosc                   | 6     | ?    | ?    |
-| Testy                        | 5     | ?    | ?    |
+| Kategoria                 | Items | PASS | FAIL |
+| ------------------------- | ----- | ---- | ---- |
+| Architektura i zaleznosci | 4     | ?    | ?    |
+| TypeScript                | 5     | ?    | ?    |
+| React i hooki             | 5     | ?    | ?    |
+| Tailwind i styling        | 4     | ?    | ?    |
+| Dostepnosc                | 6     | ?    | ?    |
+| Testy                     | 5     | ?    | ?    |
 
 ### Findings
 
-| ID      | Plik                        | Severity  | Opis                          | Status     |
-|---------|-----------------------------|-----------|-------------------------------|------------|
-| CR-GM1-01 | (plik do uzupelnienia)    | ?         | (opis do uzupelnienia)        | OPEN/CLOSED |
+| ID        | Plik                   | Severity | Opis                   | Status      |
+| --------- | ---------------------- | -------- | ---------------------- | ----------- |
+| CR-GM1-01 | (plik do uzupelnienia) | ?        | (opis do uzupelnienia) | OPEN/CLOSED |
 
 ### Verdict: [ ] APPROVED / [ ] CHANGES REQUESTED
 
@@ -46,20 +46,20 @@ Ten plik jest wypelniany przez `gui-05-code-reviewer` po przeglądzie kazdego mi
 
 ### Wyniki checklist
 
-| Kategoria                    | Items | PASS | FAIL |
-|------------------------------|-------|------|------|
-| Architektura i zaleznosci    | 4     | ?    | ?    |
-| TypeScript                   | 5     | ?    | ?    |
-| React i hooki                | 5     | ?    | ?    |
-| Tailwind i styling           | 4     | ?    | ?    |
-| Dostepnosc                   | 6     | ?    | ?    |
-| Testy                        | 5     | ?    | ?    |
+| Kategoria                 | Items | PASS | FAIL |
+| ------------------------- | ----- | ---- | ---- |
+| Architektura i zaleznosci | 4     | ?    | ?    |
+| TypeScript                | 5     | ?    | ?    |
+| React i hooki             | 5     | ?    | ?    |
+| Tailwind i styling        | 4     | ?    | ?    |
+| Dostepnosc                | 6     | ?    | ?    |
+| Testy                     | 5     | ?    | ?    |
 
 ### Findings
 
-| ID      | Plik                        | Severity  | Opis                          | Status     |
-|---------|-----------------------------|-----------|-------------------------------|------------|
-| CR-GM2-01 | (plik do uzupelnienia)    | ?         | (opis do uzupelnienia)        | OPEN/CLOSED |
+| ID        | Plik                   | Severity | Opis                   | Status      |
+| --------- | ---------------------- | -------- | ---------------------- | ----------- |
+| CR-GM2-01 | (plik do uzupelnienia) | ?        | (opis do uzupelnienia) | OPEN/CLOSED |
 
 ### Verdict: [ ] APPROVED / [ ] CHANGES REQUESTED
 
@@ -69,20 +69,20 @@ Ten plik jest wypelniany przez `gui-05-code-reviewer` po przeglądzie kazdego mi
 
 ### Wyniki checklist
 
-| Kategoria                    | Items | PASS | FAIL |
-|------------------------------|-------|------|------|
-| Architektura i zaleznosci    | 4     | ?    | ?    |
-| TypeScript                   | 5     | ?    | ?    |
-| React i hooki                | 5     | ?    | ?    |
-| Tailwind i styling           | 4     | ?    | ?    |
-| Dostepnosc                   | 6     | ?    | ?    |
-| Testy                        | 5     | ?    | ?    |
+| Kategoria                 | Items | PASS | FAIL |
+| ------------------------- | ----- | ---- | ---- |
+| Architektura i zaleznosci | 4     | ?    | ?    |
+| TypeScript                | 5     | ?    | ?    |
+| React i hooki             | 5     | ?    | ?    |
+| Tailwind i styling        | 4     | ?    | ?    |
+| Dostepnosc                | 6     | ?    | ?    |
+| Testy                     | 5     | ?    | ?    |
 
 ### Findings
 
-| ID      | Plik                        | Severity  | Opis                          | Status     |
-|---------|-----------------------------|-----------|-------------------------------|------------|
-| CR-GM3-01 | (plik do uzupelnienia)    | ?         | (opis do uzupelnienia)        | OPEN/CLOSED |
+| ID        | Plik                   | Severity | Opis                   | Status      |
+| --------- | ---------------------- | -------- | ---------------------- | ----------- |
+| CR-GM3-01 | (plik do uzupelnienia) | ?        | (opis do uzupelnienia) | OPEN/CLOSED |
 
 ### Verdict: [ ] APPROVED / [ ] CHANGES REQUESTED
 

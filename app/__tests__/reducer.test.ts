@@ -229,7 +229,12 @@ describe('simulationReducer', () => {
         { type: 'STEP' },
       ]);
       const imported = [
-        { type: 'addVehicle' as const, vehicleId: 'NEW', startRoad: 'east' as const, endRoad: 'west' as const },
+        {
+          type: 'addVehicle' as const,
+          vehicleId: 'NEW',
+          startRoad: 'east' as const,
+          endRoad: 'west' as const,
+        },
       ];
       const state = simulationReducer(dirtyState, {
         type: 'IMPORT_COMMANDS',

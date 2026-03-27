@@ -21,7 +21,10 @@ export function ErrorBanner() {
       aria-atomic="true"
     >
       {/* Icon */}
-      <span className="text-traffic-red text-lg leading-none mt-0.5 flex-shrink-0" aria-hidden="true">
+      <span
+        className="text-traffic-red text-lg leading-none mt-0.5 flex-shrink-0"
+        aria-hidden="true"
+      >
         &#9888;
       </span>
 
@@ -36,7 +39,9 @@ export function ErrorBanner() {
         className="flex-shrink-0 text-traffic-red hover:text-status-error transition-colors focus:outline-none focus:ring-2 focus:ring-traffic-red rounded"
         aria-label="Dismiss error"
       >
-        <span aria-hidden="true" className="text-lg leading-none">&times;</span>
+        <span aria-hidden="true" className="text-lg leading-none">
+          &times;
+        </span>
       </button>
     </div>
   );

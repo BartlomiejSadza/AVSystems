@@ -1,7 +1,9 @@
 # WORKFLOW: Command Processing
 
 ## ID: WF-2, WF-3, WF-5
+
 ## Version: 1.0
+
 ## Date: 2026-03-25
 
 ---
@@ -13,7 +15,12 @@
 ```json
 {
   "commands": [
-    { "type": "addVehicle", "vehicleId": "string", "startRoad": "north|south|east|west", "endRoad": "north|south|east|west" },
+    {
+      "type": "addVehicle",
+      "vehicleId": "string",
+      "startRoad": "north|south|east|west",
+      "endRoad": "north|south|east|west"
+    },
     { "type": "step" }
   ]
 }
@@ -23,13 +30,12 @@
 
 ```json
 {
-  "stepStatuses": [
-    { "leftVehicles": ["vehicleId1", "vehicleId2"] }
-  ]
+  "stepStatuses": [{ "leftVehicles": ["vehicleId1", "vehicleId2"] }]
 }
 ```
 
 Rules:
+
 - One StepStatus entry is produced per `step` command, in order.
 - `addVehicle` commands produce no entry in `stepStatuses`.
 - `leftVehicles` may be empty `[]` if no vehicle crossed in that step.
@@ -39,6 +45,7 @@ Rules:
 ## 2. addVehicle Flow (WF-2)
 
 ### Trigger
+
 A command object with `type: "addVehicle"` is encountered during command processing.
 
 ### Precondition checks (in order)
@@ -80,6 +87,7 @@ No reordering, sorting, or priority insertion is permitted.
 ## 3. step Flow (WF-3 + WF-4 + WF-5)
 
 ### Trigger
+
 A command object with `type: "step"` is encountered during command processing.
 
 ### Execution steps (ordered)
@@ -114,18 +122,19 @@ AFTER:
 
 ### Edge cases
 
-| Scenario                              | Behaviour                              |
-|---------------------------------------|----------------------------------------|
-| All queues empty                      | leftVehicles = [], StepStatus produced |
-| Green road queue empty                | That road contributes nothing          |
-| Red road queue non-empty              | Vehicles wait; not dequeued            |
-| Multiple green roads with vehicles    | One vehicle per road dequeued per step |
+| Scenario                           | Behaviour                              |
+| ---------------------------------- | -------------------------------------- |
+| All queues empty                   | leftVehicles = [], StepStatus produced |
+| Green road queue empty             | That road contributes nothing          |
+| Red road queue non-empty           | Vehicles wait; not dequeued            |
+| Multiple green roads with vehicles | One vehicle per road dequeued per step |
 
 ---
 
 ## 4. Phase Selection Sub-flow (WF-4)
 
 ### Purpose
+
 Determines which phase (P1 or P2) is active for the current step.
 
 ### Algorithm: Adaptive round-robin with density priority
@@ -185,12 +194,12 @@ parse_input(file)
 
 ## 6. State Transitions Summary
 
-| Event              | stepCount | currentPhase  | queues               | stepStatuses |
-|--------------------|-----------|---------------|----------------------|--------------|
-| Init               | 0         | P1 (default)  | all empty            | []           |
-| addVehicle         | unchanged | unchanged     | startRoad +1         | unchanged    |
-| step (vehicles)    | +1        | recalculated  | green roads -1 front | +1 entry     |
-| step (no vehicles) | +1        | recalculated  | unchanged            | +1 entry     |
+| Event              | stepCount | currentPhase | queues               | stepStatuses |
+| ------------------ | --------- | ------------ | -------------------- | ------------ |
+| Init               | 0         | P1 (default) | all empty            | []           |
+| addVehicle         | unchanged | unchanged    | startRoad +1         | unchanged    |
+| step (vehicles)    | +1        | recalculated | green roads -1 front | +1 entry     |
+| step (no vehicles) | +1        | recalculated | unchanged            | +1 entry     |
 
 ---
 

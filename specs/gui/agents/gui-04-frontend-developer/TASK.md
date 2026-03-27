@@ -81,12 +81,14 @@ Per task — zgodnie z TEST-PLAN-GUI.md sekcja "Test Execution per Milestone":
 ## Gate przejscia
 
 Per task:
+
 - Implementacja kompletna.
 - Testy zielone (`pnpm test` dla scope tasku).
 - Brak bledow TypeScript (`pnpm build` lub `tsc --noEmit`).
 - `specs/gui/STATUS-GUI.yaml` zaktualizowany (`task_status.GN = done`).
 
 Po kazdym milestone (GM1, GM2, GM3):
+
 - Przekaz do `gui-05-code-reviewer` (review kodu) i `gui-06-e2e-tester` (E2E tests).
 - Przekaz do `gui-07-accessibility-auditor` po GM2 i GM3.
 - Czekaj na `gui-08-reality-checker` verdict GO przed przejsciem do nastepnego milestone.
@@ -96,6 +98,7 @@ Po kazdym milestone (GM1, GM2, GM3):
 ## Handoff
 
 Wypelnij `HANDOFF.md` per milestone z:
+
 - Lista zaimplementowanych plikow.
 - Wyniki testow (liczba, poziom pokrycia).
 - Znane ograniczenia lub TODOs dla gui-05-code-reviewer.

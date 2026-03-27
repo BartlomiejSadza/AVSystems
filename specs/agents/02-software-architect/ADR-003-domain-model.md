@@ -1,9 +1,11 @@
 # ADR-003: Domain Model — Types, Aggregates, and State
 
 ## Status
+
 Accepted
 
 ## Date
+
 2026-03-25
 
 ---
@@ -32,11 +34,11 @@ All implementation tasks (T1–T5) derive their type signatures from this docume
 ```typescript
 // src/simulator/types.ts
 
-export type Road = "north" | "south" | "east" | "west"
+export type Road = 'north' | 'south' | 'east' | 'west';
 
-export const ROADS: Road[] = ["north", "south", "east", "west"]
+export const ROADS: Road[] = ['north', 'south', 'east', 'west'];
 
-export const ROAD_PRIORITY: Road[] = ["north", "south", "east", "west"]
+export const ROAD_PRIORITY: Road[] = ['north', 'south', 'east', 'west'];
 // Used for deterministic tie-breaking in phase selection (ADR-001)
 ```
 
@@ -47,9 +49,9 @@ serialize cleanly to/from JSON without enum mapping, and are directly expressibl
 
 ```typescript
 export interface Vehicle {
-  readonly vehicleId: string
-  readonly startRoad: Road
-  readonly endRoad: Road
+  readonly vehicleId: string;
+  readonly startRoad: Road;
+  readonly endRoad: Road;
 }
 ```
 
@@ -61,8 +63,8 @@ but the base simulation does not use it for phase or conflict logic.
 
 ```typescript
 export type Command =
-  | { type: "addVehicle"; vehicleId: string; startRoad: Road; endRoad: Road }
-  | { type: "step" }
+  | { type: 'addVehicle'; vehicleId: string; startRoad: Road; endRoad: Road }
+  | { type: 'step' };
 ```
 
 Rationale: discriminated union — TypeScript narrows the type after checking `command.type`.
@@ -71,17 +73,17 @@ This eliminates the need for runtime casts inside the processing loop.
 #### Phase
 
 ```typescript
-export type PhaseId = "NS" | "EW"
+export type PhaseId = 'NS' | 'EW';
 
 export interface Phase {
-  readonly id: PhaseId
-  readonly greenRoads: Readonly<Road[]>
+  readonly id: PhaseId;
+  readonly greenRoads: Readonly<Road[]>;
 }
 
 export const PHASES: Record<PhaseId, Phase> = {
-  NS: { id: "NS", greenRoads: ["north", "south"] },
-  EW: { id: "EW", greenRoads: ["east", "west"] },
-}
+  NS: { id: 'NS', greenRoads: ['north', 'south'] },
+  EW: { id: 'EW', greenRoads: ['east', 'west'] },
+};
 ```
 
 Rationale: `PHASES` is a constant lookup table. `greenRoads` is a readonly array to prevent
@@ -91,9 +93,9 @@ accidental mutation. Phase objects are value types — they are never mutated, o
 
 ```typescript
 export interface SimulationState {
-  queues: Map<Road, Vehicle[]>
-  currentPhase: PhaseId
-  stepCount: number
+  queues: Map<Road, Vehicle[]>;
+  currentPhase: PhaseId;
+  stepCount: number;
 }
 ```
 
@@ -110,7 +112,7 @@ The full Phase object is resolved from `PHASES[currentPhase]` when needed.
 
 ```typescript
 export interface StepStatus {
-  readonly leftVehicles: string[]
+  readonly leftVehicles: string[];
 }
 ```
 
@@ -122,7 +124,7 @@ mutating a returned status.
 
 ```typescript
 export interface SimulationResult {
-  stepStatuses: StepStatus[]
+  stepStatuses: StepStatus[];
 }
 ```
 
@@ -135,37 +137,37 @@ This is the top-level output type written to the output JSON file.
 These schemas validate the JSON input contract at runtime:
 
 ```typescript
-import { z } from "zod"
+import { z } from 'zod';
 
-export const RoadSchema = z.enum(["north", "south", "east", "west"])
+export const RoadSchema = z.enum(['north', 'south', 'east', 'west']);
 
 export const AddVehicleCommandSchema = z.object({
-  type: z.literal("addVehicle"),
+  type: z.literal('addVehicle'),
   vehicleId: z.string().min(1),
   startRoad: RoadSchema,
   endRoad: RoadSchema,
-})
+});
 
 export const StepCommandSchema = z.object({
-  type: z.literal("step"),
-})
+  type: z.literal('step'),
+});
 
-export const CommandSchema = z.discriminatedUnion("type", [
+export const CommandSchema = z.discriminatedUnion('type', [
   AddVehicleCommandSchema,
   StepCommandSchema,
-])
+]);
 
 export const InputSchema = z.object({
   commands: z.array(CommandSchema),
-})
+});
 
 export const StepStatusSchema = z.object({
   leftVehicles: z.array(z.string()),
-})
+});
 
 export const OutputSchema = z.object({
   stepStatuses: z.array(StepStatusSchema),
-})
+});
 ```
 
 Rationale: discriminated union in zod (`z.discriminatedUnion`) produces clear, field-level
@@ -179,14 +181,14 @@ error messages and is directly aligned with the TypeScript discriminated union t
 export function createInitialState(): SimulationState {
   return {
     queues: new Map([
-      ["north", []],
-      ["south", []],
-      ["east",  []],
-      ["west",  []],
+      ['north', []],
+      ['south', []],
+      ['east', []],
+      ['west', []],
     ]),
-    currentPhase: "NS",  // default initial phase (P1)
+    currentPhase: 'NS', // default initial phase (P1)
     stepCount: 0,
-  }
+  };
 }
 ```
 
@@ -223,13 +225,13 @@ app/                  // Future Next.js GUI — must not import from src/simulat
 
 The domain model is designed for extension without breaking changes:
 
-| Extension scenario           | Required change                                         |
-|------------------------------|----------------------------------------------------------|
+| Extension scenario           | Required change                                                       |
+| ---------------------------- | --------------------------------------------------------------------- |
 | Add P3/P4 (left-turn phases) | Add to `PhaseId` union, add entry in `PHASES`, update conflict matrix |
-| Add pedestrian phase         | New PhaseId, new greenRoads (empty road list)           |
-| Emergency vehicle priority   | Add priority field to Vehicle; engine checks it before FIFO |
-| Multiple lanes per road      | Change `queues: Map<Road, Vehicle[]>` to `Map<Road, Vehicle[][]>` |
-| Configurable all-red gap     | Add `transitionGap: number` to SimulationState          |
+| Add pedestrian phase         | New PhaseId, new greenRoads (empty road list)                         |
+| Emergency vehicle priority   | Add priority field to Vehicle; engine checks it before FIFO           |
+| Multiple lanes per road      | Change `queues: Map<Road, Vehicle[]>` to `Map<Road, Vehicle[][]>`     |
+| Configurable all-red gap     | Add `transitionGap: number` to SimulationState                        |
 
 All extensions are additive — no existing types need modification for the base cases above.
 
@@ -265,13 +267,13 @@ All extensions are additive — no existing types need modification for the base
 
 ## Spec-to-ADR traceability
 
-| Requirement                          | Type / schema            |
-|--------------------------------------|--------------------------|
-| Roads: north, south, east, west      | Road union type          |
-| Vehicle identity and route           | Vehicle interface        |
-| addVehicle and step commands         | Command discriminated union |
-| Phase groupings                      | Phase + PHASES constant  |
-| Simulation state                     | SimulationState interface |
-| leftVehicles output                  | StepStatus interface     |
-| JSON input validation                | InputSchema (zod)        |
-| JSON output contract                 | OutputSchema (zod)       |
+| Requirement                     | Type / schema               |
+| ------------------------------- | --------------------------- |
+| Roads: north, south, east, west | Road union type             |
+| Vehicle identity and route      | Vehicle interface           |
+| addVehicle and step commands    | Command discriminated union |
+| Phase groupings                 | Phase + PHASES constant     |
+| Simulation state                | SimulationState interface   |
+| leftVehicles output             | StepStatus interface        |
+| JSON input validation           | InputSchema (zod)           |
+| JSON output contract            | OutputSchema (zod)          |

@@ -109,11 +109,7 @@ export function JsonPanel() {
 
       {/* Import success */}
       {importSuccess && (
-        <p
-          className="text-xs text-traffic-green"
-          role="status"
-          aria-live="polite"
-        >
+        <p className="text-xs text-traffic-green" role="status" aria-live="polite">
           Commands imported successfully.
         </p>
       )}
@@ -138,8 +134,8 @@ export function JsonPanel() {
 
       {/* Info */}
       <p className="text-xs text-sim-text-dim">
-        {state.commands.length} command{state.commands.length !== 1 ? 's' : ''} in session.
-        Import replaces all current commands.
+        {state.commands.length} command{state.commands.length !== 1 ? 's' : ''} in session. Import
+        replaces all current commands.
       </p>
     </div>
   );

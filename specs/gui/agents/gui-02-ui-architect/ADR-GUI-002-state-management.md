@@ -7,7 +7,7 @@ Accepted
 ## Metadata
 
 | Pole       | Wartosc             |
-|------------|---------------------|
+| ---------- | ------------------- |
 | Data       | 2026-03-25          |
 | Wersja     | 1.0                 |
 | Wlasciciel | gui-02-ui-architect |
@@ -26,12 +26,12 @@ The simulation GUI needs to manage:
 
 Options considered:
 
-| Option            | Pros                                   | Cons                                              |
-|-------------------|----------------------------------------|---------------------------------------------------|
-| useReducer + Context | Zero dependencies, idiomatic React, testable reducer | Re-renders on all context changes        |
-| Zustand           | Minimal re-renders, simple API         | Extra dependency, not approved in tech stack      |
-| Redux Toolkit     | Devtools, large ecosystem              | Heavy boilerplate, overkill for this scope        |
-| Jotai / Recoil    | Atomic updates, minimal re-renders     | Extra dependency, learning curve                  |
+| Option               | Pros                                                 | Cons                                         |
+| -------------------- | ---------------------------------------------------- | -------------------------------------------- |
+| useReducer + Context | Zero dependencies, idiomatic React, testable reducer | Re-renders on all context changes            |
+| Zustand              | Minimal re-renders, simple API                       | Extra dependency, not approved in tech stack |
+| Redux Toolkit        | Devtools, large ecosystem                            | Heavy boilerplate, overkill for this scope   |
+| Jotai / Recoil       | Atomic updates, minimal re-renders                   | Extra dependency, learning curve             |
 
 The tech stack in `CLAUDE.md` does not list any state management library. The team is small. The simulation state fits in one object. The re-render concern is mitigated by `React.memo` on leaf components.
 
@@ -46,7 +46,12 @@ Use `useReducer` with a single `SimulationState` object, distributed via React C
 ## State Shape
 
 ```typescript
-import type { Command, StepStatus, TelemetryData, SimulateOptions } from '@/app/lib/simulation-adapter';
+import type {
+  Command,
+  StepStatus,
+  TelemetryData,
+  SimulateOptions,
+} from '@/app/lib/simulation-adapter';
 
 interface SimulationState {
   // Input history — append-only list of all commands issued
@@ -60,7 +65,7 @@ interface SimulationState {
 
   // Playback state
   isPlaying: boolean;
-  speed: number;  // auto-play interval in milliseconds, range [100, 2000]
+  speed: number; // auto-play interval in milliseconds, range [100, 2000]
 
   // Engine options forwarded to simulation-adapter
   options: SimulateOptions;
@@ -138,13 +143,13 @@ type SimulationAction =
 
 The reducer must preserve these invariants at all times:
 
-| Invariant | Rule                                                                     |
-|-----------|--------------------------------------------------------------------------|
-| R-INV-1   | `commands` is append-only — RESET is the only action that clears it      |
-| R-INV-2   | `currentStepIndex` is always `-1` or a valid index into `stepStatuses`   |
-| R-INV-3   | `isPlaying` is set to `false` on STEP_ERROR and RESET                    |
-| R-INV-4   | `error` is set to `null` on ADD_VEHICLE, STEP, RESET, IMPORT_COMMANDS    |
-| R-INV-5   | `telemetry` is only updated by STEP_RESULT — never by other actions      |
+| Invariant | Rule                                                                       |
+| --------- | -------------------------------------------------------------------------- |
+| R-INV-1   | `commands` is append-only — RESET is the only action that clears it        |
+| R-INV-2   | `currentStepIndex` is always `-1` or a valid index into `stepStatuses`     |
+| R-INV-3   | `isPlaying` is set to `false` on STEP_ERROR and RESET                      |
+| R-INV-4   | `error` is set to `null` on ADD_VEHICLE, STEP, RESET, IMPORT_COMMANDS      |
+| R-INV-5   | `telemetry` is only updated by STEP_RESULT — never by other actions        |
 | R-INV-6   | IMPORT_COMMANDS resets `stepStatuses`, `currentStepIndex`, and `telemetry` |
 
 ---
@@ -161,7 +166,10 @@ useEffect(() => {
   const result = runSimulation(state.commands, state.options);
 
   if (result.ok) {
-    dispatch({ type: 'STEP_RESULT', payload: { stepStatuses: result.stepStatuses, telemetry: result.telemetry } });
+    dispatch({
+      type: 'STEP_RESULT',
+      payload: { stepStatuses: result.stepStatuses, telemetry: result.telemetry },
+    });
   } else {
     dispatch({ type: 'STEP_ERROR', payload: result.error });
   }
@@ -196,12 +204,14 @@ The selector functions are implemented as standalone hooks that call `useSimulat
 ## Consequences
 
 **Easier because of this decision:**
+
 - Zero dependencies to install or upgrade.
 - Reducer is a pure function — trivially testable with `simulationReducer(state, action)`.
 - Full state is serializable — easy to snapshot in tests and compare.
 - Actions are a discriminated union — TypeScript exhaustiveness checking catches missing cases.
 
 **Harder because of this decision:**
+
 - Any context consumer re-renders when any part of state changes. Mitigation: `React.memo` on TrafficLight and VehicleMarker (high-frequency render components).
 - No devtools out-of-the-box. Mitigation: log actions in development mode inside the reducer or via a middleware wrapper.
 - Async side effects live in `useEffect`, not in the reducer — requires discipline to keep clean.

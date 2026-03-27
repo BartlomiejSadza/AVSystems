@@ -1,7 +1,9 @@
 # WORKFLOW: Traffic Light Cycle
 
 ## ID: WF-1
+
 ## Version: 1.0
+
 ## Date: 2026-03-25
 
 ---
@@ -33,12 +35,12 @@ Only non-conflicting directions are combined in the same phase.
 
 ### Phase Table
 
-| Phase ID | Name          | Green roads          | Description                          |
-|----------|---------------|----------------------|--------------------------------------|
-| P1       | NS-straight   | north, south         | North and south move straight through|
-| P2       | EW-straight   | east, west           | East and west move straight through  |
-| P3       | NS-left-turn  | north, south         | North and south execute left turns   |
-| P4       | EW-left-turn  | east, west           | East and west execute left turns     |
+| Phase ID | Name         | Green roads  | Description                           |
+| -------- | ------------ | ------------ | ------------------------------------- |
+| P1       | NS-straight  | north, south | North and south move straight through |
+| P2       | EW-straight  | east, west   | East and west move straight through   |
+| P3       | NS-left-turn | north, south | North and south execute left turns    |
+| P4       | EW-left-turn | east, west   | East and west execute left turns      |
 
 Note: In this simplified model, P1 and P3 share the same green roads because
 left-turn conflict geometry is not modelled at lane level. The distinction is
@@ -76,6 +78,7 @@ W-left   SAFE        CONFLICT    CONFLICT    CONFLICT    —       —       —
 ```
 
 Legend:
+
 - SAFE: both directions can be green simultaneously without collision risk.
 - CONFLICT: must not be green at the same time — INV-1 violation if combined.
 - —: not yet modelled (reserved for T11/T12 extensions).
@@ -130,12 +133,12 @@ P2_ACTIVE + STEP_EXECUTED + (tie)                -> P1_ACTIVE  (north has highes
 
 ## 5. Phase Duration Policy
 
-| Property              | Value               | Rationale                          |
-|-----------------------|---------------------|------------------------------------|
-| Minimum steps/phase   | 1                   | Allows maximum responsiveness      |
-| Maximum steps/phase   | unbounded           | Adaptive — serves until outbid     |
-| Initial phase         | P1 (NS-straight)    | Deterministic bootstrap            |
-| Tie-breaker priority  | N > S > E > W       | Fixed, documented, reproducible    |
+| Property             | Value            | Rationale                       |
+| -------------------- | ---------------- | ------------------------------- |
+| Minimum steps/phase  | 1                | Allows maximum responsiveness   |
+| Maximum steps/phase  | unbounded        | Adaptive — serves until outbid  |
+| Initial phase        | P1 (NS-straight) | Deterministic bootstrap         |
+| Tie-breaker priority | N > S > E > W    | Fixed, documented, reproducible |
 
 ---
 

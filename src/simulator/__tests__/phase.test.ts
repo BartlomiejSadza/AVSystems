@@ -2,7 +2,7 @@
  * Tests for phase definitions and the adaptive phase selection algorithm.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { PHASES, selectPhase, phaseLoad } from '../phase.js';
 import { createQueues, enqueueVehicle } from '../queue.js';
 import type { SimulationState, Vehicle } from '../types.js';

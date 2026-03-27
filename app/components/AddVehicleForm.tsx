@@ -79,10 +79,7 @@ export function AddVehicleForm() {
         <div className="space-y-3">
           {/* Vehicle ID */}
           <div>
-            <label
-              htmlFor="vehicle-id"
-              className="block text-sm text-sim-text-muted mb-1"
-            >
+            <label htmlFor="vehicle-id" className="block text-sm text-sim-text-muted mb-1">
               Vehicle ID
             </label>
             <input
@@ -99,11 +96,7 @@ export function AddVehicleForm() {
               autoComplete="off"
             />
             {errors.vehicleId && (
-              <p
-                id="vehicle-id-error"
-                className="mt-1 text-xs text-traffic-red"
-                role="alert"
-              >
+              <p id="vehicle-id-error" className="mt-1 text-xs text-traffic-red" role="alert">
                 {errors.vehicleId}
               </p>
             )}
@@ -111,10 +104,7 @@ export function AddVehicleForm() {
 
           {/* Start Road */}
           <div>
-            <label
-              htmlFor="start-road"
-              className="block text-sm text-sim-text-muted mb-1"
-            >
+            <label htmlFor="start-road" className="block text-sm text-sim-text-muted mb-1">
               Start Road
             </label>
             <select
@@ -134,10 +124,7 @@ export function AddVehicleForm() {
 
           {/* End Road */}
           <div>
-            <label
-              htmlFor="end-road"
-              className="block text-sm text-sim-text-muted mb-1"
-            >
+            <label htmlFor="end-road" className="block text-sm text-sim-text-muted mb-1">
               End Road
             </label>
             <select
@@ -155,11 +142,7 @@ export function AddVehicleForm() {
               ))}
             </select>
             {errors.roads && (
-              <p
-                id="roads-error"
-                className="mt-1 text-xs text-traffic-red"
-                role="alert"
-              >
+              <p id="roads-error" className="mt-1 text-xs text-traffic-red" role="alert">
                 {errors.roads}
               </p>
             )}
@@ -167,10 +150,7 @@ export function AddVehicleForm() {
 
           {/* Priority */}
           <div>
-            <label
-              htmlFor="priority"
-              className="block text-sm text-sim-text-muted mb-1"
-            >
+            <label htmlFor="priority" className="block text-sm text-sim-text-muted mb-1">
               Priority
             </label>
             <select

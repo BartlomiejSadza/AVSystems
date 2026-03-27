@@ -3,7 +3,7 @@
 ## Status
 
 | Pole       | Wartosc                   |
-|------------|---------------------------|
+| ---------- | ------------------------- |
 | Status     | Accepted                  |
 | Data       | 2026-03-25                |
 | Wersja     | 1.0                       |
@@ -32,7 +32,7 @@ interface SimulationState {
 
   // Stan playback
   isPlaying: boolean;
-  speed: number;             // interwal auto-play w ms (100-2000)
+  speed: number; // interwal auto-play w ms (100-2000)
 
   // Opcje symulacji przekazywane do adaptera
   options: SimulateOptions;
@@ -94,17 +94,21 @@ Ta separacja gwarantuje ze reducer pozostaje pure function bez side effects.
 ## 4. Reducer Logic
 
 ```typescript
-function simulationReducer(
-  state: SimulationState,
-  action: SimulationAction
-): SimulationState {
+function simulationReducer(state: SimulationState, action: SimulationAction): SimulationState {
   switch (action.type) {
     case 'ADD_VEHICLE':
       return {
         ...state,
         commands: [
           ...state.commands,
-          { type: 'addVehicle', vehicle: { id: action.payload.vehicleId, startRoad: action.payload.startRoad, endRoad: action.payload.endRoad } }
+          {
+            type: 'addVehicle',
+            vehicle: {
+              id: action.payload.vehicleId,
+              startRoad: action.payload.startRoad,
+              endRoad: action.payload.endRoad,
+            },
+          },
         ],
         error: null,
       };
@@ -128,7 +132,7 @@ function simulationReducer(
     case 'STEP_ERROR':
       return {
         ...state,
-        isPlaying: false,     // auto-play zatrzymany przy bledzie
+        isPlaying: false, // auto-play zatrzymany przy bledzie
         error: action.payload,
       };
 
@@ -190,10 +194,7 @@ export type AdapterResult =
   | { ok: true; stepStatuses: StepStatus[]; telemetry?: TelemetryData }
   | { ok: false; error: string };
 
-export function runSimulation(
-  commands: Command[],
-  options: SimulateOptions
-): AdapterResult {
+export function runSimulation(commands: Command[], options: SimulateOptions): AdapterResult {
   try {
     if (options.enableTelemetry) {
       const result: SimulationResult = simulateWithTelemetry(commands, options);
@@ -237,7 +238,7 @@ function useSimulation() {
     if (result.ok) {
       dispatch({
         type: 'STEP_RESULT',
-        payload: { stepStatuses: result.stepStatuses, telemetry: result.telemetry }
+        payload: { stepStatuses: result.stepStatuses, telemetry: result.telemetry },
       });
     } else {
       dispatch({ type: 'STEP_ERROR', payload: result.error });
@@ -253,7 +254,7 @@ function useSimulation() {
 
 - Symulacja jest zawsze przeliczana od poczatku na bazie pelnej historii `commands`.
 - Jest to zgodne z deterministycznym modelem silnika (`simulate(commands)` zawsze zwraca te same wyniki dla tych samych danych).
-- Wydajnosc: 300 krokow * 10 pojazdow per krok = 3000 komend. Silnik przetwarza 100K komend w ~9ms, wiec ten zakres jest bezpieczny dla reaktywnego przeliczania.
+- Wydajnosc: 300 krokow \* 10 pojazdow per krok = 3000 komend. Silnik przetwarza 100K komend w ~9ms, wiec ten zakres jest bezpieczny dla reaktywnego przeliczania.
 - Eskalacja: dla ekstremalnie dlugich sesji (>10K komend) mozna dodac memoizacje przyrostowa — nie jest potrzebna w GM1-GM3.
 
 ---

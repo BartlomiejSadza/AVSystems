@@ -3,7 +3,7 @@ project: traffic-lights-simulation
 mode: autonomous
 current_phase: release
 current_agent: 09-technical-writer
-updated_at: "2026-03-25"
+updated_at: '2026-03-25'
 
 tech_stack:
   status: locked
@@ -12,14 +12,14 @@ tech_stack:
   package_manager: pnpm
   runtime: Node.js LTS
   version_policy:
-    node: ">=22"
-    pnpm: ">=10"
-    next: ">=15"
-    typescript: ">=5.6"
-    vitest: ">=2"
-    fast_check: ">=3"
-    zod: ">=3"
-    tinybench: ">=2"
+    node: '>=22'
+    pnpm: '>=10'
+    next: '>=15'
+    typescript: '>=5.6'
+    vitest: '>=2'
+    fast_check: '>=3'
+    zod: '>=3'
+    tinybench: '>=2'
   testing:
     - Vitest
     - fast-check
@@ -100,22 +100,22 @@ test_gates:
     status: passed
   - id: implementation_tests
     status: passed
-    evidence: "300 tests passing (unit + contract + integration + golden + invariant + property-based + e2e + smoke)"
+    evidence: '300 tests passing (unit + contract + integration + golden + invariant + property-based + e2e + smoke)'
   - id: review_tests
     status: passed
   - id: api_tests
     status: passed
-    evidence: "32 schema tests + 27 validation tests + 31 e2e regression tests"
+    evidence: '32 schema tests + 27 validation tests + 31 e2e regression tests'
   - id: performance_tests
     status: passed
-    evidence: "100K commands in ~9ms avg; benchmarks for 100/1K/10K/100K commands"
+    evidence: '100K commands in ~9ms avg; benchmarks for 100/1K/10K/100K commands'
   - id: final_e2e_gate
     status: passed
-    evidence: "12 CLI smoke tests + 31 e2e regression tests all green"
+    evidence: '12 CLI smoke tests + 31 e2e regression tests all green'
 
 git_gates:
-  branch_strategy: "trunk-based with short-lived branches"
-  commit_convention: "conventional commits"
+  branch_strategy: 'trunk-based with short-lived branches'
+  commit_convention: 'conventional commits'
   pr_required: true
   ci_required: true
   status: pending

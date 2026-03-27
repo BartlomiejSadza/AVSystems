@@ -54,7 +54,10 @@ function readTempOutput(name: string): unknown {
  * Run the CLI and return { exitCode, stdout, stderr }.
  * Uses spawnSync for synchronous execution; no shell expansion needed.
  */
-function runCli(inputPath: string, outputPath: string): {
+function runCli(
+  inputPath: string,
+  outputPath: string
+): {
   exitCode: number;
   stdout: string;
   stderr: string;
@@ -160,9 +163,9 @@ describe('CLI smoke test — multi-vehicle scenario', () => {
         { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
         { type: 'addVehicle', vehicleId: 'N2', startRoad: 'north', endRoad: 'south' },
         { type: 'addVehicle', vehicleId: 'E1', startRoad: 'east', endRoad: 'west' },
-        { type: 'step' },  // NS wins (2 vs 1)
-        { type: 'step' },  // N2 remains, E1 remains; NS still has more
-        { type: 'step' },  // E1 finally departs
+        { type: 'step' }, // NS wins (2 vs 1)
+        { type: 'step' }, // N2 remains, E1 remains; NS still has more
+        { type: 'step' }, // E1 finally departs
       ],
     };
 
@@ -199,7 +202,13 @@ describe('CLI smoke test — emergency vehicle priority', () => {
       commands: [
         { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
         { type: 'addVehicle', vehicleId: 'N2', startRoad: 'north', endRoad: 'south' },
-        { type: 'addVehicle', vehicleId: 'EMG', startRoad: 'north', endRoad: 'south', priority: 'emergency' },
+        {
+          type: 'addVehicle',
+          vehicleId: 'EMG',
+          startRoad: 'north',
+          endRoad: 'south',
+          priority: 'emergency',
+        },
         { type: 'step' },
       ],
     };
@@ -227,11 +236,7 @@ describe('CLI smoke test — emergency vehicle priority', () => {
 describe('CLI smoke test — steps with no vehicles', () => {
   it('returns empty leftVehicles arrays for all steps', () => {
     const input = {
-      commands: [
-        { type: 'step' },
-        { type: 'step' },
-        { type: 'step' },
-      ],
+      commands: [{ type: 'step' }, { type: 'step' }, { type: 'step' }],
     };
 
     const inputPath = writeTempInput('steps-only-input.json', input);
@@ -308,9 +313,7 @@ describe('CLI smoke test — error handling', () => {
 
   it('exits with code 1 for invalid road name in schema', () => {
     const input = {
-      commands: [
-        { type: 'addVehicle', vehicleId: 'V1', startRoad: 'northeast', endRoad: 'south' },
-      ],
+      commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'northeast', endRoad: 'south' }],
     };
 
     const inputPath = writeTempInput('bad-road-input.json', input);
@@ -322,11 +325,11 @@ describe('CLI smoke test — error handling', () => {
   });
 
   it('exits with code 1 when --input flag is missing', () => {
-    const result = spawnSync(
-      'npx',
-      ['tsx', SIMULATE_SCRIPT, '--output', tempPath('out.json')],
-      { cwd: PROJECT_ROOT, encoding: 'utf-8', timeout: 10_000 }
-    );
+    const result = spawnSync('npx', ['tsx', SIMULATE_SCRIPT, '--output', tempPath('out.json')], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf-8',
+      timeout: 10_000,
+    });
     expect(result.status).toBe(1);
   });
 
@@ -334,11 +337,11 @@ describe('CLI smoke test — error handling', () => {
     const input = { commands: [] };
     const inputPath = writeTempInput('no-output-flag-input.json', input);
 
-    const result = spawnSync(
-      'npx',
-      ['tsx', SIMULATE_SCRIPT, '--input', inputPath],
-      { cwd: PROJECT_ROOT, encoding: 'utf-8', timeout: 10_000 }
-    );
+    const result = spawnSync('npx', ['tsx', SIMULATE_SCRIPT, '--input', inputPath], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf-8',
+      timeout: 10_000,
+    });
     expect(result.status).toBe(1);
   });
 });

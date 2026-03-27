@@ -2,11 +2,11 @@
 
 ## Status
 
-| Pole       | Wartosc                  |
-|------------|--------------------------|
-| Etap       | DONE                     |
-| Data       | 2026-03-25               |
-| Wlasciciel | gui-03-project-manager   |
+| Pole       | Wartosc                |
+| ---------- | ---------------------- |
+| Etap       | DONE                   |
+| Data       | 2026-03-25             |
+| Wlasciciel | gui-03-project-manager |
 
 ---
 
@@ -20,22 +20,22 @@
 
 ## Wyniki testow etapu
 
-| Test                    | Status | Uzasadnienie                                                                         |
-|-------------------------|--------|--------------------------------------------------------------------------------------|
-| Test pokrycia taskow    | PASS   | Wszystkie 12 komponentow z ADR-GUI-001 sa zaadresowane w taskach G1-G12              |
-| Test mierzalnosci AC    | PASS   | Kazde AC jest sformulowane jako twierdzenie (np. "renderuje N markerow", "dispatch wywolany") |
-| Test zalezy             | PASS   | Kolejnosc G1->G2->G3->... jest zgodna z ADR-GUI-001 sekcja Implementation Order     |
-| Test pokrycia testami   | PASS   | Kazdy task ma min. 1 typ testu; G2 i G3 maja najglebsze pokrycie (unit + integration) |
+| Test                  | Status | Uzasadnienie                                                                                  |
+| --------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| Test pokrycia taskow  | PASS   | Wszystkie 12 komponentow z ADR-GUI-001 sa zaadresowane w taskach G1-G12                       |
+| Test mierzalnosci AC  | PASS   | Kazde AC jest sformulowane jako twierdzenie (np. "renderuje N markerow", "dispatch wywolany") |
+| Test zalezy           | PASS   | Kolejnosc G1->G2->G3->... jest zgodna z ADR-GUI-001 sekcja Implementation Order               |
+| Test pokrycia testami | PASS   | Kazdy task ma min. 1 typ testu; G2 i G3 maja najglebsze pokrycie (unit + integration)         |
 
 ---
 
 ## Ryzyka i luki
 
-| Ryzyko                              | Mitygacja                                                               |
-|-------------------------------------|-------------------------------------------------------------------------|
-| G2 (adapter) moze byc trudniejszy niz 30-60 min | Adapter jest prosty (wrap + error handling) — max 1h     |
-| G4 (SVG) wymaga precyzji geometrycznej | Koordinaty sa zdefiniowane w ADR-GUI-003 — copy-paste         |
-| G12 (polish) moze "rosna"            | Zakres G12 jest explicite ograniczony — tylko animacje, responsive, a11y fixes |
+| Ryzyko                                          | Mitygacja                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------ |
+| G2 (adapter) moze byc trudniejszy niz 30-60 min | Adapter jest prosty (wrap + error handling) — max 1h                           |
+| G4 (SVG) wymaga precyzji geometrycznej          | Koordinaty sa zdefiniowane w ADR-GUI-003 — copy-paste                          |
+| G12 (polish) moze "rosna"                       | Zakres G12 jest explicite ograniczony — tylko animacje, responsive, a11y fixes |
 
 ---
 

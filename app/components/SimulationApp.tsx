@@ -30,7 +30,7 @@ export function SimulationApp() {
   const queues =
     state.currentStepIndex >= 0
       ? deriveQueuesAtStep(state.commands, state.stepStatuses, state.currentStepIndex)
-      : { north: [], south: [], east: [], west: [] } satisfies Record<Road, string[]>;
+      : ({ north: [], south: [], east: [], west: [] } satisfies Record<Road, string[]>);
 
   const handleAddVehicle = useCallback(() => {
     const vehicleId = customId.trim() !== '' ? customId.trim() : nextVehicleId();
@@ -54,9 +54,12 @@ export function SimulationApp() {
     dispatch({ type: 'TOGGLE_AUTO_PLAY' });
   }, [dispatch]);
 
-  const handleSpeedChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'SET_SPEED', payload: Number(e.target.value) });
-  }, [dispatch]);
+  const handleSpeedChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch({ type: 'SET_SPEED', payload: Number(e.target.value) });
+    },
+    [dispatch]
+  );
 
   const stepCount = state.stepStatuses.length;
   const totalDeparted = state.stepStatuses.reduce((sum, s) => sum + s.leftVehicles.length, 0);
@@ -67,16 +70,12 @@ export function SimulationApp() {
       {/* Left: Intersection visualization */}
       <div className="flex-1 min-w-0">
         <div className="bg-sim-surface rounded-xl p-4 border border-sim-border">
-          <IntersectionView
-            activePhase={activePhase}
-            queues={queues}
-          />
+          <IntersectionView activePhase={activePhase} queues={queues} />
         </div>
       </div>
 
       {/* Right: Control panel */}
       <div className="w-full lg:w-80 flex flex-col gap-4">
-
         {/* Status bar */}
         <div
           className="bg-sim-surface rounded-xl p-4 border border-sim-border"
@@ -184,12 +183,14 @@ export function SimulationApp() {
                 <span className="text-xs text-sim-text-dim">From</span>
                 <select
                   value={startRoad}
-                  onChange={e => setStartRoad(e.target.value as Road)}
+                  onChange={(e) => setStartRoad(e.target.value as Road)}
                   className="bg-sim-surface-alt border border-sim-border text-sim-text text-sm rounded-lg px-2 py-1.5"
                   aria-label="Vehicle start road"
                 >
-                  {ROAD_OPTIONS.map(r => (
-                    <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                  {ROAD_OPTIONS.map((r) => (
+                    <option key={r} value={r}>
+                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -197,12 +198,14 @@ export function SimulationApp() {
                 <span className="text-xs text-sim-text-dim">To</span>
                 <select
                   value={endRoad}
-                  onChange={e => setEndRoad(e.target.value as Road)}
+                  onChange={(e) => setEndRoad(e.target.value as Road)}
                   className="bg-sim-surface-alt border border-sim-border text-sim-text text-sm rounded-lg px-2 py-1.5"
                   aria-label="Vehicle destination road"
                 >
-                  {ROAD_OPTIONS.map(r => (
-                    <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                  {ROAD_OPTIONS.map((r) => (
+                    <option key={r} value={r}>
+                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -211,7 +214,7 @@ export function SimulationApp() {
               <span className="text-xs text-sim-text-dim">Priority</span>
               <select
                 value={priority}
-                onChange={e => setPriority(e.target.value as 'normal' | 'emergency')}
+                onChange={(e) => setPriority(e.target.value as 'normal' | 'emergency')}
                 className="bg-sim-surface-alt border border-sim-border text-sim-text text-sm rounded-lg px-2 py-1.5"
                 aria-label="Vehicle priority"
               >
@@ -224,7 +227,7 @@ export function SimulationApp() {
               <input
                 type="text"
                 value={customId}
-                onChange={e => setCustomId(e.target.value)}
+                onChange={(e) => setCustomId(e.target.value)}
                 placeholder="Auto-generated"
                 className="bg-sim-surface-alt border border-sim-border text-sim-text text-sm rounded-lg px-2 py-1.5 placeholder:text-sim-text-dim"
                 aria-label="Custom vehicle ID (optional)"
@@ -249,7 +252,7 @@ export function SimulationApp() {
             Queues
           </h2>
           <dl className="space-y-1.5">
-            {ROADS.map(road => (
+            {ROADS.map((road) => (
               <div key={road} className="flex items-center justify-between">
                 <dt className="text-xs text-sim-text-dim capitalize">{road}</dt>
                 <dd className="flex items-center gap-2">
@@ -313,21 +316,21 @@ export function SimulationApp() {
               Step Log
             </h2>
             <ol className="space-y-1 max-h-40 overflow-y-auto" aria-live="polite">
-              {[...state.stepStatuses].reverse().slice(0, 20).map((status, revIdx) => {
-                const stepIdx = state.stepStatuses.length - 1 - revIdx;
-                const phase = phases[stepIdx] ?? '—';
-                const departed = status.leftVehicles.join(', ') || 'none';
-                return (
-                  <li
-                    key={stepIdx}
-                    className="text-xs text-sim-text-dim font-mono flex gap-2"
-                  >
-                    <span className="text-sim-text-muted w-8 shrink-0">#{stepIdx + 1}</span>
-                    <span className="text-sim-text-dim w-24 shrink-0">{phase}</span>
-                    <span className="truncate">{departed}</span>
-                  </li>
-                );
-              })}
+              {[...state.stepStatuses]
+                .reverse()
+                .slice(0, 20)
+                .map((status, revIdx) => {
+                  const stepIdx = state.stepStatuses.length - 1 - revIdx;
+                  const phase = phases[stepIdx] ?? '—';
+                  const departed = status.leftVehicles.join(', ') || 'none';
+                  return (
+                    <li key={stepIdx} className="text-xs text-sim-text-dim font-mono flex gap-2">
+                      <span className="text-sim-text-muted w-8 shrink-0">#{stepIdx + 1}</span>
+                      <span className="text-sim-text-dim w-24 shrink-0">{phase}</span>
+                      <span className="truncate">{departed}</span>
+                    </li>
+                  );
+                })}
             </ol>
           </div>
         )}

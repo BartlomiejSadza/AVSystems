@@ -34,7 +34,7 @@
 ## Finalne inwarianty do implementacji
 
 | ID    | Poziom priorytetu | Narzedzie testowe | Task |
-|-------|-------------------|-------------------|------|
+| ----- | ----------------- | ----------------- | ---- |
 | INV-1 | CRITICAL          | fast-check        | T3   |
 | INV-2 | LOW (gap=0)       | TypeScript types  | T8   |
 | INV-3 | CRITICAL          | fast-check        | T4   |

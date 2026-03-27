@@ -1,7 +1,9 @@
 # WORKFLOW: Error Handling
 
 ## ID: WF-8
+
 ## Version: 1.0
+
 ## Date: 2026-03-25
 
 ---
@@ -13,6 +15,7 @@ Simulation state is never partially mutated when a command is invalid.
 The system produces structured errors on stderr and exits with a non-zero code.
 
 Error categories:
+
 - **ParseError** — input file cannot be read or decoded as JSON.
 - **SchemaError** — JSON does not match the expected schema structure.
 - **ValidationError** — a command has semantically invalid field values.
@@ -28,17 +31,20 @@ Error categories:
 **Trigger:** `command.type` is not `"addVehicle"` or `"step"`.
 
 **Example:**
+
 ```json
 { "type": "removeVehicle", "vehicleId": "V1" }
 ```
 
 **Response:**
+
 - Throw `UnknownCommandError`.
 - Message: `Unknown command type: "removeVehicle". Allowed types: addVehicle, step.`
 - Exit code: 1.
 - Simulation state at point of error is discarded; no partial output is written.
 
 **Recovery path:**
+
 - Caller must fix the command type in the input file.
 
 ---
@@ -48,16 +54,19 @@ Error categories:
 **Trigger:** `startRoad` or `endRoad` contains a value not in `{north, south, east, west}`.
 
 **Example:**
+
 ```json
 { "type": "addVehicle", "vehicleId": "V1", "startRoad": "northeast", "endRoad": "south" }
 ```
 
 **Response:**
+
 - Throw `ValidationError`.
 - Message: `Invalid road name "northeast" in field "startRoad". Allowed values: north, south, east, west.`
 - Exit code: 1.
 
 **Recovery path:**
+
 - Caller corrects the road name spelling.
 
 ---
@@ -68,29 +77,33 @@ Error categories:
 
 **Required fields by command type:**
 
-| Command type | Required fields                          |
-|--------------|------------------------------------------|
-| addVehicle   | type, vehicleId, startRoad, endRoad      |
-| step         | type (only)                              |
+| Command type | Required fields                     |
+| ------------ | ----------------------------------- |
+| addVehicle   | type, vehicleId, startRoad, endRoad |
+| step         | type (only)                         |
 
 **Examples of missing field errors:**
 
 ```json
 { "type": "addVehicle", "startRoad": "north", "endRoad": "south" }
 ```
+
 Missing: `vehicleId`.
 
 ```json
 { "type": "addVehicle", "vehicleId": "V1", "endRoad": "south" }
 ```
+
 Missing: `startRoad`.
 
 **Response:**
+
 - Throw `ValidationError`.
 - Message: `Missing required field "vehicleId" in addVehicle command.`
 - Exit code: 1.
 
 **Recovery path:**
+
 - Caller adds the missing field with a valid value.
 
 ---
@@ -100,11 +113,13 @@ Missing: `startRoad`.
 **Trigger:** `commands` field exists but is an empty array `[]`.
 
 **Example:**
+
 ```json
 { "commands": [] }
 ```
 
 **Response:**
+
 - This is a **valid** input.
 - Output: `{ "stepStatuses": [] }`.
 - Exit code: 0.
@@ -119,11 +134,13 @@ Missing: `startRoad`.
 **Trigger:** Top-level JSON object does not contain a `commands` key.
 
 **Example:**
+
 ```json
 { "tasks": [] }
 ```
 
 **Response:**
+
 - Throw `SchemaError`.
 - Message: `Input JSON is missing required top-level field "commands".`
 - Exit code: 1.
@@ -135,12 +152,15 @@ Missing: `startRoad`.
 **Trigger:** Input file content is not valid JSON.
 
 **Example:**
+
 ```
 { "commands": [ { type: "step" } ] }
 ```
+
 (unquoted key — invalid JSON)
 
 **Response:**
+
 - Throw `ParseError`.
 - Message: `Failed to parse input file: <file path>. JSON syntax error near line <N>.`
 - Exit code: 1.
@@ -152,11 +172,13 @@ Missing: `startRoad`.
 **Trigger:** `vehicleId` is present but not a string (e.g., a number or null).
 
 **Example:**
+
 ```json
 { "type": "addVehicle", "vehicleId": 42, "startRoad": "north", "endRoad": "south" }
 ```
 
 **Response:**
+
 - Throw `ValidationError`.
 - Message: `Field "vehicleId" must be a non-empty string.`
 - Exit code: 1.
@@ -166,15 +188,18 @@ Missing: `startRoad`.
 ### 2.8 File I/O errors
 
 **Trigger:**
+
 - `--input` file does not exist.
 - `--output` file path is not writable.
 
 **Response (input not found):**
+
 - Throw `IOError`.
 - Message: `Input file not found: <path>.`
 - Exit code: 1.
 
 **Response (output not writable):**
+
 - Throw `IOError`.
 - Message: `Cannot write output file: <path>. Check permissions.`
 - Exit code: 1.
@@ -195,6 +220,7 @@ All errors are written to **stderr** as a structured JSON object:
 ```
 
 Example:
+
 ```json
 {
   "error": "ValidationError",
@@ -209,7 +235,7 @@ Example:
 ## 4. Error Severity Matrix
 
 | Error Type          | Halts simulation | Writes partial output | Exit code |
-|---------------------|------------------|-----------------------|-----------|
+| ------------------- | ---------------- | --------------------- | --------- |
 | ParseError          | YES              | NO                    | 1         |
 | SchemaError         | YES              | NO                    | 1         |
 | ValidationError     | YES              | NO                    | 1         |

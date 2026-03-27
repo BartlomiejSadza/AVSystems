@@ -3,7 +3,7 @@ project: traffic-lights-simulation-gui
 mode: autonomous
 current_phase: specs
 current_agent: gui-01-workflow-architect
-updated_at: "2026-03-25"
+updated_at: '2026-03-25'
 
 tech_stack:
   status: locked
@@ -79,19 +79,19 @@ quality_gates:
 test_gates:
   - id: gui_spec_tests
     status: pending
-    description: "Completeness checks for GUI specs — all workflows documented, component tree defined, state contract frozen"
+    description: 'Completeness checks for GUI specs — all workflows documented, component tree defined, state contract frozen'
   - id: gui_unit_tests
     status: pending
-    description: "Component rendering tests, hook behavior tests, simulation adapter unit tests"
+    description: 'Component rendering tests, hook behavior tests, simulation adapter unit tests'
   - id: gui_integration_tests
     status: pending
-    description: "User interaction flows: add vehicle -> step -> observe result"
+    description: 'User interaction flows: add vehicle -> step -> observe result'
   - id: gui_e2e_tests
     status: pending
-    description: "Full-page Playwright tests covering all user flows from GWF-1 to GWF-8"
+    description: 'Full-page Playwright tests covering all user flows from GWF-1 to GWF-8'
   - id: gui_accessibility_tests
     status: pending
-    description: "WCAG 2.1 AA compliance — keyboard navigation, color contrast, ARIA labels"
+    description: 'WCAG 2.1 AA compliance — keyboard navigation, color contrast, ARIA labels'
 
 agents:
   - id: gui-01-workflow-architect
@@ -150,8 +150,8 @@ simulation_engine_contract:
   status: locked
   source: src/simulator/
   public_api:
-    - "simulate(commands: Command[]): StepStatus[]"
-    - "simulateWithTelemetry(commands: Command[], options?: SimulateOptions): SimulationResult"
+    - 'simulate(commands: Command[]): StepStatus[]'
+    - 'simulateWithTelemetry(commands: Command[], options?: SimulateOptions): SimulationResult'
   types:
     - Road
     - Vehicle
@@ -161,4 +161,4 @@ simulation_engine_contract:
     - TelemetryData
     - SimulationResult
     - SimulateOptions
-  constraint: "app/ must only import from src/simulator/ through lib/simulation-adapter.ts"
+  constraint: 'app/ must only import from src/simulator/ through lib/simulation-adapter.ts'

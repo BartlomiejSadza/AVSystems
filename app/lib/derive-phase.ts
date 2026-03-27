@@ -18,13 +18,13 @@ export function derivePhasePerStep(
     }
   }
 
-  return stepStatuses.map(status => {
+  return stepStatuses.map((status) => {
     if (status.leftVehicles.length === 0) return null;
     const firstVehicleId = status.leftVehicles[0];
     if (firstVehicleId === undefined) return null;
     const road = vehicleRoads.get(firstVehicleId);
     if (!road) return null;
-    const phase = PHASES.find(p => (p.roads as readonly string[]).includes(road));
+    const phase = PHASES.find((p) => (p.roads as readonly string[]).includes(road));
     return phase?.id ?? null;
   });
 }

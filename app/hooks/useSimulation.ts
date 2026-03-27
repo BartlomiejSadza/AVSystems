@@ -22,7 +22,15 @@ export interface SimulationState {
 }
 
 export type SimulationAction =
-  | { type: 'ADD_VEHICLE'; payload: { vehicleId: string; startRoad: Road; endRoad: Road; priority?: 'normal' | 'emergency' } }
+  | {
+      type: 'ADD_VEHICLE';
+      payload: {
+        vehicleId: string;
+        startRoad: Road;
+        endRoad: Road;
+        priority?: 'normal' | 'emergency';
+      };
+    }
   | { type: 'STEP' }
   | { type: 'STEP_RESULT'; payload: { stepStatuses: StepStatus[]; telemetry?: TelemetryData } }
   | { type: 'STEP_ERROR'; payload: string }
@@ -49,7 +57,10 @@ export const initialState: SimulationState = {
   error: null,
 };
 
-export function simulationReducer(state: SimulationState, action: SimulationAction): SimulationState {
+export function simulationReducer(
+  state: SimulationState,
+  action: SimulationAction
+): SimulationState {
   switch (action.type) {
     case 'ADD_VEHICLE':
       return {

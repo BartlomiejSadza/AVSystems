@@ -44,7 +44,9 @@ describe('createQueues', () => {
 
 describe('enqueueVehicle', () => {
   let state: SimulationState;
-  beforeEach(() => { state = makeState(); });
+  beforeEach(() => {
+    state = makeState();
+  });
 
   it('adds a vehicle to the correct road queue', () => {
     const v = makeVehicle('V1', 'north');
@@ -70,14 +72,20 @@ describe('enqueueVehicle', () => {
   });
 
   it('throws when startRoad is not a recognised road', () => {
-    const badVehicle = { vehicleId: 'V9', startRoad: 'diagonal' as never, endRoad: 'north' as const };
+    const badVehicle = {
+      vehicleId: 'V9',
+      startRoad: 'diagonal' as never,
+      endRoad: 'north' as const,
+    };
     expect(() => enqueueVehicle(state, badVehicle)).toThrow();
   });
 });
 
 describe('dequeueVehicle', () => {
   let state: SimulationState;
-  beforeEach(() => { state = makeState(); });
+  beforeEach(() => {
+    state = makeState();
+  });
 
   it('returns the first inserted vehicle (FIFO)', () => {
     const v1 = makeVehicle('V1', 'south');
@@ -109,7 +117,9 @@ describe('dequeueVehicle', () => {
 
 describe('queueLength', () => {
   let state: SimulationState;
-  beforeEach(() => { state = makeState(); });
+  beforeEach(() => {
+    state = makeState();
+  });
 
   it('returns 0 for an empty queue', () => {
     expect(queueLength(state, 'north')).toBe(0);
@@ -126,7 +136,9 @@ describe('queueLength', () => {
 
 describe('totalVehicles', () => {
   let state: SimulationState;
-  beforeEach(() => { state = makeState(); });
+  beforeEach(() => {
+    state = makeState();
+  });
 
   it('returns 0 when no vehicles are present', () => {
     expect(totalVehicles(state)).toBe(0);
@@ -148,7 +160,9 @@ describe('totalVehicles', () => {
 
 describe('peekVehicle', () => {
   let state: SimulationState;
-  beforeEach(() => { state = makeState(); });
+  beforeEach(() => {
+    state = makeState();
+  });
 
   it('returns the front vehicle without removing it', () => {
     const v = makeVehicle('V1', 'north');

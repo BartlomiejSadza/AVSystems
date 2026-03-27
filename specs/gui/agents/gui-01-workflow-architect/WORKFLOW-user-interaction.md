@@ -3,7 +3,7 @@
 ## Status
 
 | Pole       | Wartosc                   |
-|------------|---------------------------|
+| ---------- | ------------------------- |
 | Status     | Accepted                  |
 | Data       | 2026-03-25                |
 | Wersja     | 1.0                       |
@@ -19,24 +19,24 @@ Zdefiniowac komplet interakcji uzytkownika z interfejsem — od klikniec przycis
 
 ## 2. Interaction Map
 
-| Interakcja                  | Komponent             | Dispatched Action          | Efekt wizualny                        |
-|-----------------------------|-----------------------|---------------------------|---------------------------------------|
-| Wpisanie vehicleId          | AddVehicleForm        | (brak — lokalny state)    | Aktualizacja pola tekstowego          |
-| Wybor startRoad             | AddVehicleForm        | (brak — lokalny state)    | Aktualizacja selecta                  |
-| Wybor endRoad               | AddVehicleForm        | (brak — lokalny state)    | Aktualizacja selecta                  |
-| Klikniecie "Add Vehicle"    | AddVehicleForm        | ADD_VEHICLE               | Pojazd w kolejce, log update          |
-| Klikniecie "Step"           | ControlPanel          | STEP                      | Krok symulacji, animacja              |
-| Klikniecie "Play"           | ControlPanel          | TOGGLE_AUTO_PLAY          | Auto-play start, przycisk -> "Pause"  |
-| Klikniecie "Pause"          | ControlPanel          | TOGGLE_AUTO_PLAY          | Auto-play stop, przycisk -> "Play"    |
-| Zmiana Speed slider         | ControlPanel          | SET_SPEED                 | Zmiana interwalu auto-play            |
-| Klikniecie "Reset"          | ControlPanel          | RESET                     | Czysci stan, log, kolejki             |
-| Otwieranie ConfigPanel      | ControlPanel          | (toggle UI state)         | Panel konfiguracji widoczny           |
-| Zmiana roadPriorities       | ConfigPanel           | SET_ROAD_PRIORITIES       | Nowe priorytety od nastepnego kroku   |
-| Toggle invariantChecks      | ConfigPanel           | SET_OPTIONS               | Opcja wl/wyl                          |
-| Toggle enableTelemetry      | ConfigPanel           | SET_OPTIONS               | Dashboard wl/wyl                      |
-| Klikniecie "Import JSON"    | JsonPanel             | IMPORT_COMMANDS           | Nowe komendy w stanie                 |
-| Klikniecie "Export JSON"    | JsonPanel             | (pobieranie pliku)        | Plik JSON pobierany                   |
-| Klikniecie "Dismiss" (error)| ErrorBanner           | CLEAR_ERROR               | ErrorBanner ukryty                    |
+| Interakcja                   | Komponent      | Dispatched Action      | Efekt wizualny                       |
+| ---------------------------- | -------------- | ---------------------- | ------------------------------------ |
+| Wpisanie vehicleId           | AddVehicleForm | (brak — lokalny state) | Aktualizacja pola tekstowego         |
+| Wybor startRoad              | AddVehicleForm | (brak — lokalny state) | Aktualizacja selecta                 |
+| Wybor endRoad                | AddVehicleForm | (brak — lokalny state) | Aktualizacja selecta                 |
+| Klikniecie "Add Vehicle"     | AddVehicleForm | ADD_VEHICLE            | Pojazd w kolejce, log update         |
+| Klikniecie "Step"            | ControlPanel   | STEP                   | Krok symulacji, animacja             |
+| Klikniecie "Play"            | ControlPanel   | TOGGLE_AUTO_PLAY       | Auto-play start, przycisk -> "Pause" |
+| Klikniecie "Pause"           | ControlPanel   | TOGGLE_AUTO_PLAY       | Auto-play stop, przycisk -> "Play"   |
+| Zmiana Speed slider          | ControlPanel   | SET_SPEED              | Zmiana interwalu auto-play           |
+| Klikniecie "Reset"           | ControlPanel   | RESET                  | Czysci stan, log, kolejki            |
+| Otwieranie ConfigPanel       | ControlPanel   | (toggle UI state)      | Panel konfiguracji widoczny          |
+| Zmiana roadPriorities        | ConfigPanel    | SET_ROAD_PRIORITIES    | Nowe priorytety od nastepnego kroku  |
+| Toggle invariantChecks       | ConfigPanel    | SET_OPTIONS            | Opcja wl/wyl                         |
+| Toggle enableTelemetry       | ConfigPanel    | SET_OPTIONS            | Dashboard wl/wyl                     |
+| Klikniecie "Import JSON"     | JsonPanel      | IMPORT_COMMANDS        | Nowe komendy w stanie                |
+| Klikniecie "Export JSON"     | JsonPanel      | (pobieranie pliku)     | Plik JSON pobierany                  |
+| Klikniecie "Dismiss" (error) | ErrorBanner    | CLEAR_ERROR            | ErrorBanner ukryty                   |
 
 ---
 
@@ -44,11 +44,11 @@ Zdefiniowac komplet interakcji uzytkownika z interfejsem — od klikniec przycis
 
 ### Pola formularza
 
-| Pole        | Typ      | Walidacja kliencka                                      | Komunikat bledu                                |
-|-------------|----------|---------------------------------------------------------|------------------------------------------------|
-| vehicleId   | text     | Niepusty, max 50 znaków, tylko alfanumeryczne + "-_"   | "Vehicle ID is required" / "Invalid characters" |
-| startRoad   | select   | Wartosc z enum Road                                    | "Select a starting road"                       |
-| endRoad     | select   | Wartosc z enum Road, rozna od startRoad                | "End road must differ from start road"         |
+| Pole      | Typ    | Walidacja kliencka                                    | Komunikat bledu                                 |
+| --------- | ------ | ----------------------------------------------------- | ----------------------------------------------- |
+| vehicleId | text   | Niepusty, max 50 znaków, tylko alfanumeryczne + "-\_" | "Vehicle ID is required" / "Invalid characters" |
+| startRoad | select | Wartosc z enum Road                                   | "Select a starting road"                        |
+| endRoad   | select | Wartosc z enum Road, rozna od startRoad               | "End road must differ from start road"          |
 
 ### Sekwencja submit
 
@@ -112,14 +112,14 @@ User clicks "Add Vehicle"
 
 ### Pola konfiguracji
 
-| Pole                  | Typ             | Domyslna wartosci | Efekt                                          |
-|-----------------------|-----------------|-------------------|------------------------------------------------|
-| roadPriorities.north  | number (0-10)   | 1                 | Waga priorytetu dla drogi north w adaptacyjnym algo |
-| roadPriorities.south  | number (0-10)   | 1                 | Waga dla south                                 |
-| roadPriorities.east   | number (0-10)   | 1                 | Waga dla east                                  |
-| roadPriorities.west   | number (0-10)   | 1                 | Waga dla west                                  |
-| enableInvariantChecks | checkbox        | true              | Silnik sprawdza inwarianty po kazdym kroku     |
-| enableTelemetry       | checkbox        | false             | Uzywaj simulateWithTelemetry zamiast simulate  |
+| Pole                  | Typ           | Domyslna wartosci | Efekt                                               |
+| --------------------- | ------------- | ----------------- | --------------------------------------------------- |
+| roadPriorities.north  | number (0-10) | 1                 | Waga priorytetu dla drogi north w adaptacyjnym algo |
+| roadPriorities.south  | number (0-10) | 1                 | Waga dla south                                      |
+| roadPriorities.east   | number (0-10) | 1                 | Waga dla east                                       |
+| roadPriorities.west   | number (0-10) | 1                 | Waga dla west                                       |
+| enableInvariantChecks | checkbox      | true              | Silnik sprawdza inwarianty po kazdym kroku          |
+| enableTelemetry       | checkbox      | false             | Uzywaj simulateWithTelemetry zamiast simulate       |
 
 ### Walidacja opcji
 
@@ -183,12 +183,12 @@ Adapter reuzywac bedzie ten sam schemat Zod ktory uzywa CLI (`src/io/`). Nie dup
 
 ## 8. Keyboard Navigation
 
-| Skrot                    | Dzialanie                              |
-|--------------------------|----------------------------------------|
-| Tab / Shift+Tab          | Nawigacja miedzy elementami focusable  |
-| Enter / Space            | Aktywacja przycisku / checkboxa        |
-| Arrow keys (slider)      | Zmiana wartosci Speed slider           |
-| Escape                   | Zamkniecie ConfigPanel / ErrorBanner   |
+| Skrot               | Dzialanie                             |
+| ------------------- | ------------------------------------- |
+| Tab / Shift+Tab     | Nawigacja miedzy elementami focusable |
+| Enter / Space       | Aktywacja przycisku / checkboxa       |
+| Arrow keys (slider) | Zmiana wartosci Speed slider          |
+| Escape              | Zamkniecie ConfigPanel / ErrorBanner  |
 
 Focus management:
 

@@ -39,11 +39,7 @@ interface TrafficLightProps {
 
 export function TrafficLight({ road, activePhase }: TrafficLightProps) {
   const lightState: LightState =
-    activePhase === null
-      ? 'off'
-      : GREEN_ROADS[activePhase].includes(road)
-      ? 'green'
-      : 'red';
+    activePhase === null ? 'off' : GREEN_ROADS[activePhase].includes(road) ? 'green' : 'red';
 
   const pos = LIGHT_POSITIONS[road];
   const fill = LIGHT_FILL[lightState];
@@ -53,31 +49,11 @@ export function TrafficLight({ road, activePhase }: TrafficLightProps) {
   return (
     <g role="img" aria-label={label}>
       {/* Glow ring for active lights */}
-      {lightState !== 'off' && (
-        <circle
-          cx={pos.cx}
-          cy={pos.cy}
-          r={16}
-          fill={glow}
-        />
-      )}
+      {lightState !== 'off' && <circle cx={pos.cx} cy={pos.cy} r={16} fill={glow} />}
       {/* Housing */}
-      <circle
-        cx={pos.cx}
-        cy={pos.cy}
-        r={10}
-        fill="#1F2937"
-        stroke="#4B5563"
-        strokeWidth={1.5}
-      />
+      <circle cx={pos.cx} cy={pos.cy} r={10} fill="#1F2937" stroke="#4B5563" strokeWidth={1.5} />
       {/* Light bulb */}
-      <circle
-        cx={pos.cx}
-        cy={pos.cy}
-        r={7}
-        fill={fill}
-        aria-hidden="true"
-      />
+      <circle cx={pos.cx} cy={pos.cy} r={7} fill={fill} aria-hidden="true" />
     </g>
   );
 }

@@ -65,7 +65,10 @@ export function checkVehicleRoadConsistency(state: SimulationState): InvariantRe
 /** Check that stepCount is a non-negative integer. */
 export function checkStepCount(state: SimulationState): InvariantResult {
   if (!Number.isInteger(state.stepCount) || state.stepCount < 0) {
-    return { ok: false, reason: `stepCount must be a non-negative integer, got ${state.stepCount}` };
+    return {
+      ok: false,
+      reason: `stepCount must be a non-negative integer, got ${state.stepCount}`,
+    };
   }
   return { ok: true };
 }
@@ -83,7 +86,7 @@ export function checkLastPhaseIndex(state: SimulationState): InvariantResult {
 }
 
 /** Check that roads in any active phase do not conflict (no two simultaneously-green roads cross). */
-export function checkPhaseRoadsNonConflicting(state: SimulationState): InvariantResult {
+export function checkPhaseRoadsNonConflicting(_state: SimulationState): InvariantResult {
   // Each phase has a fixed, pre-validated road set.  We verify that no phase
   // mixes north/south with east/west (the only conflicting pairs here).
   const nsRoads = new Set<Road>(['north', 'south']);

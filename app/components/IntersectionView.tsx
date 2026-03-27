@@ -27,8 +27,8 @@ export function IntersectionView({
     activePhase === 'NS_STRAIGHT'
       ? 'North-South green'
       : activePhase === 'EW_STRAIGHT'
-      ? 'East-West green'
-      : 'No active phase';
+        ? 'East-West green'
+        : 'No active phase';
 
   const totalQueued = ROADS.reduce((sum, r) => sum + queues[r].length, 0);
 
@@ -142,26 +142,130 @@ export function IntersectionView({
 
         {/* Road border lines */}
         {/* North arm borders */}
-        <line x1={CENTER_X} y1={0} x2={CENTER_X} y2={CENTER_Y} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
-        <line x1={CENTER_X + ROAD_WIDTH} y1={0} x2={CENTER_X + ROAD_WIDTH} y2={CENTER_Y} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
+        <line
+          x1={CENTER_X}
+          y1={0}
+          x2={CENTER_X}
+          y2={CENTER_Y}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+        <line
+          x1={CENTER_X + ROAD_WIDTH}
+          y1={0}
+          x2={CENTER_X + ROAD_WIDTH}
+          y2={CENTER_Y}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
         {/* South arm borders */}
-        <line x1={CENTER_X} y1={CENTER_Y + CENTER_SIZE} x2={CENTER_X} y2={VIEW_SIZE} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
-        <line x1={CENTER_X + ROAD_WIDTH} y1={CENTER_Y + CENTER_SIZE} x2={CENTER_X + ROAD_WIDTH} y2={VIEW_SIZE} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
+        <line
+          x1={CENTER_X}
+          y1={CENTER_Y + CENTER_SIZE}
+          x2={CENTER_X}
+          y2={VIEW_SIZE}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+        <line
+          x1={CENTER_X + ROAD_WIDTH}
+          y1={CENTER_Y + CENTER_SIZE}
+          x2={CENTER_X + ROAD_WIDTH}
+          y2={VIEW_SIZE}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
         {/* East arm borders */}
-        <line x1={CENTER_X + CENTER_SIZE} y1={CENTER_Y} x2={VIEW_SIZE} y2={CENTER_Y} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
-        <line x1={CENTER_X + CENTER_SIZE} y1={CENTER_Y + ROAD_WIDTH} x2={VIEW_SIZE} y2={CENTER_Y + ROAD_WIDTH} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
+        <line
+          x1={CENTER_X + CENTER_SIZE}
+          y1={CENTER_Y}
+          x2={VIEW_SIZE}
+          y2={CENTER_Y}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+        <line
+          x1={CENTER_X + CENTER_SIZE}
+          y1={CENTER_Y + ROAD_WIDTH}
+          x2={VIEW_SIZE}
+          y2={CENTER_Y + ROAD_WIDTH}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
         {/* West arm borders */}
-        <line x1={0} y1={CENTER_Y} x2={CENTER_X} y2={CENTER_Y} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
-        <line x1={0} y1={CENTER_Y + ROAD_WIDTH} x2={CENTER_X} y2={CENTER_Y + ROAD_WIDTH} stroke="#4B5563" strokeWidth={1.5} aria-hidden="true" />
+        <line
+          x1={0}
+          y1={CENTER_Y}
+          x2={CENTER_X}
+          y2={CENTER_Y}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+        <line
+          x1={0}
+          y1={CENTER_Y + ROAD_WIDTH}
+          x2={CENTER_X}
+          y2={CENTER_Y + ROAD_WIDTH}
+          stroke="#4B5563"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
 
         {/* Road direction labels */}
-        <text x={300} y={28} textAnchor="middle" fill="#9CA3AF" fontSize={14} fontFamily="sans-serif" aria-hidden="true">N</text>
-        <text x={300} y={582} textAnchor="middle" fill="#9CA3AF" fontSize={14} fontFamily="sans-serif" aria-hidden="true">S</text>
-        <text x={578} y={304} textAnchor="middle" fill="#9CA3AF" fontSize={14} fontFamily="sans-serif" aria-hidden="true">E</text>
-        <text x={22} y={304} textAnchor="middle" fill="#9CA3AF" fontSize={14} fontFamily="sans-serif" aria-hidden="true">W</text>
+        <text
+          x={300}
+          y={28}
+          textAnchor="middle"
+          fill="#9CA3AF"
+          fontSize={14}
+          fontFamily="sans-serif"
+          aria-hidden="true"
+        >
+          N
+        </text>
+        <text
+          x={300}
+          y={582}
+          textAnchor="middle"
+          fill="#9CA3AF"
+          fontSize={14}
+          fontFamily="sans-serif"
+          aria-hidden="true"
+        >
+          S
+        </text>
+        <text
+          x={578}
+          y={304}
+          textAnchor="middle"
+          fill="#9CA3AF"
+          fontSize={14}
+          fontFamily="sans-serif"
+          aria-hidden="true"
+        >
+          E
+        </text>
+        <text
+          x={22}
+          y={304}
+          textAnchor="middle"
+          fill="#9CA3AF"
+          fontSize={14}
+          fontFamily="sans-serif"
+          aria-hidden="true"
+        >
+          W
+        </text>
 
         {/* Vehicle queues per road */}
-        {ROADS.map(road => (
+        {ROADS.map((road) => (
           <VehicleQueue
             key={road}
             road={road}
@@ -171,12 +275,8 @@ export function IntersectionView({
         ))}
 
         {/* Traffic lights */}
-        {ROADS.map(road => (
-          <TrafficLight
-            key={road}
-            road={road}
-            activePhase={activePhase}
-          />
+        {ROADS.map((road) => (
+          <TrafficLight key={road} road={road} activePhase={activePhase} />
         ))}
 
         {/* Center phase label */}

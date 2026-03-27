@@ -89,9 +89,7 @@ export function selectPhase(state: SimulationState, priorities?: RoadPriorities)
     phase.roads.some((road) => {
       const queue = state.queues.get(road);
       return (
-        queue !== undefined &&
-        queue.length > 0 &&
-        (queue[0]!.priority ?? 'normal') === 'emergency'
+        queue !== undefined && queue.length > 0 && (queue[0]!.priority ?? 'normal') === 'emergency'
       );
     })
   );
@@ -127,7 +125,6 @@ export function selectPhase(state: SimulationState, priorities?: RoadPriorities)
   const nextIndex = lastIndex === -1 ? 0 : (lastIndex + 1) % PHASES.length;
 
   // Prefer the candidate whose index matches nextIndex; fall back to first candidate.
-  const chosen =
-    candidates.find((c) => c.phase.index === nextIndex) ?? candidates[0];
+  const chosen = candidates.find((c) => c.phase.index === nextIndex) ?? candidates[0];
   return chosen!.phase;
 }

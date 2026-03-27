@@ -1,11 +1,7 @@
 'use client';
 
 import { createContext, useContext, type ReactNode, type Dispatch } from 'react';
-import {
-  useSimulation,
-  type SimulationState,
-  type SimulationAction,
-} from '../hooks/useSimulation';
+import { useSimulation, type SimulationState, type SimulationAction } from '../hooks/useSimulation';
 import { useAutoPlay } from '../hooks/useAutoPlay';
 
 interface SimulationContextValue {
@@ -26,8 +22,6 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   useAutoPlay(state.isPlaying, state.speed, dispatch);
 
   return (
-    <SimulationContext.Provider value={{ state, dispatch }}>
-      {children}
-    </SimulationContext.Provider>
+    <SimulationContext.Provider value={{ state, dispatch }}>{children}</SimulationContext.Provider>
   );
 }
