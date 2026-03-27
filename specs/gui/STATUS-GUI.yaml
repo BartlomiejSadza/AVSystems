@@ -1,0 +1,164 @@
+version: 1
+project: traffic-lights-simulation-gui
+mode: autonomous
+current_phase: specs
+current_agent: gui-01-workflow-architect
+updated_at: "2026-03-25"
+
+tech_stack:
+  status: locked
+  framework: Next.js 15+
+  ui_library: React 19
+  language: TypeScript
+  mode: strict
+  package_manager: pnpm
+  styling: Tailwind CSS
+  testing:
+    - Vitest
+    - Playwright
+  linting:
+    - ESLint
+    - Prettier
+  reference_file: specs/TECH-STACK.md
+
+phases:
+  specs: { status: in_progress }
+  implementation: { status: pending }
+  verification: { status: pending }
+  release: { status: pending }
+
+execution:
+  task_board_file: specs/gui/agents/gui-03-project-manager/TASKLIST-GUI.md
+  test_plan_file: specs/gui/agents/gui-03-project-manager/TEST-PLAN-GUI.md
+  milestones_file: specs/gui/agents/gui-03-project-manager/MILESTONES-GUI.md
+  total_tasks: 12
+  completed_tasks: 0
+  milestone_gate_frequency: 4
+
+milestones:
+  - id: GM1
+    name: gui-foundation
+    tasks: [G1, G2, G3, G4]
+    status: pending
+    gate_status: pending
+  - id: GM2
+    name: gui-interactive
+    tasks: [G5, G6, G7, G8]
+    status: pending
+    gate_status: pending
+  - id: GM3
+    name: gui-polish
+    tasks: [G9, G10, G11, G12]
+    status: pending
+    gate_status: pending
+
+task_status:
+  G1: pending
+  G2: pending
+  G3: pending
+  G4: pending
+  G5: pending
+  G6: pending
+  G7: pending
+  G8: pending
+  G9: pending
+  G10: pending
+  G11: pending
+  G12: pending
+
+quality_gates:
+  - id: gui_design_spec_complete
+    status: pending
+  - id: gui_component_tree_defined
+    status: pending
+  - id: gui_state_contract_frozen
+    status: pending
+  - id: gui_acceptance_criteria_defined
+    status: pending
+
+test_gates:
+  - id: gui_spec_tests
+    status: pending
+    description: "Completeness checks for GUI specs — all workflows documented, component tree defined, state contract frozen"
+  - id: gui_unit_tests
+    status: pending
+    description: "Component rendering tests, hook behavior tests, simulation adapter unit tests"
+  - id: gui_integration_tests
+    status: pending
+    description: "User interaction flows: add vehicle -> step -> observe result"
+  - id: gui_e2e_tests
+    status: pending
+    description: "Full-page Playwright tests covering all user flows from GWF-1 to GWF-8"
+  - id: gui_accessibility_tests
+    status: pending
+    description: "WCAG 2.1 AA compliance — keyboard navigation, color contrast, ARIA labels"
+
+agents:
+  - id: gui-01-workflow-architect
+    status: in_progress
+    depends_on: []
+    output_dir: specs/gui/agents/gui-01-workflow-architect
+    artifacts:
+      - REGISTRY-GUI.md
+      - WORKFLOW-intersection-visualization.md
+      - WORKFLOW-user-interaction.md
+      - WORKFLOW-state-management.md
+  - id: gui-02-ui-architect
+    status: pending
+    depends_on: [gui-01-workflow-architect]
+    output_dir: specs/gui/agents/gui-02-ui-architect
+    artifacts:
+      - ADR-GUI-001-component-architecture.md
+      - ADR-GUI-002-state-management.md
+      - ADR-GUI-003-visual-design.md
+  - id: gui-03-project-manager
+    status: pending
+    depends_on: [gui-02-ui-architect]
+    output_dir: specs/gui/agents/gui-03-project-manager
+    artifacts:
+      - TASKLIST-GUI.md
+      - TEST-PLAN-GUI.md
+      - MILESTONES-GUI.md
+  - id: gui-04-frontend-developer
+    status: pending
+    depends_on: [gui-03-project-manager]
+    output_dir: specs/gui/agents/gui-04-frontend-developer
+    cadence: per_task
+  - id: gui-05-code-reviewer
+    status: pending
+    depends_on: [gui-04-frontend-developer]
+    output_dir: specs/gui/agents/gui-05-code-reviewer
+    cadence: per_task
+  - id: gui-06-e2e-tester
+    status: pending
+    depends_on: [gui-04-frontend-developer]
+    output_dir: specs/gui/agents/gui-06-e2e-tester
+    cadence: per_milestone
+  - id: gui-07-accessibility-auditor
+    status: pending
+    depends_on: [gui-05-code-reviewer]
+    output_dir: specs/gui/agents/gui-07-accessibility-auditor
+    cadence: per_milestone
+  - id: gui-08-reality-checker
+    status: pending
+    depends_on: [gui-05-code-reviewer, gui-06-e2e-tester, gui-07-accessibility-auditor]
+    output_dir: specs/gui/agents/gui-08-reality-checker
+    cadence: per_milestone
+    verdict: null
+
+simulation_engine_contract:
+  status: locked
+  source: src/simulator/
+  public_api:
+    - "simulate(commands: Command[]): StepStatus[]"
+    - "simulateWithTelemetry(commands: Command[], options?: SimulateOptions): SimulationResult"
+  types:
+    - Road
+    - Vehicle
+    - Command
+    - StepStatus
+    - PhaseId
+    - TelemetryData
+    - SimulationResult
+    - SimulateOptions
+  constraint: "app/ must only import from src/simulator/ through lib/simulation-adapter.ts"
