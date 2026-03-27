@@ -1,5 +1,6 @@
 # ============================================================================
 # CI Pipeline — Traffic Lights Simulation
+# https://github.com/BartlomiejSadza/AVSystems
 # ============================================================================
 #
 # Runs on every push and pull request to main.
