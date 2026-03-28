@@ -14,9 +14,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.27
         version: 10.4.27(postcss@8.5.8)
-      husky:
-        specifier: ^9.1.7
-        version: 9.1.7
       next:
         specifier: ^15.2.0
         version: 15.5.14(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -66,6 +63,9 @@ importers:
       fast-check:
         specifier: ^3.23.0
         version: 3.23.2
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       lint-staged:
         specifier: ^16.4.0
         version: 16.4.0
