@@ -1,4 +1,4 @@
-import type { AnimationState, Particle } from './types';
+import type { AnimationState } from './types';
 
 export const TRANSITION_DURATION = 300; // ms
 
@@ -44,7 +44,7 @@ export function updateAnimationState(state: AnimationState, deltaTime: number): 
 
   // Cycle NPC animation frames
   state.npcFrameTimer += deltaTime;
-  if (state.npcFrameTimer >= NPC_FRAME_DURATION) {
+  while (state.npcFrameTimer >= NPC_FRAME_DURATION) {
     state.npcFrameTimer -= NPC_FRAME_DURATION;
     state.npcFrame = (state.npcFrame + 1) % NPC_FRAME_COUNT;
   }
@@ -52,15 +52,22 @@ export function updateAnimationState(state: AnimationState, deltaTime: number): 
   // Advance light glow phase (continuous oscillation)
   state.lightGlowPhase = (state.lightGlowPhase + (deltaTime / 1000) * Math.PI * 2) % (Math.PI * 2);
 
-  // Update particles: decrease life, remove dead
-  state.particles = state.particles
-    .map((p: Particle) => ({
-      ...p,
-      x: p.x + p.vx * (deltaTime / 1000),
-      y: p.y + p.vy * (deltaTime / 1000),
-      life: p.life - deltaTime / 1000,
-    }))
-    .filter((p: Particle) => p.life > 0);
+  // Update particles in-place: advance position, decrease life, remove dead
+  const particles = state.particles;
+  let aliveIndex = 0;
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i]!;
+    p.life -= deltaTime / 1000;
+    if (p.life > 0) {
+      p.x += p.vx * (deltaTime / 1000);
+      p.y += p.vy * (deltaTime / 1000);
+      if (i !== aliveIndex) {
+        particles[aliveIndex] = p;
+      }
+      aliveIndex++;
+    }
+  }
+  particles.length = aliveIndex;
 
   return state;
 }

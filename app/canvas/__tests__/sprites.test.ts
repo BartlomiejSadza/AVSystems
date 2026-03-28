@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PALETTE } from '../sprites/types';
 import { drawSprite, createCachedSprite } from '../sprites/draw-sprite';
 import type { SpriteDefinition } from '../sprites/types';
@@ -94,6 +94,11 @@ describe('drawSprite', () => {
 });
 
 describe('createCachedSprite', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
   it('returns an array with length equal to sprite.frames.length', () => {
     // Mock document.createElement for the offscreen canvas
     const mockPutImageData = vi.fn();
@@ -110,26 +115,13 @@ describe('createCachedSprite', () => {
       getContext: vi.fn(() => mockOffCtx),
     };
 
-    const originalCreateElement = global.document?.createElement;
     const docMock = {
       createElement: vi.fn(() => mockCanvas),
     };
-    // Patch global document
-    Object.defineProperty(global, 'document', {
-      value: docMock,
-      writable: true,
-      configurable: true,
-    });
+    vi.stubGlobal('document', docMock);
 
     const result = createCachedSprite(testSprite);
     expect(result).toHaveLength(testSprite.frames.length);
-
-    // Restore
-    Object.defineProperty(global, 'document', {
-      value: { createElement: originalCreateElement },
-      writable: true,
-      configurable: true,
-    });
   });
 
   it('returns one canvas element per frame for a multi-frame sprite', () => {
@@ -158,11 +150,7 @@ describe('createCachedSprite', () => {
     const docMock = {
       createElement: vi.fn(() => mockCanvas()),
     };
-    Object.defineProperty(global, 'document', {
-      value: docMock,
-      writable: true,
-      configurable: true,
-    });
+    vi.stubGlobal('document', docMock);
 
     const result = createCachedSprite(multiFrameSprite);
     expect(result).toHaveLength(3);

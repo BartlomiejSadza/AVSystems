@@ -30,7 +30,7 @@ export interface Particle {
   y: number;
   vx: number;
   vy: number;
-  life: number; // 0.0 to 1.0, decreasing
+  life: number; // remaining lifetime in seconds, decreasing
   color: number; // palette index
 }
 

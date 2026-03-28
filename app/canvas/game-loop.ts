@@ -7,18 +7,24 @@ export function createGameLoop(
   getAnimationState: () => AnimationState,
   layers: LayerDrawFn[]
 ): { start: () => void; stop: () => void } {
+  const maybeCtx = canvas.getContext('2d');
+  if (!maybeCtx) {
+    throw new Error('Failed to get 2D context from canvas');
+  }
+  const ctx: CanvasRenderingContext2D = maybeCtx;
+
   let rafId: number | null = null;
-  let lastTime = 0;
-  const ctx = canvas.getContext('2d')!;
+  let lastRenderTime = 0;
 
   function frame(time: number) {
-    const deltaTime = time - lastTime;
-    lastTime = time;
+    const deltaTime = time - lastRenderTime;
 
     if (deltaTime < FRAME_BUDGET_MS * 0.8) {
       rafId = requestAnimationFrame(frame);
       return;
     }
+
+    lastRenderTime = time;
 
     const rc: RenderContext = {
       ctx,
@@ -43,7 +49,7 @@ export function createGameLoop(
 
   return {
     start: () => {
-      lastTime = performance.now();
+      lastRenderTime = performance.now();
       rafId = requestAnimationFrame(frame);
     },
     stop: () => {

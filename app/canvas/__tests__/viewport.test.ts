@@ -1,14 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import { cssToGame, gameToCSS } from '../viewport';
-import { GAME_WIDTH, GAME_HEIGHT, PIXEL_SCALE } from '../constants';
+import {
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  PIXEL_SCALE,
+  CANVAS_CSS_WIDTH,
+  CANVAS_CSS_HEIGHT,
+} from '../constants';
 
 // Standard full-size canvas at origin
-const standardRect = { left: 0, top: 0, width: 960, height: 720 } as DOMRect;
+const standardRect = {
+  left: 0,
+  top: 0,
+  width: CANVAS_CSS_WIDTH,
+  height: CANVAS_CSS_HEIGHT,
+} as DOMRect;
 
 describe('cssToGame', () => {
   it('maps canvas center CSS coordinates to game center (160, 120)', () => {
-    const cssCenterX = 960 / 2; // 480
-    const cssCenterY = 720 / 2; // 360
+    const cssCenterX = CANVAS_CSS_WIDTH / 2; // 480
+    const cssCenterY = CANVAS_CSS_HEIGHT / 2; // 360
     const { gx, gy } = cssToGame(cssCenterX, cssCenterY, standardRect);
     expect(gx).toBe(GAME_WIDTH / 2); // 160
     expect(gy).toBe(GAME_HEIGHT / 2); // 120
@@ -21,7 +32,12 @@ describe('cssToGame', () => {
   });
 
   it('handles non-zero left/top offsets in canvasRect', () => {
-    const offsetRect = { left: 100, top: 50, width: 960, height: 720 } as DOMRect;
+    const offsetRect = {
+      left: 100,
+      top: 50,
+      width: CANVAS_CSS_WIDTH,
+      height: CANVAS_CSS_HEIGHT,
+    } as DOMRect;
     // Click at CSS (100, 50) = canvas origin = game (0, 0)
     const { gx, gy } = cssToGame(100, 50, offsetRect);
     expect(gx).toBe(0);
@@ -29,9 +45,14 @@ describe('cssToGame', () => {
   });
 
   it('handles non-zero offsets: center still maps to game center', () => {
-    const offsetRect = { left: 100, top: 50, width: 960, height: 720 } as DOMRect;
-    const cssCenterX = 100 + 960 / 2;
-    const cssCenterY = 50 + 720 / 2;
+    const offsetRect = {
+      left: 100,
+      top: 50,
+      width: CANVAS_CSS_WIDTH,
+      height: CANVAS_CSS_HEIGHT,
+    } as DOMRect;
+    const cssCenterX = 100 + CANVAS_CSS_WIDTH / 2;
+    const cssCenterY = 50 + CANVAS_CSS_HEIGHT / 2;
     const { gx, gy } = cssToGame(cssCenterX, cssCenterY, offsetRect);
     expect(gx).toBe(GAME_WIDTH / 2);
     expect(gy).toBe(GAME_HEIGHT / 2);
@@ -47,8 +68,8 @@ describe('cssToGame', () => {
   });
 
   it('maps bottom-right boundary to near game bottom-right', () => {
-    // cssX = 960, cssY = 720 maps to gx = 320, gy = 240 (outside game bounds)
-    const { gx, gy } = cssToGame(960, 720, standardRect);
+    // cssX = CANVAS_CSS_WIDTH, cssY = CANVAS_CSS_HEIGHT maps to gx = 320, gy = 240 (outside game bounds)
+    const { gx, gy } = cssToGame(CANVAS_CSS_WIDTH, CANVAS_CSS_HEIGHT, standardRect);
     expect(gx).toBe(GAME_WIDTH);
     expect(gy).toBe(GAME_HEIGHT);
   });
@@ -71,12 +92,17 @@ describe('gameToCSS', () => {
 
   it('maps game center to CSS canvas center', () => {
     const { cssX, cssY } = gameToCSS(GAME_WIDTH / 2, GAME_HEIGHT / 2, standardRect);
-    expect(cssX).toBe(960 / 2);
-    expect(cssY).toBe(720 / 2);
+    expect(cssX).toBe(CANVAS_CSS_WIDTH / 2);
+    expect(cssY).toBe(CANVAS_CSS_HEIGHT / 2);
   });
 
   it('respects non-zero left/top offsets', () => {
-    const offsetRect = { left: 100, top: 50, width: 960, height: 720 } as DOMRect;
+    const offsetRect = {
+      left: 100,
+      top: 50,
+      width: CANVAS_CSS_WIDTH,
+      height: CANVAS_CSS_HEIGHT,
+    } as DOMRect;
     const { cssX, cssY } = gameToCSS(0, 0, offsetRect);
     expect(cssX).toBe(100);
     expect(cssY).toBe(50);
