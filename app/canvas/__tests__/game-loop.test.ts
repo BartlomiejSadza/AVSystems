@@ -16,6 +16,7 @@ const mockAnimState: AnimationState = {
   npcFrame: 0,
   npcFrameTimer: 0,
   lightGlowPhase: 0,
+  phaseFlashAlpha: 0,
   particles: [],
 };
 

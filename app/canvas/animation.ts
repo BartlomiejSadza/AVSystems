@@ -11,6 +11,7 @@ export function createInitialAnimationState(): AnimationState {
     npcFrameTimer: 0,
     lightGlowPhase: 0,
     particles: [],
+    phaseFlashAlpha: 0,
   };
 }
 
@@ -68,6 +69,11 @@ export function updateAnimationState(state: AnimationState, deltaTime: number): 
     }
   }
   particles.length = aliveIndex;
+
+  // Fade out phase transition flash
+  if (state.phaseFlashAlpha > 0) {
+    state.phaseFlashAlpha = Math.max(0, state.phaseFlashAlpha - deltaTime / 300);
+  }
 
   return state;
 }
