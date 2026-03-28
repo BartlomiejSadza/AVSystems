@@ -45,25 +45,25 @@ Research on educational technology engagement (Habgood & Ainsworth, 2011; Hamari
 
 **High-engagement factors:**
 
-| Factor | Relevance to This Project |
-|--------|--------------------------|
-| Sense of agency and control | Let users add vehicles, control timing, experiment freely |
-| Immediate visual feedback | Vehicle movement, light changes, queue growth must be instant and visible |
-| Low-stakes experimentation | No fail states, no grades — "what happens if I add 20 cars from the north?" |
-| Humor and personality | NPC commentator with character, funny vehicle names, playful descriptions |
-| Visual novelty and aesthetic appeal | Pixel-art style itself is a hook — it signals "game" not "homework" |
-| Social comparison (optional) | "Your intersection handled 47 vehicles!" — shareable stats without competition |
-| Discovery and surprise | Hidden behaviors, edge cases that reveal themselves through experimentation |
+| Factor                              | Relevance to This Project                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| Sense of agency and control         | Let users add vehicles, control timing, experiment freely                      |
+| Immediate visual feedback           | Vehicle movement, light changes, queue growth must be instant and visible      |
+| Low-stakes experimentation          | No fail states, no grades — "what happens if I add 20 cars from the north?"    |
+| Humor and personality               | NPC commentator with character, funny vehicle names, playful descriptions      |
+| Visual novelty and aesthetic appeal | Pixel-art style itself is a hook — it signals "game" not "homework"            |
+| Social comparison (optional)        | "Your intersection handled 47 vehicles!" — shareable stats without competition |
+| Discovery and surprise              | Hidden behaviors, edge cases that reveal themselves through experimentation    |
 
 **Low-engagement factors to avoid:**
 
-| Factor | How to Avoid |
-|--------|-------------|
-| Walls of text | Use visual explanations, tooltips on demand, NPC speech bubbles |
-| Mandatory reading before interaction | Let users click immediately, teach through doing |
-| Overly complex initial state | Start with one road, one vehicle, add complexity progressively |
-| Punitive feedback | Never say "wrong" — say "interesting, look what happened" |
-| Condescending tone | Avoid baby language — 11-13 year olds want to feel smart, not patronized |
+| Factor                               | How to Avoid                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| Walls of text                        | Use visual explanations, tooltips on demand, NPC speech bubbles          |
+| Mandatory reading before interaction | Let users click immediately, teach through doing                         |
+| Overly complex initial state         | Start with one road, one vehicle, add complexity progressively           |
+| Punitive feedback                    | Never say "wrong" — say "interesting, look what happened"                |
+| Condescending tone                   | Avoid baby language — 11-13 year olds want to feel smart, not patronized |
 
 ### 1.3 Gaming Literacy at This Age
 
@@ -86,6 +86,7 @@ This simulator will likely be used in:
 - **Computer lab environments** with shared/older hardware
 
 This means:
+
 - The UI must be self-explanatory enough for unsupervised use
 - Performance must be acceptable on lower-end school hardware
 - The pixel-art canvas rendering at 960x720 is appropriate for typical school monitors (1366x768 minimum)
@@ -111,6 +112,7 @@ Teaching traffic management — a system with multiple interacting components, t
 - **Sandbox over scenario.** SimCity's enduring educational value comes from freeform experimentation, not its scenario mode. Our simulator should prioritize sandbox play — let users create traffic situations and observe outcomes.
 
 **Patterns to avoid from SimCity:**
+
 - Information overload in data panels (too many statistics for 11-13 year olds)
 - No guided introduction — new players are dropped into a blank map with no direction
 
@@ -191,24 +193,24 @@ The BRIEF specifies a NES/PICO-8 inspired palette of approximately 32 colors wit
 
 **PICO-8 palette as reference (16 colors):**
 
-| Color | Hex | Use Case |
-|-------|-----|----------|
-| Black | #000000 | Background |
-| Dark Blue | #1D2B53 | Road surface |
-| Dark Purple | #7E2553 | Accents |
-| Dark Green | #008751 | Vegetation, safe indicators |
-| Brown | #AB5236 | Buildings, NPC skin |
-| Dark Gray | #5F574F | Shadows, disabled elements |
-| Light Gray | #C2C3C7 | Text, road markings |
-| White | #FFF1E8 | Highlights, active text |
-| Red | #FF004D | Traffic light red, danger |
-| Orange | #FFA300 | Traffic light amber, warnings |
-| Yellow | #FFEC27 | Highlights, stars, rewards |
-| Green | #00E436 | Traffic light green, success |
-| Blue | #29ADFF | Information, water, coolness |
-| Lavender | #83769C | Secondary text |
-| Pink | #FF77A8 | Emergency vehicles, alerts |
-| Peach | #FFCCAA | NPC skin, warm accents |
+| Color       | Hex     | Use Case                      |
+| ----------- | ------- | ----------------------------- |
+| Black       | #000000 | Background                    |
+| Dark Blue   | #1D2B53 | Road surface                  |
+| Dark Purple | #7E2553 | Accents                       |
+| Dark Green  | #008751 | Vegetation, safe indicators   |
+| Brown       | #AB5236 | Buildings, NPC skin           |
+| Dark Gray   | #5F574F | Shadows, disabled elements    |
+| Light Gray  | #C2C3C7 | Text, road markings           |
+| White       | #FFF1E8 | Highlights, active text       |
+| Red         | #FF004D | Traffic light red, danger     |
+| Orange      | #FFA300 | Traffic light amber, warnings |
+| Yellow      | #FFEC27 | Highlights, stars, rewards    |
+| Green       | #00E436 | Traffic light green, success  |
+| Blue        | #29ADFF | Information, water, coolness  |
+| Lavender    | #83769C | Secondary text                |
+| Pink        | #FF77A8 | Emergency vehicles, alerts    |
+| Peach       | #FFCCAA | NPC skin, warm accents        |
 
 **Contrast requirements:**
 
@@ -295,18 +297,21 @@ The current GUI presents approximately 15 distinct data points simultaneously (s
 **Recommended information hierarchy:**
 
 **Level 1 — Always visible (HUD bar, maximum 4 items):**
+
 - Current phase (shown as traffic light icon state, not text)
 - Step counter (numeric, small)
 - Total vehicles in simulation (car icon + number)
 - Play/pause state (icon)
 
 **Level 2 — Visible on hover or focus (tooltips and speech bubbles):**
+
 - Per-road queue length (hover over a road)
 - Vehicle details (hover over a vehicle sprite)
 - Phase explanation (hover over traffic light)
 - NPC commentary (appears contextually)
 
 **Level 3 — Available on demand (toggle panels):**
+
 - Step log / history
 - Telemetry / statistics
 - Queue detail view
@@ -320,23 +325,23 @@ Gamification for 11-13 year olds must be handled carefully. Research (Hamari et 
 
 **Recommended gamification elements:**
 
-| Element | Implementation | Purpose |
-|---------|---------------|---------|
-| Step counter as score-like display | Pixel-art counter in HUD that ticks up visually | Provides sense of progress |
-| Vehicle departure animation | Vehicles drive off-screen with a small celebration (pixel sparkle) | Immediate positive feedback for successful phase completion |
-| NPC reactions | Commentator reacts to interesting states ("New record: 12 vehicles cleared!") | Social/personality engagement |
-| Scenario challenges (optional) | "Can you clear all vehicles in under 10 steps?" | Goal-oriented play for advanced users |
-| Discovery log | Track what states/scenarios the user has encountered | Encourages exploration |
+| Element                            | Implementation                                                                | Purpose                                                     |
+| ---------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Step counter as score-like display | Pixel-art counter in HUD that ticks up visually                               | Provides sense of progress                                  |
+| Vehicle departure animation        | Vehicles drive off-screen with a small celebration (pixel sparkle)            | Immediate positive feedback for successful phase completion |
+| NPC reactions                      | Commentator reacts to interesting states ("New record: 12 vehicles cleared!") | Social/personality engagement                               |
+| Scenario challenges (optional)     | "Can you clear all vehicles in under 10 steps?"                               | Goal-oriented play for advanced users                       |
+| Discovery log                      | Track what states/scenarios the user has encountered                          | Encourages exploration                                      |
 
 **Gamification elements to avoid:**
 
-| Element | Reason |
-|---------|--------|
-| Leaderboards | Creates anxiety, shifts focus from learning to competition |
-| Grades or scores that judge performance | Educational context should be judgment-free |
-| Time pressure | Conflicts with understanding — learning needs time for reflection |
-| Unlockable content gating | Frustrates slower learners, creates artificial barriers |
-| Points or currency | Distracts from the learning objective |
+| Element                                 | Reason                                                            |
+| --------------------------------------- | ----------------------------------------------------------------- |
+| Leaderboards                            | Creates anxiety, shifts focus from learning to competition        |
+| Grades or scores that judge performance | Educational context should be judgment-free                       |
+| Time pressure                           | Conflicts with understanding — learning needs time for reflection |
+| Unlockable content gating               | Frustrates slower learners, creates artificial barriers           |
+| Points or currency                      | Distracts from the learning objective                             |
 
 ### 4.5 Control Layout: Gamepad-Style Bottom Bar
 
@@ -402,27 +407,27 @@ Modern tutorial design has shifted toward organic, non-intrusive teaching.
 
 **Trigger conditions (when the NPC speaks):**
 
-| Trigger | Condition | Example Comment |
-|---------|-----------|-----------------|
-| First launch | User opens the simulator for the first time | "Hey! I'm Officer Pixel. Welcome to the intersection!" |
-| First vehicle added | User adds their first vehicle | "A car from the north! Let's see where it goes." |
-| First step executed | User clicks Step for the first time | "The lights changed! See which direction got green?" |
-| Queue threshold reached | Any single queue reaches 5+ vehicles | "Getting busy on the north road! That's a lot of cars." |
-| Phase change observation | Phase changes from NS to EW or vice versa | "Now it's east-west's turn. The phases alternate!" |
-| Emergency vehicle added | User adds an emergency vehicle | "Emergency vehicle incoming! Watch how it gets priority." |
-| Idle detection (15s) | User has not interacted for 15 seconds | "Try adding some vehicles and hitting Step to see what happens!" |
-| All queues cleared | All queues reach zero | "Empty intersection! You cleared everyone through." |
-| Interesting state | 10+ vehicles departed in a session | "12 vehicles through! This intersection is flowing nicely." |
+| Trigger                  | Condition                                   | Example Comment                                                  |
+| ------------------------ | ------------------------------------------- | ---------------------------------------------------------------- |
+| First launch             | User opens the simulator for the first time | "Hey! I'm Officer Pixel. Welcome to the intersection!"           |
+| First vehicle added      | User adds their first vehicle               | "A car from the north! Let's see where it goes."                 |
+| First step executed      | User clicks Step for the first time         | "The lights changed! See which direction got green?"             |
+| Queue threshold reached  | Any single queue reaches 5+ vehicles        | "Getting busy on the north road! That's a lot of cars."          |
+| Phase change observation | Phase changes from NS to EW or vice versa   | "Now it's east-west's turn. The phases alternate!"               |
+| Emergency vehicle added  | User adds an emergency vehicle              | "Emergency vehicle incoming! Watch how it gets priority."        |
+| Idle detection (15s)     | User has not interacted for 15 seconds      | "Try adding some vehicles and hitting Step to see what happens!" |
+| All queues cleared       | All queues reach zero                       | "Empty intersection! You cleared everyone through."              |
+| Interesting state        | 10+ vehicles departed in a session          | "12 vehicles through! This intersection is flowing nicely."      |
 
 **Suppression conditions (when the NPC stays quiet):**
 
-| Condition | Reason |
-|-----------|--------|
-| Auto-play is active | Do not interrupt automated simulation with commentary |
-| User dismissed NPC within last 60 seconds | Respect the dismissal |
-| Same comment category triggered within last 3 steps | Avoid repetition |
-| More than 3 comments shown within last 60 seconds | Prevent comment fatigue |
-| User is actively interacting (filling forms, clicking rapidly) | Do not distract during focused interaction |
+| Condition                                                      | Reason                                                |
+| -------------------------------------------------------------- | ----------------------------------------------------- |
+| Auto-play is active                                            | Do not interrupt automated simulation with commentary |
+| User dismissed NPC within last 60 seconds                      | Respect the dismissal                                 |
+| Same comment category triggered within last 3 steps            | Avoid repetition                                      |
+| More than 3 comments shown within last 60 seconds              | Prevent comment fatigue                               |
+| User is actively interacting (filling forms, clicking rapidly) | Do not distract during focused interaction            |
 
 **NPC personality guidelines:**
 
@@ -450,18 +455,18 @@ WCAG 2.2 Level AA is the baseline, with specific adaptations for the 11-13 age g
 
 **Relevant WCAG criteria and child-specific adaptations:**
 
-| WCAG Criterion | Standard Requirement | Child Adaptation |
-|---------------|---------------------|-----------------|
-| 1.1.1 Non-text Content | Alt text for images | Canvas must have aria-label describing current state. All sprites need text alternatives accessible to screen readers. |
-| 1.3.1 Info and Relationships | Semantic structure | HUD overlay must use semantic HTML (headings, lists, buttons). Canvas content must be described via ARIA live regions. |
-| 1.4.1 Use of Color | Color not sole indicator | Traffic light state must be indicated by position (top/middle/bottom), shape, and label — not only red/green color. |
-| 1.4.3 Contrast (Minimum) | 4.5:1 for text | Increase to 5:1 minimum for this age group to account for variable screen quality in schools. |
-| 1.4.11 Non-text Contrast | 3:1 for UI components | All interactive pixel-art elements must be distinguishable from background at 3:1 or higher. |
-| 2.1.1 Keyboard | All functionality via keyboard | Tab order must be logical. All buttons, controls, and interactive elements must be keyboard-accessible. |
-| 2.4.7 Focus Visible | Visible focus indicator | Pixel-art focus indicator (blinking border or highlight) must be clearly visible at 3x scale. Minimum 2 game-pixel border. |
-| 2.5.5 Target Size | 44x44 CSS px minimum | Target 48x48 CSS px for this age group. Pixel-art buttons must be at least 16x16 game pixels. |
-| 3.2.1 On Focus | No context change on focus | Hover tooltips must not obscure interactive elements or change application state. |
-| 4.1.2 Name, Role, Value | ARIA for custom controls | Canvas-rendered controls must have corresponding ARIA roles and labels in the React overlay. |
+| WCAG Criterion               | Standard Requirement           | Child Adaptation                                                                                                           |
+| ---------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| 1.1.1 Non-text Content       | Alt text for images            | Canvas must have aria-label describing current state. All sprites need text alternatives accessible to screen readers.     |
+| 1.3.1 Info and Relationships | Semantic structure             | HUD overlay must use semantic HTML (headings, lists, buttons). Canvas content must be described via ARIA live regions.     |
+| 1.4.1 Use of Color           | Color not sole indicator       | Traffic light state must be indicated by position (top/middle/bottom), shape, and label — not only red/green color.        |
+| 1.4.3 Contrast (Minimum)     | 4.5:1 for text                 | Increase to 5:1 minimum for this age group to account for variable screen quality in schools.                              |
+| 1.4.11 Non-text Contrast     | 3:1 for UI components          | All interactive pixel-art elements must be distinguishable from background at 3:1 or higher.                               |
+| 2.1.1 Keyboard               | All functionality via keyboard | Tab order must be logical. All buttons, controls, and interactive elements must be keyboard-accessible.                    |
+| 2.4.7 Focus Visible          | Visible focus indicator        | Pixel-art focus indicator (blinking border or highlight) must be clearly visible at 3x scale. Minimum 2 game-pixel border. |
+| 2.5.5 Target Size            | 44x44 CSS px minimum           | Target 48x48 CSS px for this age group. Pixel-art buttons must be at least 16x16 game pixels.                              |
+| 3.2.1 On Focus               | No context change on focus     | Hover tooltips must not obscure interactive elements or change application state.                                          |
+| 4.1.2 Name, Role, Value      | ARIA for custom controls       | Canvas-rendered controls must have corresponding ARIA roles and labels in the React overlay.                               |
 
 ### 6.2 Colorblind-Safe Traffic Light Palette
 
@@ -470,6 +475,7 @@ This is the single most critical accessibility requirement for this project. Tra
 **The problem:**
 
 Standard traffic light colors:
+
 - Red: #FF0000
 - Yellow/Amber: #FFFF00
 - Green: #00FF00
@@ -510,6 +516,7 @@ Traffic light state must be communicated through ALL of the following channels s
 **Palette testing requirement:**
 
 All traffic light sprites must be validated using CVD simulation tools (e.g., Coblis, Color Oracle) for:
+
 - Protanopia (red-blind)
 - Deuteranopia (green-blind)
 - Tritanopia (blue-blind)
@@ -529,14 +536,14 @@ Pixel font readability is a known challenge. Research on bitmap font legibility 
 
 **Characters critical to this application:**
 
-| Character Set | Usage | Priority |
-|--------------|-------|----------|
-| N, S, E, W | Cardinal directions | Must be instantly recognizable at smallest display size |
-| 0-9 | Step counts, queue lengths, vehicle IDs | Must be clearly distinguishable from each other |
-| V, Q | Vehicle and queue labels | Must be distinct from each other and from numbers |
-| A-Z uppercase | NPC speech, labels | Full set needed for speech bubbles |
-| a-z lowercase | NPC speech | Full set needed for natural text |
-| Basic punctuation | NPC speech (. , ! ? ' -) | Minimum set for readable sentences |
+| Character Set     | Usage                                   | Priority                                                |
+| ----------------- | --------------------------------------- | ------------------------------------------------------- |
+| N, S, E, W        | Cardinal directions                     | Must be instantly recognizable at smallest display size |
+| 0-9               | Step counts, queue lengths, vehicle IDs | Must be clearly distinguishable from each other         |
+| V, Q              | Vehicle and queue labels                | Must be distinct from each other and from numbers       |
+| A-Z uppercase     | NPC speech, labels                      | Full set needed for speech bubbles                      |
+| a-z lowercase     | NPC speech                              | Full set needed for natural text                        |
+| Basic punctuation | NPC speech (. , ! ? ' -)                | Minimum set for readable sentences                      |
 
 **Recommendation:** Use the React overlay (rendered at CSS resolution) for all critical informational text (HUD, control labels, statistics). Reserve pixel font rendering in Canvas for atmospheric/decorative text only (NPC speech bubbles, vehicle labels, road labels). This ensures readability of critical information while maintaining pixel-art aesthetic for the game layer.
 
@@ -546,18 +553,18 @@ Full keyboard navigation is required for accessibility and also benefits power u
 
 **Keyboard map:**
 
-| Key | Action | Context |
-|-----|--------|---------|
-| Space | Step (advance simulation by one step) | Global — most important action |
-| Enter | Activate focused button / confirm form | Standard behavior |
-| P | Toggle play/pause | Global shortcut |
-| R | Reset simulation | Global shortcut (with confirmation) |
-| 1-4 | Focus on road (1=North, 2=South, 3=East, 4=West) | Quick navigation to road info |
-| Tab | Move focus to next interactive element | Standard keyboard navigation |
-| Shift+Tab | Move focus to previous interactive element | Standard keyboard navigation |
-| Escape | Dismiss tooltip / close expanded panel / dismiss NPC | Dismiss interactions |
-| ? or H | Show keyboard shortcut help overlay | Discoverable help |
-| Arrow keys | Navigate within a control group (e.g., road selection) | Fine navigation |
+| Key        | Action                                                 | Context                             |
+| ---------- | ------------------------------------------------------ | ----------------------------------- |
+| Space      | Step (advance simulation by one step)                  | Global — most important action      |
+| Enter      | Activate focused button / confirm form                 | Standard behavior                   |
+| P          | Toggle play/pause                                      | Global shortcut                     |
+| R          | Reset simulation                                       | Global shortcut (with confirmation) |
+| 1-4        | Focus on road (1=North, 2=South, 3=East, 4=West)       | Quick navigation to road info       |
+| Tab        | Move focus to next interactive element                 | Standard keyboard navigation        |
+| Shift+Tab  | Move focus to previous interactive element             | Standard keyboard navigation        |
+| Escape     | Dismiss tooltip / close expanded panel / dismiss NPC   | Dismiss interactions                |
+| ? or H     | Show keyboard shortcut help overlay                    | Discoverable help                   |
+| Arrow keys | Navigate within a control group (e.g., road selection) | Fine navigation                     |
 
 **Focus management:**
 
@@ -605,14 +612,14 @@ The BRIEF specifies no sound. This removes a major engagement channel that games
 
 **Visual feedback that replaces audio cues:**
 
-| Typical Audio Cue | Visual Replacement |
-|--------------------|--------------------|
-| Button click sound | Button depression animation (2-frame, 100ms) + subtle screen flash/ripple |
-| Success/completion sound | Pixel sparkle/star animation at departure point + NPC celebration pose |
-| Warning/alert sound | Screen edge pulse in warning color (amber) + NPC concerned pose |
-| Ambient traffic sounds | Animated background elements (pixel clouds moving, birds on wires, pedestrian walk cycles) |
-| Phase change chime | Traffic light transition animation (smooth color fade over 3-4 frames) + road surface flash |
-| Vehicle arrival | Vehicle sprite entrance animation (drives in from screen edge to queue position) |
+| Typical Audio Cue        | Visual Replacement                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| Button click sound       | Button depression animation (2-frame, 100ms) + subtle screen flash/ripple                   |
+| Success/completion sound | Pixel sparkle/star animation at departure point + NPC celebration pose                      |
+| Warning/alert sound      | Screen edge pulse in warning color (amber) + NPC concerned pose                             |
+| Ambient traffic sounds   | Animated background elements (pixel clouds moving, birds on wires, pedestrian walk cycles)  |
+| Phase change chime       | Traffic light transition animation (smooth color fade over 3-4 frames) + road surface flash |
+| Vehicle arrival          | Vehicle sprite entrance animation (drives in from screen edge to queue position)            |
 
 **Ambient animation (background life):**
 
@@ -644,14 +651,14 @@ The first 30 seconds must establish:
 
 The application should move through these emotional tones based on simulation state:
 
-| State | Tone | Visual Indicators |
-|-------|------|-------------------|
-| Empty intersection | Calm, inviting | Peaceful scene, NPC relaxed, warm colors |
-| Light traffic | Engaged, positive | Smooth vehicle flow, NPC content, normal palette |
-| Building congestion | Curious, challenging | Queues growing visibly, NPC interested, slightly warmer colors |
-| Heavy congestion | Exciting, humorous | Long queues, NPC animated/surprised, no negative framing |
-| Clearing traffic | Satisfying, rewarding | Vehicles departing with sparkle effects, NPC celebrating |
-| All cleared | Accomplished, proud | Empty roads, NPC congratulatory, brief celebration animation |
+| State               | Tone                  | Visual Indicators                                              |
+| ------------------- | --------------------- | -------------------------------------------------------------- |
+| Empty intersection  | Calm, inviting        | Peaceful scene, NPC relaxed, warm colors                       |
+| Light traffic       | Engaged, positive     | Smooth vehicle flow, NPC content, normal palette               |
+| Building congestion | Curious, challenging  | Queues growing visibly, NPC interested, slightly warmer colors |
+| Heavy congestion    | Exciting, humorous    | Long queues, NPC animated/surprised, no negative framing       |
+| Clearing traffic    | Satisfying, rewarding | Vehicles departing with sparkle effects, NPC celebrating       |
+| All cleared         | Accomplished, proud   | Empty roads, NPC congratulatory, brief celebration animation   |
 
 The key design principle: congestion is interesting, not bad. The application should never make the user feel they have "failed" — even gridlock scenarios should be framed as fascinating emergent behavior worth understanding.
 
@@ -663,14 +670,14 @@ The key design principle: congestion is interesting, not bad. The application sh
 
 **Demographics and Context**
 
-| Attribute | Detail |
-|-----------|--------|
-| Age | 12 years old |
-| Grade | 6th grade |
-| Location | Suburban area, attends public school |
-| Tech proficiency | High for age — plays Minecraft and Roblox regularly, comfortable with keyboard and mouse |
-| Device | Shared family laptop (Windows 11, 1366x768 display), school Chromebook |
-| Context of use | Assigned in science class as part of a unit on urban systems, also plays at home out of curiosity |
+| Attribute        | Detail                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| Age              | 12 years old                                                                                      |
+| Grade            | 6th grade                                                                                         |
+| Location         | Suburban area, attends public school                                                              |
+| Tech proficiency | High for age — plays Minecraft and Roblox regularly, comfortable with keyboard and mouse          |
+| Device           | Shared family laptop (Windows 11, 1366x768 display), school Chromebook                            |
+| Context of use   | Assigned in science class as part of a unit on urban systems, also plays at home out of curiosity |
 
 **Behavioral Patterns**
 
@@ -706,14 +713,14 @@ Maja will read the NPC's first message, then largely ignore it unless the NPC sa
 
 **Demographics and Context**
 
-| Attribute | Detail |
-|-----------|--------|
-| Age | 11 years old |
-| Grade | 5th grade |
-| Location | Urban area, attends public school |
+| Attribute        | Detail                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| Age              | 11 years old                                                                                                 |
+| Grade            | 5th grade                                                                                                    |
+| Location         | Urban area, attends public school                                                                            |
 | Tech proficiency | Moderate — uses a computer for homework and watches YouTube, limited gaming experience (mobile puzzle games) |
-| Device | School Chromebook (14-inch, 1366x768), occasionally uses parent's iPad at home |
-| Context of use | Teacher-directed classroom activity with specific learning objectives |
+| Device           | School Chromebook (14-inch, 1366x768), occasionally uses parent's iPad at home                               |
+| Context of use   | Teacher-directed classroom activity with specific learning objectives                                        |
 
 **Behavioral Patterns**
 
@@ -749,15 +756,15 @@ Kacper will actively read and follow NPC guidance. The NPC is his primary learni
 
 **Demographics and Context**
 
-| Attribute | Detail |
-|-----------|--------|
-| Age | 13 years old |
-| Grade | 7th grade |
-| Location | Urban area, attends public school with inclusive education support |
-| Tech proficiency | High — uses assistive technology daily, experienced with screen magnification and keyboard navigation |
-| Device | School-provided laptop with large display (15.6-inch, 1080p) and screen magnification software |
-| Context of use | Same classroom assignment as peers, needs full functionality through keyboard and with reduced color reliance |
-| Accessibility needs | Deuteranopia (red-green color blindness), prefers larger text and high contrast |
+| Attribute           | Detail                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Age                 | 13 years old                                                                                                  |
+| Grade               | 7th grade                                                                                                     |
+| Location            | Urban area, attends public school with inclusive education support                                            |
+| Tech proficiency    | High — uses assistive technology daily, experienced with screen magnification and keyboard navigation         |
+| Device              | School-provided laptop with large display (15.6-inch, 1080p) and screen magnification software                |
+| Context of use      | Same classroom assignment as peers, needs full functionality through keyboard and with reduced color reliance |
+| Accessibility needs | Deuteranopia (red-green color blindness), prefers larger text and high contrast                               |
 
 **Behavioral Patterns**
 
@@ -805,6 +812,7 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** Opens the simulator URL or clicks a link from a classroom assignment.
 
 **What the user sees:**
+
 - Dark-themed pixel-art intersection fills the screen
 - A HUD bar at the top shows minimal information (step counter at 0, vehicle count at 0)
 - A control bar at the bottom with large, clear buttons (Step, Play, Reset, Add Vehicle)
@@ -812,22 +820,26 @@ This journey map traces a first-time user's experience from opening the simulato
 - The intersection is empty — no vehicles, traffic lights showing red in all directions
 
 **What the user thinks:**
+
 - "Oh, this looks like a game" (positive emotional categorization)
 - "It's a road intersection" (immediate scene recognition)
 - "There's a little character saying something" (NPC draws attention)
 
 **NPC behavior:**
+
 - Speech bubble: "Welcome to the intersection! I'm Officer Pixel. Try adding a vehicle!"
 - The NPC points toward the Add Vehicle control
 
 **Emotional state:** Curious, mildly positive
 
 **Persona variations:**
+
 - Maja: Already scanning for clickable elements, may click the intersection directly before reading NPC text
 - Kacper: Reads the NPC text carefully, looks for the Add Vehicle button
 - Zara: Tabs to first interactive element, hears screen reader announce "Traffic intersection simulator. Officer Pixel says: Welcome to the intersection."
 
 **Design requirements:**
+
 - Page must be interactive within 2 seconds of navigation
 - No loading screen, splash screen, or mandatory tutorial
 - NPC message must be visible without scrolling on 1366x768 displays
@@ -840,27 +852,32 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** Clicks "Add Vehicle" button (or opens Add Vehicle form).
 
 **What the user sees:**
+
 - A form appears (as an overlay or expanding panel) with road selection dropdowns (From: North/South/East/West, To: North/South/East/West)
 - Priority selection (Normal / Emergency) with "Normal" pre-selected
 - A clear "Add" button
 
 **What the user does:**
+
 - Selects "From: North, To: South" (default or first choice)
 - Clicks "Add"
 
 **What happens:**
+
 - A pixel-art car sprite appears at the north edge of the intersection, facing south
 - The car drives to the queue position with a brief entrance animation (0.5 seconds)
 - The HUD updates: vehicle count changes from 0 to 1
 - The NPC reacts with a speech bubble: "A car from the north! It wants to go south. But the light is red — it has to wait."
 
 **What the user thinks:**
+
 - "Oh cool, a little car appeared!" (delight)
 - "It's waiting because the light is red" (first learning moment — connection between light state and vehicle behavior)
 
 **Emotional state:** Engaged, pleased by the visual response
 
 **Design requirements:**
+
 - Vehicle entrance animation must complete within 500ms
 - The pixel car must be clearly visible and identifiable as a car
 - The road it appeared on (north) must be visually obvious from the car's position
@@ -873,6 +890,7 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** Clicks the "Step" button.
 
 **What the user sees:**
+
 - Traffic lights animate: North and South lights change from red to green. East and West lights remain red.
 - The vehicle at the north queue drives through the intersection toward the south exit with a smooth pixel animation
 - A small sparkle/celebration effect plays as the vehicle departs
@@ -880,12 +898,14 @@ This journey map traces a first-time user's experience from opening the simulato
 - The NPC speech bubble: "The north-south lights turned green! Your car drove through. That's one phase — next step will switch to east-west."
 
 **What the user thinks:**
+
 - "So the step makes the lights change and cars go through" (core mechanic understood)
 - "North-south went together — that makes sense, they don't cross each other" (traffic logic begins to form)
 
 **Emotional state:** Understanding dawning, satisfaction from seeing cause and effect
 
 **Design requirements:**
+
 - Traffic light change animation must be clear and visually prominent (not subtle)
 - Vehicle movement through intersection must take 300-500ms — fast enough to not bore, slow enough to track
 - The connection between "step" action and "phase change" result must be visually unambiguous
@@ -898,6 +918,7 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** Adds multiple vehicles from different directions, clicks Step repeatedly.
 
 **Typical experimentation sequence:**
+
 1. Add 2-3 vehicles from north
 2. Add 1-2 vehicles from east
 3. Click Step — observe north-south cars go, east cars wait
@@ -906,6 +927,7 @@ This journey map traces a first-time user's experience from opening the simulato
 6. Click Step multiple times — observe alternating phases
 
 **What the user learns through experimentation:**
+
 - Phases alternate between N-S and E-W
 - Only vehicles on the green-phase roads can move
 - Vehicles in the red-phase direction accumulate in queues
@@ -913,6 +935,7 @@ This journey map traces a first-time user's experience from opening the simulato
 - Emergency vehicles (if they try adding one) get special treatment
 
 **NPC behavior during this phase:**
+
 - Frequency: One comment every 2-3 steps (not every step)
 - Content escalates from descriptive to analytical:
   - Step 2: "East-west's turn now! See how they alternate?"
@@ -923,11 +946,13 @@ This journey map traces a first-time user's experience from opening the simulato
 **Emotional state:** Increasingly confident, transitioning from exploration to understanding
 
 **Persona variations:**
+
 - Maja: Adds 10+ vehicles from one direction to see what happens, discovers long queue visualization, delighted by the visual chaos
 - Kacper: Adds vehicles methodically, one at a time, clicks step between each, builds understanding systematically
 - Zara: Uses keyboard (Space for Step), tabs between Add Vehicle form fields, relies on ARIA announcements and NPC text for phase confirmation
 
 **Design requirements:**
+
 - Queue visualization must scale gracefully from 1 to 15+ vehicles (scroll, compress, or overflow indicator)
 - Step execution must remain responsive even with many vehicles (target: under 100ms including animation start)
 - NPC comment frequency must adapt to user pace (fewer comments for rapid interaction)
@@ -939,17 +964,20 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** User begins to predict what will happen before clicking Step.
 
 **Observable behavior shift:**
+
 - User pauses before clicking Step, looking at the queue states
 - User may verbalize or think "the east cars should go now because last step was north-south"
 - User tests their prediction by clicking Step and confirming
 
 **What the user has learned:**
+
 - The two-phase system (N-S and E-W alternation)
 - Queue mechanics (vehicles wait during red phase)
 - The relationship between vehicle additions and queue growth
 - The basic traffic flow principle: controlled alternation prevents collision
 
 **NPC behavior at this stage:**
+
 - Shifts from teaching to validation: "You've got the hang of it! The phases keep alternating to give everyone a fair turn."
 - May introduce a challenge: "Think you can clear all vehicles in the fewest steps?"
 - May introduce a new concept: "Try adding an emergency vehicle — watch what happens differently."
@@ -963,12 +991,14 @@ This journey map traces a first-time user's experience from opening the simulato
 **User action:** Explores advanced features, creates complex scenarios.
 
 **Possible exploration paths:**
+
 1. **Auto-play mode:** Clicks Play, observes continuous simulation. Adjusts speed. Watches patterns emerge over many steps.
 2. **Emergency vehicles:** Adds emergency vehicles, discovers priority behavior.
 3. **Stress testing:** Adds many vehicles from one direction, observes queue behavior under load.
 4. **Telemetry exploration:** Opens statistics panel (Level 3 information), examines phase distribution and average queue lengths.
 
 **NPC behavior:**
+
 - Mostly quiet, occasional observations on advanced patterns
 - Available if the user hovers or clicks on the NPC directly
 - Comments on notable achievements: "50 vehicles processed! This intersection is running smoothly."
@@ -976,6 +1006,7 @@ This journey map traces a first-time user's experience from opening the simulato
 **Emotional state:** Engaged in mastery-level exploration, self-directed learning
 
 **Natural session end:**
+
 - User runs out of curiosity (normal — 8-12 minutes is a successful session for this age group)
 - Teacher directs students to move on
 - User has answered assignment questions and feels finished
@@ -985,62 +1016,62 @@ This journey map traces a first-time user's experience from opening the simulato
 
 ### 9.2 Journey Map Summary
 
-| Phase | Duration | User Goal | Key Design Need | NPC Role |
-|-------|----------|-----------|-----------------|----------|
-| 1. Landing | 0-5s | Orient, categorize as "game" | Instant visual appeal, no barriers | Welcome, point to first action |
-| 2. First Vehicle | 5-30s | Do something, see a result | Immediate visual feedback, simple form | Explain what happened |
-| 3. First Step | 30s-1.5min | Understand the core mechanic | Clear phase change visualization | Connect step to phase change |
-| 4. Experimentation | 1.5-5min | Build mental model of traffic flow | Responsive multi-vehicle simulation | Periodic insight comments |
-| 5. Confirmation | 5-8min | Validate understanding through prediction | Consistent, predictable behavior | Validate and challenge |
-| 6. Deep Exploration | 8-12+min | Explore advanced features, edge cases | Rich feature set, layered information | Mostly passive, on-demand |
+| Phase               | Duration   | User Goal                                 | Key Design Need                        | NPC Role                       |
+| ------------------- | ---------- | ----------------------------------------- | -------------------------------------- | ------------------------------ |
+| 1. Landing          | 0-5s       | Orient, categorize as "game"              | Instant visual appeal, no barriers     | Welcome, point to first action |
+| 2. First Vehicle    | 5-30s      | Do something, see a result                | Immediate visual feedback, simple form | Explain what happened          |
+| 3. First Step       | 30s-1.5min | Understand the core mechanic              | Clear phase change visualization       | Connect step to phase change   |
+| 4. Experimentation  | 1.5-5min   | Build mental model of traffic flow        | Responsive multi-vehicle simulation    | Periodic insight comments      |
+| 5. Confirmation     | 5-8min     | Validate understanding through prediction | Consistent, predictable behavior       | Validate and challenge         |
+| 6. Deep Exploration | 8-12+min   | Explore advanced features, edge cases     | Rich feature set, layered information  | Mostly passive, on-demand      |
 
 ---
 
 ## Appendix A: Research References
 
-1. Birch, J. (2012). Worldwide prevalence of red-green color deficiency. *Journal of the Optical Society of America A*, 29(3), 313-320.
-2. Boyarski, D., Neuwirth, C., Forlizzi, J., & Regli, S. H. (1998). A study of fonts designed for screen display. *Proceedings of CHI '98*, 87-94.
-3. Deterding, S., Dixon, D., Khaled, R., & Nacke, L. (2011). From game design elements to gamefulness. *Proceedings of MindTrek '11*, 9-15.
-4. Habgood, M. P. J., & Ainsworth, S. E. (2011). Motivating children to learn effectively: Exploring the value of intrinsic integration in educational games. *Journal of the Learning Sciences*, 20(2), 169-206.
-5. Hamari, J., Shernoff, D. J., Rowe, E., Coller, B., Asbell-Clarke, J., & Edwards, T. (2016). Challenging games help students learn: An empirical study on engagement, flow and immersion in game-based learning. *Computers in Human Behavior*, 54, 170-179.
-6. Kirschner, P. A., Sweller, J., & Clark, R. E. (2006). Why minimal guidance during instruction does not work. *Educational Psychologist*, 41(2), 75-86.
-7. Nielsen Norman Group (2024). Tooltip guidelines. *nngroup.com*.
+1. Birch, J. (2012). Worldwide prevalence of red-green color deficiency. _Journal of the Optical Society of America A_, 29(3), 313-320.
+2. Boyarski, D., Neuwirth, C., Forlizzi, J., & Regli, S. H. (1998). A study of fonts designed for screen display. _Proceedings of CHI '98_, 87-94.
+3. Deterding, S., Dixon, D., Khaled, R., & Nacke, L. (2011). From game design elements to gamefulness. _Proceedings of MindTrek '11_, 9-15.
+4. Habgood, M. P. J., & Ainsworth, S. E. (2011). Motivating children to learn effectively: Exploring the value of intrinsic integration in educational games. _Journal of the Learning Sciences_, 20(2), 169-206.
+5. Hamari, J., Shernoff, D. J., Rowe, E., Coller, B., Asbell-Clarke, J., & Edwards, T. (2016). Challenging games help students learn: An empirical study on engagement, flow and immersion in game-based learning. _Computers in Human Behavior_, 54, 170-179.
+6. Kirschner, P. A., Sweller, J., & Clark, R. E. (2006). Why minimal guidance during instruction does not work. _Educational Psychologist_, 41(2), 75-86.
+7. Nielsen Norman Group (2024). Tooltip guidelines. _nngroup.com_.
 8. Ofcom (2024). Children and parents: Media use and attitudes report. UK.
-9. Pekrun, R., Lichtenfeld, S., Marsh, H. W., Murayama, K., & Goetz, T. (2017). Achievement emotions and academic performance. *Child Development*, 88(5), 1653-1670.
-10. Resnick, M., & Rosenbaum, E. (2013). Designing for tinkerability. In *Design, Make, Play* (pp. 163-181). Routledge.
-11. Ruff, H. A., & Rothbart, M. K. (2001). *Attention in Early Development*. Oxford University Press.
-12. Seale, J. K. (2006). *E-Learning and Disability in Higher Education: Accessibility Research and Practice*. Routledge.
-13. Sheedy, J. E., Subbaram, M. V., Zimmerman, A. B., & Hayes, J. R. (2005). Text legibility and the letter superiority effect. *Human Factors*, 47(4), 797-815.
-14. WebAIM (2024). Screen reader user survey #10. *webaim.org*.
+9. Pekrun, R., Lichtenfeld, S., Marsh, H. W., Murayama, K., & Goetz, T. (2017). Achievement emotions and academic performance. _Child Development_, 88(5), 1653-1670.
+10. Resnick, M., & Rosenbaum, E. (2013). Designing for tinkerability. In _Design, Make, Play_ (pp. 163-181). Routledge.
+11. Ruff, H. A., & Rothbart, M. K. (2001). _Attention in Early Development_. Oxford University Press.
+12. Seale, J. K. (2006). _E-Learning and Disability in Higher Education: Accessibility Research and Practice_. Routledge.
+13. Sheedy, J. E., Subbaram, M. V., Zimmerman, A. B., & Hayes, J. R. (2005). Text legibility and the letter superiority effect. _Human Factors_, 47(4), 797-815.
+14. WebAIM (2024). Screen reader user survey #10. _webaim.org_.
 
 ## Appendix B: Key Metrics for Usability Testing
 
 When this design proceeds to usability testing, the following metrics should be measured:
 
-| Metric | Target | Method |
-|--------|--------|--------|
-| Time to first meaningful interaction | Under 15 seconds | Observation, screen recording |
-| Time to understand phase alternation concept | Under 3 minutes | Think-aloud protocol, comprehension question |
-| Task completion: "Add a vehicle from east going west" | 95%+ success rate | Task-based usability test |
-| Task completion: "Make the simulation run 5 steps" | 95%+ success rate | Task-based usability test |
-| Unassisted feature discovery rate (tooltips, NPC, advanced panels) | 70%+ within 10 minutes | Observation |
-| Colorblind users: Identify current phase correctly | 100% success rate | CVD simulation + user testing |
-| Keyboard-only users: Complete all primary tasks | 100% success rate | Keyboard-only usability test |
-| Subjective engagement rating (1-5 scale) | 4.0+ average | Post-session questionnaire |
-| Session duration (unstructured play) | 8+ minutes average | Analytics |
-| "Would you use this again?" (yes/no) | 80%+ yes | Post-session questionnaire |
+| Metric                                                             | Target                 | Method                                       |
+| ------------------------------------------------------------------ | ---------------------- | -------------------------------------------- |
+| Time to first meaningful interaction                               | Under 15 seconds       | Observation, screen recording                |
+| Time to understand phase alternation concept                       | Under 3 minutes        | Think-aloud protocol, comprehension question |
+| Task completion: "Add a vehicle from east going west"              | 95%+ success rate      | Task-based usability test                    |
+| Task completion: "Make the simulation run 5 steps"                 | 95%+ success rate      | Task-based usability test                    |
+| Unassisted feature discovery rate (tooltips, NPC, advanced panels) | 70%+ within 10 minutes | Observation                                  |
+| Colorblind users: Identify current phase correctly                 | 100% success rate      | CVD simulation + user testing                |
+| Keyboard-only users: Complete all primary tasks                    | 100% success rate      | Keyboard-only usability test                 |
+| Subjective engagement rating (1-5 scale)                           | 4.0+ average           | Post-session questionnaire                   |
+| Session duration (unstructured play)                               | 8+ minutes average     | Analytics                                    |
+| "Would you use this again?" (yes/no)                               | 80%+ yes               | Post-session questionnaire                   |
 
 ## Appendix C: Competitive Landscape Summary
 
-| Product | Strengths for Our Reference | Weaknesses to Avoid |
-|---------|---------------------------|---------------------|
-| SimCity (EDU) | Sandbox experimentation, visual feedback, layered data | Information overload, steep learning curve |
-| Mini Motorways | Minimal text, visual flow, gradual complexity | No educational framing, stress-based gameplay |
-| Cities: Skylines EDU | Classroom integration, learning objectives, reflection | Heavy hardware requirements, complex UI |
-| Khan Academy | Hint system, no-penalty exploration, inline feedback | Text-heavy, not game-like, low visual engagement |
-| Traffic Jam 3D (mobile) | Simple traffic concept, visual appeal | Shallow learning, no systems understanding |
-| PICO-8 educational demos | Pixel-art charm, constrained aesthetic, retro cool | Usually single-concept, no depth |
+| Product                  | Strengths for Our Reference                            | Weaknesses to Avoid                              |
+| ------------------------ | ------------------------------------------------------ | ------------------------------------------------ |
+| SimCity (EDU)            | Sandbox experimentation, visual feedback, layered data | Information overload, steep learning curve       |
+| Mini Motorways           | Minimal text, visual flow, gradual complexity          | No educational framing, stress-based gameplay    |
+| Cities: Skylines EDU     | Classroom integration, learning objectives, reflection | Heavy hardware requirements, complex UI          |
+| Khan Academy             | Hint system, no-penalty exploration, inline feedback   | Text-heavy, not game-like, low visual engagement |
+| Traffic Jam 3D (mobile)  | Simple traffic concept, visual appeal                  | Shallow learning, no systems understanding       |
+| PICO-8 educational demos | Pixel-art charm, constrained aesthetic, retro cool     | Usually single-concept, no depth                 |
 
 ---
 
-*This research spec should be reviewed by the design team before proceeding to the Design phase. All design decisions in subsequent phases should reference specific sections of this document for justification.*
+_This research spec should be reviewed by the design team before proceeding to the Design phase. All design decisions in subsequent phases should reference specific sections of this document for justification._

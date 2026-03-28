@@ -1,9 +1,11 @@
 # GUI Redesign — Pixel-Art Educational Traffic Simulator
 
 ## Vision
+
 Transform the current minimal dark-mode GUI into a **pixel-art retro game-style** educational traffic lights simulator for children aged 11–13.
 
 ## Design Decisions (Locked)
+
 - **Visual style**: Pixel-art / retro 8-bit aesthetic
 - **Layout**: Game-style — intersection centered, HUD top bar, gamepad-style controls bottom bar
 - **Rendering**: HTML Canvas (pixel scene) + React overlay (HUD, tooltips, controls)
@@ -14,6 +16,7 @@ Transform the current minimal dark-mode GUI into a **pixel-art retro game-style*
 - **Theme**: Dark retro with NES/PICO-8 inspired palette (~32 colors)
 
 ## Existing Codebase
+
 - **Framework**: Next.js 15 + TypeScript 5.6 + Tailwind CSS 4
 - **Simulation engine**: Pure domain logic in `src/simulator/` — fully functional, 366 tests passing
 - **Current GUI**: 13 React components in `app/`, SVG-based, minimal styling, functional but not polished
@@ -21,6 +24,7 @@ Transform the current minimal dark-mode GUI into a **pixel-art retro game-style*
 - **Adapter**: `app/lib/simulation-adapter.ts` wraps engine for GUI use
 
 ## Constraints
+
 - Simulation logic (`src/simulator/`) must NOT be modified
 - All pixel-art sprites created inline in code (no external asset files)
 - Must remain a Next.js app (no separate game engine)
@@ -28,6 +32,7 @@ Transform the current minimal dark-mode GUI into a **pixel-art retro game-style*
 - No external runtime dependencies for rendering (pure Canvas API). Dev/test dependencies (e.g., node-canvas for visual regression tests) are permitted.
 
 ## Pipeline Phases
+
 1. **Research** — UX research, game design research, accessibility for children
 2. **Design** — Sprite design, color palette, layout specs, animation specs
 3. **Architecture** — Canvas renderer architecture, component tree, state flow
@@ -35,4 +40,5 @@ Transform the current minimal dark-mode GUI into a **pixel-art retro game-style*
 5. **Testing** — Visual regression, component tests, accessibility, usability
 
 ## Specs Location
+
 All specs go to: `specs/gui-redesign/<phase>/`

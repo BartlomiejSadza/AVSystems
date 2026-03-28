@@ -3,6 +3,7 @@
 **Reviewer:** Senior Code Reviewer
 **Date:** 2026-03-27
 **Documents reviewed:**
+
 - `specs/gui-redesign/BRIEF.md`
 - `specs/gui-redesign/research/UX-RESEARCH.md`
 - `specs/gui-redesign/design/GAME-DESIGN.md`
@@ -27,6 +28,7 @@ The BRIEF allows 3 OR 4. The downstream specs chose 3. This needs to be explicit
 ### C-02: Traffic light housing dimensions are internally inconsistent in GAME-DESIGN.md
 
 The traffic light spec (Section 2.3) says:
+
 - Housing size: **7 x 18 px**
 - But the pixel layout shows rows 0 through 19 -- that is **20 rows**, not 18.
 
@@ -39,12 +41,14 @@ Count the rows: Row 0 through Row 19 = 20 rows. The table says 18. The actual pi
 **FRONTEND-ARCHITECTURE.md** Section 1.1 defines HudBar and ControlBar as **React DOM components** overlaid above and below the canvas. The canvas is described as containing only the game scene (layers 0-5: background, roads, traffic lights, vehicles, NPC, effects).
 
 These are two fundamentally different layout models:
+
 1. Game Design: Canvas draws everything (HUD in canvas, controls in canvas, game scene in canvas).
 2. Architecture: Canvas draws only the game scene; HUD and controls are React DOM.
 
 **The Architecture approach is correct** (it matches the BRIEF's "React overlay (HUD, tooltips, controls)" language). But the Game Design spec's pixel-perfect layouts for HUD elements (Section 4.1, 4.2) define positions in game pixels on the canvas, including font size "5px" which refers to the pixel font rendered on canvas.
 
 This means either:
+
 - The Game Design HUD/Control specs need to be rewritten for React DOM (CSS pixels, not game pixels), OR
 - The Architecture needs to clarify that HUD and controls are rendered in the canvas too.
 
@@ -63,11 +67,13 @@ The UX-RESEARCH.md (Section 3.1, line 183-186) explicitly recommends the hybrid 
 ### C-05: Palette index mismatch between Game Design and Architecture
 
 **GAME-DESIGN.md** defines a 32-color palette with indices 00-31, where:
+
 - Index 00 = `#1D2B53` (Midnight Blue)
 - Index 01 = `#2C2C34` (Dark Asphalt)
 - etc.
 
 **FRONTEND-ARCHITECTURE.md** Section 2.4 defines the PALETTE array where:
+
 - Index 0 = `transparent`
 - Index 1 = `#000000` (black)
 - Index 2 = `#1D2B53` (dark blue)
@@ -95,11 +101,13 @@ The Game Design spec ignores this recommendation entirely and specifies pixel-fo
 ### W-01: Colorblind shapes differ between UX Research and Game Design
 
 **UX-RESEARCH.md** Section 6.2 specifies:
+
 - Red = square or **octagonal** shape (stop sign association)
 - Green = **arrow or triangular** shape pointing in traffic flow direction
 - Amber = circle or diamond
 
 **GAME-DESIGN.md** Section 2.3 specifies:
+
 - Red = **square** shape (5x5 solid fill)
 - Green = **circle/diamond** shape (5x5 with corners cut)
 - No amber shape specified (yellow is listed as "unused in sim, always off")
@@ -119,6 +127,7 @@ So the yellow lamp is "always off" in Section 2.3 but animated during transition
 ### W-03: Maximum visible vehicles is too low for the expected use case
 
 **GAME-DESIGN.md** Section 3.6 specifies maximum visible vehicles per queue:
+
 - North/South: **5 vehicles**
 - East/West: **9 vehicles**
 
@@ -167,6 +176,7 @@ The total height of the app is: HUD bar (CSS height, unspecified) + canvas (720p
 The Architecture spec does not mention buses at all. The sprite definitions reference "car-north, car-south... emergency-car variants" but no bus variants.
 
 **The bus has no way to be triggered from the simulation engine.** Either:
+
 1. Remove the bus from the Game Design spec (simplest),
 2. Add it as a cosmetic-only variation (randomly assign bus sprite to some normal vehicles), or
 3. Add a vehicle type to the domain model (violates the BRIEF constraint: "Simulation logic must NOT be modified").
@@ -182,11 +192,13 @@ The Architecture spec does not mention buses at all. The sprite definitions refe
 ### W-09: NPC trigger conditions differ between UX Research and Architecture
 
 **UX-RESEARCH.md** Section 5.3 defines detailed NPC trigger conditions including:
+
 - Queue threshold: 5+ vehicles
 - Idle detection: 15 seconds
 - Suppression: No comments during auto-play, 60-second dismissal cooldown, same-category cooldown of 3 steps, max 3 comments per 60 seconds
 
 **FRONTEND-ARCHITECTURE.md** Section 3.6 defines NPC triggers as:
+
 - First step, phase change, vehicle added, emergency vehicle, error, every 10 steps
 - Auto-dismiss after 3 seconds
 - Queue holds max 3 messages
@@ -210,6 +222,7 @@ These are fundamentally different interaction patterns. The Game Design approach
 ### N-01: Game Design specifies buildings overlapping grass quadrant boundaries
 
 Building positions in Section 3.6:
+
 - "Building: School" at (200, 20) in NE quadrant. NE quadrant starts at x=178. A 32-wide building at x=200 ends at x=232, which is within bounds.
 - "Building: Apt" at (280, 24) in NE quadrant. NE quadrant ends at x=320. A 32-wide building at x=280 ends at x=312, within bounds.
 
@@ -280,21 +293,21 @@ The Architecture's assessment that full redraw at 320x240 costs ~0.5-2ms is accu
 
 ## Summary of Required Actions
 
-| ID | Category | Action Required | Blocks Implementation? |
-|----|----------|----------------|----------------------|
-| C-01 | CRITICAL | Lock PIXEL_SCALE=3 in BRIEF.md | Yes |
-| C-02 | CRITICAL | Fix traffic light housing dimensions (7x18 vs 7x20) | Yes |
-| C-03 | CRITICAL | Resolve HUD/ControlBar rendering model (canvas vs React DOM) | Yes |
-| C-04 | CRITICAL | Resolve NPC dialog rendering model (canvas vs React DOM) | Yes |
-| C-05 | CRITICAL | Establish single canonical palette with consistent indices | Yes |
-| C-06 | CRITICAL | Align font rendering strategy across all three specs | Yes |
-| W-01 | WARNING | Reconcile colorblind signal shapes (arrow vs diamond for green) | Recommended |
-| W-02 | WARNING | Clarify amber/yellow lamp behavior and color | Recommended |
-| W-03 | WARNING | Increase max visible vehicles or specify dynamic spacing | Recommended |
-| W-04 | WARNING | Clarify "no external dependencies" scope (runtime vs dev) | Recommended |
-| W-05 | WARNING | Verify east-facing car sprite orientation | Recommended |
-| W-06 | WARNING | Specify responsive behavior for 1366x768 viewports | Recommended |
-| W-07 | WARNING | Decide bus sprite strategy (remove, cosmetic-only, or domain change) | Recommended |
-| W-08 | WARNING | Complete the Architecture palette to 32 colors | Recommended |
-| W-09 | WARNING | Reconcile NPC trigger/suppression rules across specs | Recommended |
-| W-10 | WARNING | Pick one AddVehicle interaction pattern (buttons vs form) | Recommended |
+| ID   | Category | Action Required                                                      | Blocks Implementation? |
+| ---- | -------- | -------------------------------------------------------------------- | ---------------------- |
+| C-01 | CRITICAL | Lock PIXEL_SCALE=3 in BRIEF.md                                       | Yes                    |
+| C-02 | CRITICAL | Fix traffic light housing dimensions (7x18 vs 7x20)                  | Yes                    |
+| C-03 | CRITICAL | Resolve HUD/ControlBar rendering model (canvas vs React DOM)         | Yes                    |
+| C-04 | CRITICAL | Resolve NPC dialog rendering model (canvas vs React DOM)             | Yes                    |
+| C-05 | CRITICAL | Establish single canonical palette with consistent indices           | Yes                    |
+| C-06 | CRITICAL | Align font rendering strategy across all three specs                 | Yes                    |
+| W-01 | WARNING  | Reconcile colorblind signal shapes (arrow vs diamond for green)      | Recommended            |
+| W-02 | WARNING  | Clarify amber/yellow lamp behavior and color                         | Recommended            |
+| W-03 | WARNING  | Increase max visible vehicles or specify dynamic spacing             | Recommended            |
+| W-04 | WARNING  | Clarify "no external dependencies" scope (runtime vs dev)            | Recommended            |
+| W-05 | WARNING  | Verify east-facing car sprite orientation                            | Recommended            |
+| W-06 | WARNING  | Specify responsive behavior for 1366x768 viewports                   | Recommended            |
+| W-07 | WARNING  | Decide bus sprite strategy (remove, cosmetic-only, or domain change) | Recommended            |
+| W-08 | WARNING  | Complete the Architecture palette to 32 colors                       | Recommended            |
+| W-09 | WARNING  | Reconcile NPC trigger/suppression rules across specs                 | Recommended            |
+| W-10 | WARNING  | Pick one AddVehicle interaction pattern (buttons vs form)            | Recommended            |
