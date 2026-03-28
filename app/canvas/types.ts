@@ -23,6 +23,8 @@ export interface AnimationState {
   lightGlowPhase: number;
   /** Active particle effects */
   particles: Particle[];
+  /** Flash overlay opacity for phase transitions (0 = no flash, 1 = full flash) */
+  phaseFlashAlpha: number;
 }
 
 export interface Particle {

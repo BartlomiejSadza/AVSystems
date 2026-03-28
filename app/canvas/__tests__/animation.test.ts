@@ -36,6 +36,10 @@ describe('createInitialAnimationState', () => {
   it('returns empty particles array', () => {
     expect(freshState().particles).toHaveLength(0);
   });
+
+  it('returns phaseFlashAlpha of 0', () => {
+    expect(freshState().phaseFlashAlpha).toBe(0);
+  });
 });
 
 describe('updateAnimationState', () => {
@@ -136,6 +140,24 @@ describe('updateAnimationState', () => {
     const state = freshState();
     const result = updateAnimationState(state, 100);
     expect(result).toBe(state);
+  });
+
+  it('decrements phaseFlashAlpha when > 0', () => {
+    const state: AnimationState = { ...freshState(), phaseFlashAlpha: 1 };
+    const updated = updateAnimationState(state, 150); // 150/300 = 0.5 decrement
+    expect(updated.phaseFlashAlpha).toBeCloseTo(0.5);
+  });
+
+  it('phaseFlashAlpha does not go below 0', () => {
+    const state: AnimationState = { ...freshState(), phaseFlashAlpha: 0.1 };
+    const updated = updateAnimationState(state, 1000); // large delta
+    expect(updated.phaseFlashAlpha).toBe(0);
+  });
+
+  it('phaseFlashAlpha stays at 0 when already 0', () => {
+    const state: AnimationState = { ...freshState(), phaseFlashAlpha: 0 };
+    const updated = updateAnimationState(state, 100);
+    expect(updated.phaseFlashAlpha).toBe(0);
   });
 });
 
