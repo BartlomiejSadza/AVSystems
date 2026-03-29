@@ -18,4 +18,69 @@
   --color-status-success: #86efac;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+/* Pixel-art range slider */
+.pixel-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: linear-gradient(
+    to right,
+    #29adff var(--slider-pct, 0%),
+    #374151 var(--slider-pct, 0%)
+  );
+  border: 2px solid #4b5563;
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+}
+
+.pixel-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 24px;
+  background: #f9fafb;
+  border: 2px solid #4b5563;
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+  transition: background 0.1s;
+}
+
+.pixel-slider::-webkit-slider-thumb:hover {
+  background: #29adff;
+}
+
+.pixel-slider::-moz-range-thumb {
+  width: 16px;
+  height: 24px;
+  background: #f9fafb;
+  border: 2px solid #4b5563;
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.pixel-slider::-moz-range-thumb:hover {
+  background: #29adff;
+}
+
+.pixel-slider:focus::-webkit-slider-thumb {
+  background: #29adff;
+  border-color: #f9fafb;
+}
+
+/* NPC dialog entrance animation */
+@keyframes npc-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

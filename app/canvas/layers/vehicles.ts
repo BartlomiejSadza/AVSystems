@@ -7,7 +7,10 @@ import {
   AMBULANCE_EAST,
   AMBULANCE_WEST,
 } from '../sprites/vehicles';
-import type { SpriteDefinition } from '../sprites/types';
+
+import { PALETTE, type SpriteDefinition } from '../sprites/types';
+
+const OVERFLOW_FONT = '5px monospace';
 
 // Vehicle direction mapping: vehicles in the north queue are approaching from
 // the north, so they face south (toward the intersection).
@@ -165,8 +168,9 @@ export function drawVehicles(rc: RenderContext): void {
       }
 
       rc.ctx.save();
-      rc.ctx.fillStyle = '#ffffff';
-      rc.ctx.font = '5px monospace';
+
+      rc.ctx.fillStyle = PALETTE[8]!; // white
+      rc.ctx.font = OVERFLOW_FONT;
       rc.ctx.textAlign = 'center';
       rc.ctx.textBaseline = 'middle';
       rc.ctx.fillText(`+${overflow}`, textX, textY);
