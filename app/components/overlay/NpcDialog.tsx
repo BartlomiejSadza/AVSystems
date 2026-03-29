@@ -12,63 +12,21 @@ export function NpcDialog({ message, visible, onDismiss }: NpcDialogProps) {
   if (!visible || !message) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '80px',
-        left: '16px',
-        zIndex: 50,
-        maxWidth: '400px',
-        // Entrance animation driven by CSS transitions —
-        // the element is mounted when visible=true so we use
-        // a CSS animation keyframe instead.
-        animation: 'npc-slide-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both',
-      }}
-    >
+    <div className="fixed bottom-20 left-4 z-50 max-w-[400px] [animation:npc-slide-in_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
       {/* Outer pixel border */}
-      <div
-        style={{
-          backgroundColor: '#1D2B53',
-          border: '2px solid #7E2553',
-          padding: '12px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-        }}
-      >
+      <div className="flex flex-col gap-2 border-2 border-[#7E2553] bg-[#1D2B53] p-3">
         {/* Header row: portrait + close button */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: '8px',
-          }}
-        >
+        <div className="flex items-start justify-between gap-2">
           {/* NPC Portrait */}
           <div
-            style={{
-              width: 24,
-              height: 24,
-              flexShrink: 0,
-              backgroundColor: '#7E2553',
-              border: '2px solid #C2C3C7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '14px',
-              imageRendering: 'pixelated',
-            }}
+            className="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-[#C2C3C7] bg-[#7E2553] text-sm [image-rendering:pixelated]"
             aria-label="Officer Pixel portrait"
           >
             {'👮'}
           </div>
 
           {/* Officer label */}
-          <span
-            className="font-[family-name:var(--font-pixel)] text-[8px] leading-tight uppercase tracking-widest"
-            style={{ color: '#C2C3C7', flex: 1, alignSelf: 'center' }}
-          >
+          <span className="flex-1 self-center font-[family-name:var(--font-pixel)] text-[8px] uppercase leading-tight tracking-widest text-[#C2C3C7]">
             Officer Pixel
           </span>
 
@@ -77,29 +35,14 @@ export function NpcDialog({ message, visible, onDismiss }: NpcDialogProps) {
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss"
-            style={{
-              backgroundColor: '#7E2553',
-              border: '2px solid #C2C3C7',
-              color: '#FFF1E8',
-              width: 44,
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-            className="font-[family-name:var(--font-pixel)] text-[10px] leading-none"
+            className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border-2 border-[#C2C3C7] bg-[#7E2553] font-[family-name:var(--font-pixel)] text-[10px] leading-none text-[#FFF1E8]"
           >
             X
           </button>
         </div>
 
         {/* Message */}
-        <p
-          className="font-[family-name:var(--font-pixel)] text-[10px] leading-relaxed"
-          style={{ color: '#FFF1E8', margin: 0 }}
-        >
+        <p className="m-0 font-[family-name:var(--font-pixel)] text-[10px] leading-relaxed text-[#FFF1E8]">
           {message}
         </p>
       </div>

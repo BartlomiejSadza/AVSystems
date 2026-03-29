@@ -14,56 +14,22 @@ export function Tooltip({ content, x, y }: TooltipProps) {
   return (
     <div
       role="tooltip"
+      className="pointer-events-none absolute z-50 max-w-[200px] -translate-x-1/2"
       style={{
-        position: 'absolute',
         left: x,
         top: y,
-        // Offset upward so the tail points at target below
         transform: 'translate(-50%, calc(-100% - 10px))',
-        zIndex: 50,
-        maxWidth: '200px',
-        pointerEvents: 'none',
       }}
     >
       {/* Bubble body */}
-      <div
-        style={{
-          backgroundColor: '#1D2B53',
-          border: '2px solid #7E2553',
-          color: '#FFF1E8',
-          padding: '4px 8px',
-          imageRendering: 'pixelated',
-        }}
-        className="font-[family-name:var(--font-pixel)] text-[10px] leading-tight"
-      >
+      <div className="border-2 border-[#7E2553] bg-[#1D2B53] px-2 py-1 font-[family-name:var(--font-pixel)] text-[10px] leading-tight text-[#FFF1E8] [image-rendering:pixelated]">
         {content}
       </div>
 
       {/* Tail triangle pointing downward */}
-      <div
-        style={{
-          width: 0,
-          height: 0,
-          borderLeft: '6px solid transparent',
-          borderRight: '6px solid transparent',
-          borderTop: '6px solid #7E2553',
-          margin: '0 auto',
-          position: 'relative',
-        }}
-      >
+      <div className="relative mx-auto h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-[#7E2553]">
         {/* Inner fill triangle to match background */}
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: '4px solid transparent',
-            borderRight: '4px solid transparent',
-            borderTop: '4px solid #1D2B53',
-            position: 'absolute',
-            top: -7,
-            left: -4,
-          }}
-        />
+        <div className="absolute -left-1 -top-[7px] h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-[#1D2B53]" />
       </div>
     </div>
   );

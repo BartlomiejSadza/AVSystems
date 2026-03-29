@@ -1,6 +1,7 @@
 import type { AnimationState } from './types';
 
 export const TRANSITION_DURATION = 300; // ms
+export const PHASE_FLASH_FADE_MS = 300;
 
 /** Create initial animation state (at rest, no active animations). */
 export function createInitialAnimationState(): AnimationState {
@@ -72,7 +73,7 @@ export function updateAnimationState(state: AnimationState, deltaTime: number): 
 
   // Fade out phase transition flash
   if (state.phaseFlashAlpha > 0) {
-    state.phaseFlashAlpha = Math.max(0, state.phaseFlashAlpha - deltaTime / 300);
+    state.phaseFlashAlpha = Math.max(0, state.phaseFlashAlpha - deltaTime / PHASE_FLASH_FADE_MS);
   }
 
   return state;
