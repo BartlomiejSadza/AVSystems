@@ -7,6 +7,7 @@ import {
   AMBULANCE_EAST,
   AMBULANCE_WEST,
 } from '../sprites/vehicles';
+
 import { PALETTE, type SpriteDefinition } from '../sprites/types';
 
 const OVERFLOW_FONT = '5px monospace';
@@ -167,6 +168,7 @@ export function drawVehicles(rc: RenderContext): void {
       }
 
       rc.ctx.save();
+
       rc.ctx.fillStyle = PALETTE[8]!; // white
       rc.ctx.font = OVERFLOW_FONT;
       rc.ctx.textAlign = 'center';
