@@ -1,8 +1,8 @@
 # Subtasks: 09-technical-writer
 
-- [ ] S1: Zebranie materialow technicznych i raportow
-- [ ] S2: Aktualizacja README (algorytm, uruchomienie, testy)
-- [ ] S3: Dodanie sekcji ograniczen i rozszerzen
-- [ ] S4: Smoke-test komend z README
-- [ ] S5: Uzupelnienie README-CHECKLIST
-- [ ] S6: Uzupelnienie HANDOFF i STATUS
+- [x] S1: Zebranie materialow technicznych i raportow
+- [x] S2: Aktualizacja README (algorytm, uruchomienie, testy)
+- [x] S3: Dodanie sekcji ograniczen i rozszerzen
+- [x] S4: Smoke-test komend z README
+- [x] S5: Uzupelnienie README-CHECKLIST
+- [x] S6: Uzupelnienie HANDOFF i STATUS
