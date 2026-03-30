@@ -1,83 +1,83 @@
-# Traffic Lights Simulation
+# Symulacja Sygnalizacji Świetlnej
 
-> A 4-way intersection traffic light simulator: feed it JSON commands, get back which vehicles cleared the intersection each tick.
+> Symulator ruchu na skrzyżowaniu 4-kierunkowym: przekaż komendy JSON, otrzymaj listę pojazdów opuszczających skrzyżowanie w każdym kroku.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
-[![Tests](https://img.shields.io/badge/tests-1095%2B%20passing-brightgreen.svg)](#run-tests)
+[![Tests](https://img.shields.io/badge/testy-1138%2B%20zaliczone-brightgreen.svg)](#uruchamianie-testów)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Why This Exists
+## Dlaczego to powstało?
 
-Traffic intersections require provably safe light sequencing — at no point should two conflicting directions be green at the same time. This simulator models a 4-way intersection with an adaptive phase-selection algorithm that maximises throughput while enforcing the collision-free safety invariant. It is designed as a pure domain engine: deterministic, fully tested, and completely independent from any GUI or I/O framework.
+Skrzyżowania wymagają sprawdzalnych, bezpiecznych sekwencji świateł — w żadnym momencie dwa kolizyjne kierunki nie mogą mieć zielonego światła. Ten symulator modeluje skrzyżowanie 4-kierunkowe z adaptacyjnym algorytmem wyboru fazy, który maksymalizuje przepustowość przy jednoczesnym zachowaniu niezmienników bezpieczeństwa. Został zaprojektowany jako czysty silnik domenowy: deterministyczny, w pełni przetestowany i całkowicie niezależny od interfejsu graficznego (GUI) czy frameworków I/O.
 
-## Quick Start
+## Szybki start
 
 ```bash
 pnpm simulate --input ./input.json --output ./output.json
 ```
 
-## Installation
+## Instalacja
 
-**Prerequisites:**
+**Wymagania wstępne:**
 
 - Node.js >= 22
 - pnpm >= 10
 
 ```bash
-# Clone the repository
+# Sklonuj repozytorium
 git clone https://github.com/your-org/traffic-lights-simulation.git
 cd traffic-lights-simulation
 
-# Install dependencies
+# Zainstaluj zależności
 pnpm install
 ```
 
-## CLI Usage
+## Użycie CLI
 
 ```bash
-pnpm simulate --input <path-to-input.json> --output <path-to-output.json>
+pnpm simulate --input <sciezka-do-input.json> --output <sciezka-do-output.json>
 ```
 
-**Options:**
+**Opcje:**
 
-| Flag              | Description                                   |
+| Flaga             | Opis                                          |
 | ----------------- | --------------------------------------------- |
-| `--input <path>`  | Path to the input JSON file (required)        |
-| `--output <path>` | Path to write the output JSON file (required) |
-| `--help`          | Print usage information                       |
+| `--input <path>`  | Ścieżka do wejściowego pliku JSON (wymagane)  |
+| `--output <path>` | Ścieżka do wyjściowego pliku JSON (wymagane) |
+| `--help`          | Wyświetl informacje o użyciu                  |
 
-**Example with the included sample files:**
+**Przykład z dołączonymi plikami próbkowymi:**
 
 ```bash
 pnpm simulate --input ./input.json --output ./output.json
 ```
 
-On success, the CLI prints:
+Po sukcesie CLI wypisze:
 
 ```
 Simulation complete. 4 step(s) written to "./output.json".
 ```
 
-## Input / Output Format
+## Format Wejścia / Wyjścia
 
-### Input
+### Wejście
 
-The input file contains a JSON object with a `commands` array. Two command types are supported.
+Plik wejściowy zawiera obiekt JSON z tablicą `commands`. Obsługiwane są dwa typy komend.
 
-**`addVehicle`** — places a vehicle in the queue for its starting road:
+**`addVehicle`** — umieszcza pojazd w kolejce dla drogi wjazdowej:
 
-| Field       | Type                                     | Required | Description                                                                                                    |
-| ----------- | ---------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `type`      | `"addVehicle"`                           | yes      | Command discriminator                                                                                          |
-| `vehicleId` | `string`                                 | yes      | Unique vehicle identifier                                                                                      |
-| `startRoad` | `"north" \| "south" \| "east" \| "west"` | yes      | Road the vehicle enters from                                                                                   |
-| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | yes      | Road the vehicle exits onto                                                                                    |
-| `priority`  | `"normal" \| "emergency"`                | no       | Defaults to `"normal"`. Emergency vehicles jump to the front of their road queue and force their phase active. |
+| Pole        | Typ                                      | Wymagane | Opis                                                                                                                               |
+| ----------- | ---------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `type`      | `"addVehicle"`                           | tak      | Dyskryminator komendy                                                                                                              |
+| `vehicleId` | `string`                                 | tak      | Unikalny identyfikator pojazdu                                                                                                     |
+| `startRoad` | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, z której pojazd wjeżdża                                                                                                     |
+| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, na którą pojazd zjeżdża                                                                                                     |
+| `priority`  | `"normal" \| "emergency"`                | nie      | Domyślnie `"normal"`. Pojazdy uprzywilejowane przeskakują na początek kolejki i wymuszają aktywację swojej fazy sygnalizacji. |
 
-**`step`** — advances the simulation by one tick. The engine selects the active phase, dequeues the front vehicle from each road in that phase, and records which vehicles left.
+**`step`** — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
 
-**Full example (`input.json`):**
+**Pełny przykład (`input.json`):**
 
 ```json
 {
@@ -94,15 +94,15 @@ The input file contains a JSON object with a `commands` array. Two command types
 }
 ```
 
-### Output
+### Wyjście
 
-The output file contains a JSON object with a `stepStatuses` array — one entry per `step` command, in order.
+Plik wyjściowy zawiera obiekt JSON z tablicą `stepStatuses` — jeden wpis na każdą komendę `step`, w kolejności występowania.
 
-| Field          | Type       | Description                                                                                  |
-| -------------- | ---------- | -------------------------------------------------------------------------------------------- |
-| `leftVehicles` | `string[]` | IDs of vehicles that cleared the intersection this tick. Empty array if no vehicle departed. |
+| Pole           | Typ        | Opis                                                                                                          |
+| -------------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
+| `leftVehicles` | `string[]` | Identyfikatory pojazdów, które opuściły skrzyżowanie w tym kroku. Pusta tablica, jeśli żaden pojazd nie odjechał. |
 
-**Full example (`output.json`):**
+**Pełny przykład (`output.json`):**
 
 ```json
 {
@@ -115,171 +115,102 @@ The output file contains a JSON object with a `stepStatuses` array — one entry
 }
 ```
 
-> Note: `vehicle21` in the sample output is a vehicle pre-loaded in the state before the example commands run.
+> Uwaga: `vehicle21` w przykładowym wyjściu to pojazd załadowany do stanu przed uruchomieniem przykładowych komend.
 
-## Algorithm
+## Algorytm i Projekt Systemu
 
-### Adaptive Phase Selection
+Silnik symulacji to deterministyczny automat skończony oparty na krokach czasowych (tick-based state machine), zarządzający skrzyżowaniem 4-kierunkowym. Priorytetyzuje bezpieczeństwo (unikanie kolizji) i wydajność (przepustowość) poprzez wielowarstwową logikę sterowania.
 
-The intersection operates with two mutually exclusive phases:
+### 1. Klasyfikacja Ruchu
+Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą arytmetyki modularnej:
+`d = (endIndex - startIndex + 4) % 4`
 
-| Phase         | Roads with green light |
-| ------------- | ---------------------- |
-| `NS_STRAIGHT` | north + south          |
-| `EW_STRAIGHT` | east + west            |
+- `d = 2`: **Prosto** (Obsługiwane przez fazy `THROUGH`)
+- `d = 3`: **Skręt w lewo** (Obsługiwane przez fazy `LEFT`)
+- `d = 1`: **Skręt w prawo** (Obsługiwane przez fazy `THROUGH`)
+- `d = 0`: **Zawracanie** (Obsługiwane przez fazy `LEFT`)
 
-Each `step` command, the engine selects one phase using this algorithm:
+### 2. Chronione Fazy Sygnalizacji
+Kontroler przełącza się między czterema chronionymi fazami w kanonicznej kolejności pierścienia:
+1. `NS_THROUGH` (Północ/Południe Prosto i w Prawo)
+2. `NS_LEFT` (Północ/Południe w Lewo i Zawracanie)
+3. `EW_THROUGH` (Wschód/Zachód Prosto i w Prawo)
+4. `EW_LEFT` (Wschód/Zachód w Lewo i Zawracanie)
 
-1. **Emergency override.** If any road has an emergency vehicle at the front of its queue, the phase containing that road is forced active immediately. This ensures emergency vehicles are never delayed by normal traffic.
+**Niezmiennik bezpieczeństwa:** Tylko jedna oś (NS lub EW) może mieć światło inne niż czerwone w danym momencie. Silnik wymusza to poprzez przechodzenie przez segmenty `YELLOW` (żółte) i `ALL_RED` (wszystkie czerwone).
 
-2. **Weighted load comparison.** For each phase, the engine computes the combined weighted queue length across its roads (`weightedLoad = Σ queueLength(road) × weight(road)`). The phase with the higher weighted load wins.
+### 3. Adaptacyjna Logika Wyboru
+Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną fazę `GREEN` za pomocą algorytmu ważonego zapotrzebowania:
 
-3. **Tie-breaking.** When both phases have equal load (including when all queues are empty), the engine alternates: it picks the phase whose index differs from the last active phase. At simulation start, phase 0 (`NS_STRAIGHT`) goes first.
+- **Obliczanie zapotrzebowania:** Dla każdej fazy zapotrzebowanie $D$ jest obliczane jako:
+  $D_{faza} = \sum_{droga \in faza} (dlugoscKolejki_{droga} \times waga_{droga})$
+- **Wybór zwycięzcy:** Wygrywa faza o najwyższym zapotrzebowaniu.
+- **Rozstrzyganie remisów:** Jeśli zapotrzebowania są równe (np. wszystkie wynoszą zero), silnik używa **algorytmu Round-Robin**. Wybiera następną fazę w pierścieniu względem `lastServedPhaseIndex`.
+- **Pomijanie pustych faz:** Jeśli opcja `skipEmptyPhases` jest włączona, kontroler automatycznie pominie fazy z zerowym zapotrzebowaniem, natychmiast przechodząc do kolejnej uprawnionej fazy.
 
-**Why adaptive?** A fixed round-robin wastes green time when one axis is empty and the other has queued vehicles. Adaptive selection prioritises whichever direction has more vehicles, reducing average wait time.
+### 4. Priorytetyzacja Pojazdów Uprzywilejowanych
+Pojazdy uprzywilejowane (`priority: "emergency"`) uruchamiają specjalną ścieżkę nadpisującą standardową logikę:
+- **Wskakiwanie do kolejki:** Pojazdy uprzywilejowane są wstawiane na początek swoich kolejek (zachowując FIFO tylko względem innych pojazdów uprzywilejowanych).
+- **Wymuszanie fazy:** Jeśli pojazd uprzywilejowany dotrze na czoło kolejki, logika `reconcileEmergencyBeforeDischarge` identyfikuje wymaganą fazę. Jeśli aktywna faza jest kolizyjna, kontroler natychmiast inicjuje przejście (Zielone -> Żółte -> Wszystkie Czerwone), aby obsłużyć pojazd uprzywilejowany tak szybko, jak to możliwe.
 
-**Road priority weights** (optional, programmatic API only) let you bias phase selection — for example, giving a bus lane weight `2.0` means that road is treated as if it had twice as many vehicles when comparing phase loads.
+### 5. Maszyna Stanów Przejść
+Każda faza sygnalizacji składa się z trzech segmentów:
+- **GREEN (Zielone):** Pojazdy opuszczają skrzyżowanie. Trwa od `minGreenTicks` do `maxGreenTicks`. Jeśli zapotrzebowanie spadnie do zera po upływie `minGreenTicks`, faza kończy się wcześniej.
+- **YELLOW (Żółte):** Segment ostrzegawczy. Żaden pojazd nie opuszcza skrzyżowania.
+- **ALL_RED (Wszystkie Czerwone):** Interwał oczyszczania. Wszystkie światła są czerwone, aby upewnić się, że skrzyżowanie jest puste przed zmianą osi ruchu.
 
-### Safety Invariant
+## Wydajność i Niezawodność
 
-The simulator enforces a structural safety guarantee: **no two conflicting directions are ever green at the same time**. North/south and east/west are the only two phase groups; they never overlap. This invariant is checked at runtime (`assertInvariants`) and is verified by 1095+ automated tests including property-based tests using fast-check.
+### Niezmienniki Bezpieczeństwa
+System utrzymuje zestaw **niezmienników bezpieczeństwa** sprawdzanych po każdej zmianie stanu:
+- **Kompletność:** Wszystkie 4 drogi muszą zawsze posiadać kolejkę.
+- **Unikalność:** ID pojazdu nie może istnieć w dwóch miejscach jednocześnie.
+- **Spójność:** Pojazdy muszą znajdować się w kolejce odpowiadającej ich drodze wjazdowej (`startRoad`).
+- **Brak Kolizji:** Aktywne zielone drogi muszą należeć do tej samej osi.
 
-### Transition Phases
+### Determinizm
+Symulacja jest **funkcją czystą** swoich komend wejściowych. Dla tej samej sekwencji komend `addVehicle` i `step`, silnik wygeneruje dokładnie taką samą tablicę `leftVehicles` za każdym razem, niezależnie od środowiska wykonawczego.
 
-Real-world intersections use amber and all-red clearance intervals between green phases. This simulation models those transitions as **instantaneous** — each `step` moves directly from one green phase to the next with no intermediate tick. The design prioritises simplicity and throughput for the simulation use case.
+## Możliwe Rozszerzenia
 
-## Run Tests
+- **Obsługa wielu pasów:** Modelowanie dedykowanych pasów do skrętu w lewo/prawo w ramach jednej drogi.
+- **Logika pieszych:** Integracja istniejących danych o pieszych NPC z czasem sygnalizacji.
+- **Czujniki pętli indukcyjnej:** Dodanie detektorów, które wyzwalają zmiany faz tylko przy fizycznej obecności pojazdów.
+- **Symulacja sieciowa:** Łączenie wielu instancji skrzyżowań w celu symulacji fali ruchu w siatce miejskiej.
+
+## Uruchamianie Testów
 
 ```bash
 pnpm test
 ```
 
-This runs 1095+ tests covering:
+Uruchamia ponad 1138 testów obejmujących:
+- Testy jednostkowe, integracyjne, regresyjne (fixture-based).
+- Testy niezmienników i bezpieczeństwa.
+- Testy oparte na właściwościach (property-based) przy użyciu `fast-check`.
+- Testy dymne (smoke tests) CLI.
 
-- Unit tests (queue, phase selection, engine, invariants, telemetry)
-- Contract tests (JSON schema validation via zod)
-- Integration tests (multi-command sequences)
-- Golden tests (input/output fixture regression)
-- Invariant tests (safety properties)
-- Property-based tests (fast-check randomised inputs)
-- End-to-end tests (CLI smoke tests)
-- Smoke tests
-
-**Additional test commands:**
-
-```bash
-pnpm test:watch      # Watch mode — re-runs on file changes
-pnpm test:coverage   # Generate coverage report
-pnpm typecheck       # TypeScript strict-mode check (no emit)
-```
-
-## Run Benchmarks
+## Benchmarking
 
 ```bash
 pnpm bench
 ```
 
-Benchmarks exercise the simulation engine at multiple scales: 100, 1 000, 10 000, and 100 000 commands. Typical result: **100 000 commands in ~9ms average**.
+Wyniki typowe: **100 000 komend w średnio ~9ms**.
 
-## GUI
+## Stos Technologiczny
 
-The project includes a pixel-art canvas-based GUI built with Next.js 15 and React 19. The GUI renders the 4-way intersection with animated traffic lights, moving vehicles, and NPC pedestrians.
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser. The GUI is a visual layer only — it calls the same pure simulator engine used by the CLI.
-
-## Programmatic API
-
-You can use the simulator directly from TypeScript without the CLI:
-
-```typescript
-import { simulate } from './src/simulator/engine.js';
-import type { Command } from './src/simulator/types.js';
-
-const commands: Command[] = [
-  { type: 'addVehicle', vehicleId: 'v1', startRoad: 'north', endRoad: 'south' },
-  { type: 'addVehicle', vehicleId: 'v2', startRoad: 'east', endRoad: 'west' },
-  { type: 'step' },
-  { type: 'step' },
-];
-
-const results = simulate(commands);
-// results[0].leftVehicles => ['v1']  (NS_STRAIGHT phase)
-// results[1].leftVehicles => ['v2']  (EW_STRAIGHT phase)
-```
-
-For telemetry data alongside step results:
-
-```typescript
-import { simulateWithTelemetry } from './src/simulator/engine.js';
-
-const { stepStatuses, telemetry } = simulateWithTelemetry(commands);
-```
-
-## Architecture
-
-```
-src/simulator/   # Pure domain logic — no I/O, no framework dependencies
-  engine.ts      # simulate() and simulateWithTelemetry() entry points
-  phase.ts       # Phase definitions and adaptive selectPhase() algorithm
-  queue.ts       # Per-road FIFO queues with emergency-priority insertion
-  invariants.ts  # Runtime safety assertion checks
-  types.ts       # Core domain types (Vehicle, Command, StepStatus, etc.)
-  telemetry.ts   # Optional per-step metrics accumulator
-
-src/io/          # JSON parsing (input) and serialisation (output)
-scripts/         # CLI entry point (simulate.ts) and benchmarks (bench.ts)
-app/             # Next.js GUI (pages, canvas renderer, React components)
-specs/           # Spec Control Tower — single source of truth for project state
-```
-
-Key constraint: `src/simulator/` has zero dependencies on the GUI layer, I/O layer, or any external framework. It accepts plain TypeScript objects and returns plain TypeScript objects.
-
-## Limitations and Possible Extensions
-
-### Current Limitations
-
-- **Two phases only.** The simulator models straight-through movement on two axes (NS and EW). Left-turn and right-turn dedicated phases are not implemented.
-- **One vehicle per road per step.** Each `step` dequeues at most one vehicle per road in the active phase. Real intersections may clear multiple vehicles per green cycle.
-- **Instantaneous transitions.** Amber and all-red clearance ticks are modelled as zero-duration. Adding explicit transition ticks would require changes to the phase state machine.
-- **No vehicle routing.** The `endRoad` field is stored but not used for routing decisions. All vehicles on a road are treated identically regardless of their destination.
-- **Single intersection.** The simulator models one isolated intersection. Multi-intersection coordination (green waves, coordinated signals) is out of scope.
-- **No persistence.** Simulation state is in-memory only. There is no checkpoint/resume mechanism.
-
-### Possible Extensions
-
-- **Turn phases.** Add `NS_LEFT_TURN` and `EW_LEFT_TURN` phases with protected left-turn signals.
-- **Variable green duration.** Allow a phase to hold for multiple ticks based on queue depth rather than switching every tick.
-- **Explicit transition ticks.** Model amber and all-red intervals as distinct simulation ticks.
-- **Multi-intersection network.** Connect multiple simulator instances to model arterial roads with coordinated signal timing.
-- **Persistent state.** Serialise and resume simulation state from a checkpoint file.
-- **Metrics dashboard.** Surface per-road wait times, average throughput, and phase utilisation via the telemetry API.
-
-## Tech Stack
-
-| Tool              | Version        | Role                   |
+| Narzędzie         | Wersja         | Rola                   |
 | ----------------- | -------------- | ---------------------- |
-| Next.js           | >=15           | GUI framework          |
-| TypeScript        | >=5.6 (strict) | Language               |
-| pnpm              | >=10           | Package manager        |
-| Node.js           | >=22           | Runtime                |
-| Vitest            | >=2            | Test runner            |
-| fast-check        | >=3            | Property-based testing |
-| zod               | >=3            | JSON schema validation |
-| tinybench         | >=2            | Performance benchmarks |
-| ESLint + Prettier | latest         | Linting and formatting |
-| GitHub Actions    | —              | CI                     |
+| Next.js           | >=15           | Framework GUI          |
+| TypeScript        | >=5.6 (strict) | Język                  |
+| pnpm              | >=10           | Menedżer pakietów      |
+| Node.js           | >=22           | Środowisko uruchomieniowe |
+| Vitest            | >=2            | Runner testowy         |
+| fast-check        | >=3            | Testy property-based   |
+| zod               | >=3            | Walidacja schematów JSON |
+| tinybench         | >=2            | Benchmarki wydajności  |
 
-## Contributing
-
-1. Create a short-lived branch from `main`.
-2. Follow conventional commits: `feat:`, `fix:`, `test:`, `docs:`, `chore:`.
-3. Every PR requires a description, test plan, test results, and green CI.
-4. Spec documents are written in Polish. Code, commits, and documentation are in English.
-
-## License
+## Licencja
 
 MIT
