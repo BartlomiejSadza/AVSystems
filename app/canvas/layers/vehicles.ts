@@ -10,7 +10,7 @@ import {
 
 import { PALETTE, type SpriteDefinition } from '../sprites/types';
 
-const OVERFLOW_FONT = '5px monospace';
+const OVERFLOW_FONT = '7px monospace';
 
 // Vehicle direction mapping: vehicles in the north queue are approaching from
 // the north, so they face south (toward the intersection).
@@ -39,27 +39,27 @@ interface RoadConfig {
 
 const ROAD_CONFIG: Record<string, RoadConfig> = {
   north: {
-    maxVisible: 8,
-    slotX: (_n) => 154,
-    slotY: (n) => 90 - n * 10,
+    maxVisible: 4, // fewer visible since cars are bigger and roads start at y=0
+    slotX: (_n) => 150,
+    slotY: (n) => 82 - n * 20, // slot 0 near intersection, going up
     axis: 'vertical',
   },
   south: {
-    maxVisible: 8,
-    slotX: (_n) => 166,
-    slotY: (n) => 130 + n * 10,
+    maxVisible: 4,
+    slotX: (_n) => 170,
+    slotY: (n) => 158 + n * 20, // slot 0 near intersection, going down
     axis: 'vertical',
   },
   west: {
-    maxVisible: 6,
-    slotX: (n) => 132 - n * 14,
+    maxVisible: 5,
+    slotX: (n) => 118 - n * 22,
     slotY: (_n) => 110,
     axis: 'horizontal',
   },
   east: {
-    maxVisible: 6,
-    slotX: (n) => 174 + n * 14,
-    slotY: (_n) => 122,
+    maxVisible: 5,
+    slotX: (n) => 202 + n * 22,
+    slotY: (_n) => 130,
     axis: 'horizontal',
   },
 };
@@ -157,14 +157,14 @@ export function drawVehicles(rc: RenderContext): void {
       let textX = baseX;
       let textY = baseY;
       if (road === 'north') {
-        textY = baseY - 10;
+        textY = baseY - 20;
       } else if (road === 'south') {
-        textY = baseY + 10;
+        textY = baseY + 20;
       } else if (road === 'west') {
-        textX = baseX - 14;
+        textX = baseX - 22;
       } else {
         // east
-        textX = baseX + 14;
+        textX = baseX + 22;
       }
 
       rc.ctx.save();
