@@ -20,171 +20,231 @@ const AMB = 9; // ambulance body (red)
 // ---------------------------------------------------------------------------
 
 /**
- * North-facing car sprite (8 × 12).
+ * North-facing car sprite (12 × 18).
  *
  * Layout (B = body, T = tire, W = windshield, R = taillight, . = 0):
- *   Row  0:  ..BBBB..
- *   Row  1:  .BBBBBB.
- *   Row  2:  TBBBBBBT
- *   Row  3:  BWWWWWWB
- *   Row  4:  BWWWWWWB
- *   Row  5:  BBBBBBBB
- *   Row  6:  BBBBBBBB
- *   Row  7:  BBBBBBBB
- *   Row  8:  TBBBBBBT
- *   Row  9:  .BBBBBB.
- *   Row 10:  .BBBBBB.
- *   Row 11:  ..BRRB..
+ *   Row  0:  ...BBBBBB...    (hood, rounded)
+ *   Row  1:  ..BBBBBBBB..
+ *   Row  2:  .BBBBBBBBBB.
+ *   Row  3:  TBBBBBBBBBT     (front tires)
+ *   Row  4:  TBBBBBBBBBBT
+ *   Row  5:  BWWWWWWWWWWB    (windshield, 3 rows)
+ *   Row  6:  BWWWWWWWWWWB
+ *   Row  7:  BWWWWWWWWWWB
+ *   Row  8:  BBBBBBBBBBBB    (body, 4 rows)
+ *   Row  9:  BBBBBBBBBBBB
+ *   Row 10:  BBBBBBBBBBBB
+ *   Row 11:  BBBBBBBBBBBB
+ *   Row 12:  TBBBBBBBBBT     (rear tires)
+ *   Row 13:  TBBBBBBBBBBT
+ *   Row 14:  .BBBBBBBBBB.
+ *   Row 15:  .BBBBBBBBBB.
+ *   Row 16:  ..BBBBBBBB..
+ *   Row 17:  ...BRRRRB...    (taillights)
  */
 function createCarNorth(B: number): SpriteDefinition {
   // prettier-ignore
   const frame: number[] = [
-    // row 0
-    0, 0, B, B, B, B, 0, 0,
-    // row 1
-    0, B, B, B, B, B, B, 0,
-    // row 2
-    T, B, B, B, B, B, B, T,
-    // row 3
-    B, W, W, W, W, W, W, B,
-    // row 4
-    B, W, W, W, W, W, W, B,
-    // row 5
-    B, B, B, B, B, B, B, B,
-    // row 6
-    B, B, B, B, B, B, B, B,
-    // row 7
-    B, B, B, B, B, B, B, B,
-    // row 8
-    T, B, B, B, B, B, B, T,
-    // row 9
-    0, B, B, B, B, B, B, 0,
-    // row 10
-    0, B, B, B, B, B, B, 0,
-    // row 11
-    0, 0, B, R, R, B, 0, 0,
+    // row 0  ...BBBBBB...
+    0, 0, 0, B, B, B, B, B, B, 0, 0, 0,
+    // row 1  ..BBBBBBBB..
+    0, 0, B, B, B, B, B, B, B, B, 0, 0,
+    // row 2  .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 3  TBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, T, 0,
+    // row 4  TBBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, B, T,
+    // row 5  BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 6  BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 7  BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 8  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 9  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 10 BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 11 BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 12 TBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, T, 0,
+    // row 13 TBBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, B, T,
+    // row 14 .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 15 .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 16 ..BBBBBBBB..
+    0, 0, B, B, B, B, B, B, B, B, 0, 0,
+    // row 17 ...BRRRRB...
+    0, 0, 0, B, R, R, R, R, B, 0, 0, 0,
   ];
-  return { name: `car_north_${B}`, width: 8, height: 12, frames: [frame], frameDuration: 0 };
+  return { name: `car_north_${B}`, width: 12, height: 18, frames: [frame], frameDuration: 0 };
 }
 
 /**
- * South-facing car sprite (8 × 12) — vertical mirror of north.
+ * South-facing car sprite (12 × 18) — vertical mirror of north.
  *
  * Layout:
- *   Row  0:  ..BRRB..
- *   Row  1:  .BBBBBB.
- *   Row  2:  .BBBBBB.
- *   Row  3:  TBBBBBBT
- *   Row  4:  BBBBBBBB
- *   Row  5:  BBBBBBBB
- *   Row  6:  BBBBBBBB
- *   Row  7:  BWWWWWWB
- *   Row  8:  BWWWWWWB
- *   Row  9:  TBBBBBBT
- *   Row 10:  .BBBBBB.
- *   Row 11:  ..BBBB..
+ *   Row  0:  ...BRRRRB...    (taillights)
+ *   Row  1:  ..BBBBBBBB..
+ *   Row  2:  .BBBBBBBBBB.
+ *   Row  3:  TBBBBBBBBBT
+ *   Row  4:  TBBBBBBBBBBT
+ *   Row  5:  BBBBBBBBBBBB
+ *   Row  6:  BBBBBBBBBBBB
+ *   Row  7:  BBBBBBBBBBBB
+ *   Row  8:  BBBBBBBBBBBB
+ *   Row  9:  BWWWWWWWWWWB
+ *   Row 10:  BWWWWWWWWWWB
+ *   Row 11:  BWWWWWWWWWWB
+ *   Row 12:  TBBBBBBBBBT
+ *   Row 13:  TBBBBBBBBBBT
+ *   Row 14:  .BBBBBBBBBB.
+ *   Row 15:  .BBBBBBBBBB.
+ *   Row 16:  ..BBBBBBBB..
+ *   Row 17:  ...BBBBBB...
  */
 function createCarSouth(B: number): SpriteDefinition {
   // prettier-ignore
   const frame: number[] = [
-    // row 0
-    0, 0, B, R, R, B, 0, 0,
-    // row 1
-    0, B, B, B, B, B, B, 0,
-    // row 2
-    0, B, B, B, B, B, B, 0,
-    // row 3
-    T, B, B, B, B, B, B, T,
-    // row 4
-    B, B, B, B, B, B, B, B,
-    // row 5
-    B, B, B, B, B, B, B, B,
-    // row 6
-    B, B, B, B, B, B, B, B,
-    // row 7
-    B, W, W, W, W, W, W, B,
-    // row 8
-    B, W, W, W, W, W, W, B,
-    // row 9
-    T, B, B, B, B, B, B, T,
-    // row 10
-    0, B, B, B, B, B, B, 0,
-    // row 11
-    0, 0, B, B, B, B, 0, 0,
+    // row 0  ...BRRRRB...
+    0, 0, 0, B, R, R, R, R, B, 0, 0, 0,
+    // row 1  ..BBBBBBBB..
+    0, 0, B, B, B, B, B, B, B, B, 0, 0,
+    // row 2  .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 3  TBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, T, 0,
+    // row 4  TBBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, B, T,
+    // row 5  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 6  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 7  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 8  BBBBBBBBBBBB
+    B, B, B, B, B, B, B, B, B, B, B, B,
+    // row 9  BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 10 BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 11 BWWWWWWWWWWB
+    B, W, W, W, W, W, W, W, W, W, W, B,
+    // row 12 TBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, T, 0,
+    // row 13 TBBBBBBBBBBT
+    T, B, B, B, B, B, B, B, B, B, B, T,
+    // row 14 .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 15 .BBBBBBBBBB.
+    0, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 16 ..BBBBBBBB..
+    0, 0, B, B, B, B, B, B, B, B, 0, 0,
+    // row 17 ...BBBBBB...
+    0, 0, 0, B, B, B, B, B, B, 0, 0, 0,
   ];
-  return { name: `car_south_${B}`, width: 8, height: 12, frames: [frame], frameDuration: 0 };
+  return { name: `car_south_${B}`, width: 12, height: 18, frames: [frame], frameDuration: 0 };
 }
 
 /**
- * East-facing car sprite (12 × 8).
+ * East-facing car sprite (18 × 12).
  *
  * Layout (front = right side, taillights = left side):
- *   Row 0:  ......TBBT..
- *   Row 1:  RR.BBBBBBBB.
- *   Row 2:  RBBBBBBBBBBT
- *   Row 3:  .BBBBBBBWWB.
- *   Row 4:  .BBBBBBBWWB.
- *   Row 5:  RBBBBBBBBBBT
- *   Row 6:  RR.BBBBBBBB.
- *   Row 7:  ......TBBT..
+ *   Row  0:  ..........TTBBBB....
+ *   Row  1:  ..RRBBBBBBBBBBBBB...
+ *   Row  2:  .RBBBBBBBBBBBBBBBT..
+ *   Row  3:  .RBBBBBBBBBBBBBBBBT.
+ *   Row  4:  ..BBBBBBBBBBBWWWBB..
+ *   Row  5:  ..BBBBBBBBBBBWWWBB..
+ *   Row  6:  ..BBBBBBBBBBBWWWBB..
+ *   Row  7:  .RBBBBBBBBBBBBBBBBT.
+ *   Row  8:  .RBBBBBBBBBBBBBBBT..
+ *   Row  9:  ..RRBBBBBBBBBBBBB...
+ *   Row 10:  ..........TTBBBB....
+ *   Row 11:  ..................
  */
 function createCarEast(B: number): SpriteDefinition {
   // prettier-ignore
   const frame: number[] = [
     // row 0
-    0, 0, 0, 0, 0, 0, T, B, B, T, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, T, T, B, B, B, B, 0, 0,
     // row 1
-    R, R, 0, B, B, B, B, B, B, B, B, 0,
+    0, 0, R, R, B, B, B, B, B, B, B, B, B, B, B, B, B, 0,
     // row 2
-    R, B, B, B, B, B, B, B, B, B, B, T,
+    0, R, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, T,
     // row 3
-    0, B, B, B, B, B, B, B, W, W, B, 0,
+    0, R, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, T,
     // row 4
-    0, B, B, B, B, B, B, B, W, W, B, 0,
+    0, 0, B, B, B, B, B, B, B, B, B, B, B, W, W, W, B, 0,
     // row 5
-    R, B, B, B, B, B, B, B, B, B, B, T,
+    0, 0, B, B, B, B, B, B, B, B, B, B, B, W, W, W, B, 0,
     // row 6
-    R, R, 0, B, B, B, B, B, B, B, B, 0,
+    0, 0, B, B, B, B, B, B, B, B, B, B, B, W, W, W, B, 0,
     // row 7
-    0, 0, 0, 0, 0, 0, T, B, B, T, 0, 0,
+    0, R, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, T,
+    // row 8
+    0, R, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, T,
+    // row 9
+    0, 0, R, R, B, B, B, B, B, B, B, B, B, B, B, B, B, 0,
+    // row 10
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, T, T, B, B, B, B, 0, 0,
+    // row 11
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
-  return { name: `car_east_${B}`, width: 12, height: 8, frames: [frame], frameDuration: 0 };
+  return { name: `car_east_${B}`, width: 18, height: 12, frames: [frame], frameDuration: 0 };
 }
 
 /**
- * West-facing car sprite (12 × 8) — horizontal mirror of east.
+ * West-facing car sprite (18 × 12) — horizontal mirror of east.
  *
  * Layout (front = left side, taillights = right side):
- *   Row 0:  ..TBBT......
- *   Row 1:  .BBBBBBBB.RR
- *   Row 2:  TBBBBBBBBBR.
- *   Row 3:  .BWWBBBBBBB.
- *   Row 4:  .BWWBBBBBBB.
- *   Row 5:  TBBBBBBBBBBR
- *   Row 6:  .BBBBBBBB.RR
- *   Row 7:  ..TBBT......
+ *   Row  0:  ....BBBBTT..........
+ *   Row  1:  ...BBBBBBBBBBBBBBRR.
+ *   Row  2:  ..TBBBBBBBBBBBBBBBBR
+ *   Row  3:  .TBBBBBBBBBBBBBBBBR.
+ *   Row  4:  ..BBWWWBBBBBBBBBBB..
+ *   Row  5:  ..BBWWWBBBBBBBBBBB..
+ *   Row  6:  ..BBWWWBBBBBBBBBBB..
+ *   Row  7:  .TBBBBBBBBBBBBBBBBR.
+ *   Row  8:  ..TBBBBBBBBBBBBBBBBR
+ *   Row  9:  ...BBBBBBBBBBBBBBRR.
+ *   Row 10:  ....BBBBTT..........
+ *   Row 11:  ..................
  */
 function createCarWest(B: number): SpriteDefinition {
   // prettier-ignore
   const frame: number[] = [
     // row 0
-    0, 0, T, B, B, T, 0, 0, 0, 0, 0, 0,
+    0, 0, B, B, B, B, T, T, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     // row 1
-    0, B, B, B, B, B, B, B, B, 0, R, R,
+    0, B, B, B, B, B, B, B, B, B, B, B, B, B, R, R, 0, 0,
     // row 2
-    T, B, B, B, B, B, B, B, B, B, R, 0,
+    T, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, R, 0,
     // row 3
-    0, B, W, W, B, B, B, B, B, B, B, 0,
+    T, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, R, 0,
     // row 4
-    0, B, W, W, B, B, B, B, B, B, B, 0,
+    0, B, W, W, W, B, B, B, B, B, B, B, B, B, B, B, 0, 0,
     // row 5
-    T, B, B, B, B, B, B, B, B, B, B, R,
+    0, B, W, W, W, B, B, B, B, B, B, B, B, B, B, B, 0, 0,
     // row 6
-    0, B, B, B, B, B, B, B, B, 0, R, R,
+    0, B, W, W, W, B, B, B, B, B, B, B, B, B, B, B, 0, 0,
     // row 7
-    0, 0, T, B, B, T, 0, 0, 0, 0, 0, 0,
+    T, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, R, 0,
+    // row 8
+    T, B, B, B, B, B, B, B, B, B, B, B, B, B, B, B, R, 0,
+    // row 9
+    0, B, B, B, B, B, B, B, B, B, B, B, B, B, R, R, 0, 0,
+    // row 10
+    0, 0, B, B, B, B, T, T, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    // row 11
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
-  return { name: `car_west_${B}`, width: 12, height: 8, frames: [frame], frameDuration: 0 };
+  return { name: `car_west_${B}`, width: 18, height: 12, frames: [frame], frameDuration: 0 };
 }
 
 // ---------------------------------------------------------------------------
@@ -217,137 +277,181 @@ export const CAR_WEST_CREAM = createCarWest(16);
 // ---------------------------------------------------------------------------
 
 /**
- * Ambulance north (8 × 14).
+ * Ambulance north (12 × 21).
  *
- * Layout (B=9, F=flasher, W=windshield, T=tire, R=taillight=9, C=cross):
- *   Row  0:  ..FBBF..
- *   Row  1:  .BBBBBB.
- *   Row  2:  TBBBBBBT
- *   Row  3:  BWWWWWWB
- *   Row  4:  BBBBBBBB
- *   Row  5:  BB.CC.BB
- *   Row  6:  BBCCCCBB
- *   Row  7:  BB.CC.BB
- *   Row  8:  BBBBBBBB
- *   Row  9:  TBBBBBBT
- *   Row 10:  .BBBBBB.
- *   Row 11:  .BBBBBB.
- *   Row 12:  ..BRRB..
- *   Row 13:  ..BRRB..
+ * Layout (B=AMB=9, F=flasher, W=windshield, T=tire, R=taillight=9, C=cross):
+ *   Row  0:  ...FL.BB.FR...   (flashers at corners)
+ *   Row  1:  ..BBBBBBBBBB..
+ *   Row  2:  .BBBBBBBBBBBB.
+ *   Row  3:  TBBBBBBBBBBT     (front tires)
+ *   Row  4:  TBBBBBBBBBBBT
+ *   Row  5:  BWWWWWWWWWWB     (windshield, 2 rows)
+ *   Row  6:  BWWWWWWWWWWB
+ *   Row  7:  BBBBBBBBBBBB     (body)
+ *   Row  8:  BBBBBBBBBBBB
+ *   Row  9:  BBB.CCCC.BBB     (cross section)
+ *   Row 10:  BBBBCCCCBBBB
+ *   Row 11:  BBBBCCCCBBBB
+ *   Row 12:  BBB.CCCC.BBB
+ *   Row 13:  BBBBBBBBBBBB     (body)
+ *   Row 14:  BBBBBBBBBBBB
+ *   Row 15:  TBBBBBBBBBBT     (rear tires)
+ *   Row 16:  TBBBBBBBBBBBT
+ *   Row 17:  .BBBBBBBBBB.
+ *   Row 18:  .BBBBBBBBBB.
+ *   Row 19:  ..BRRRRRRB..     (taillights)
+ *   Row 20:  ..BRRRRRRB..
  *
  * Frame 0: left flasher = 13 (blue), right flasher = 22 (off)
  * Frame 1: left flasher = 22 (off),  right flasher = 13 (blue)
  */
 export const AMBULANCE_NORTH: SpriteDefinition = (() => {
   function makeFrame(fLeft: number, fRight: number): number[] {
+    const B = AMB;
     // prettier-ignore
     return [
-      // row 0  ..FBBF..
-      0, 0, fLeft, AMB, AMB, fRight, 0, 0,
-      // row 1  .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 2  TBBBBBBT
-      T, AMB, AMB, AMB, AMB, AMB, AMB, T,
-      // row 3  BWWWWWWB
-      AMB, W, W, W, W, W, W, AMB,
-      // row 4  BBBBBBBB
-      AMB, AMB, AMB, AMB, AMB, AMB, AMB, AMB,
-      // row 5  BB.CC.BB
-      AMB, AMB, 0, C, C, 0, AMB, AMB,
-      // row 6  BBCCCCBB
-      AMB, AMB, C, C, C, C, AMB, AMB,
-      // row 7  BB.CC.BB
-      AMB, AMB, 0, C, C, 0, AMB, AMB,
-      // row 8  BBBBBBBB
-      AMB, AMB, AMB, AMB, AMB, AMB, AMB, AMB,
-      // row 9  TBBBBBBT
-      T, AMB, AMB, AMB, AMB, AMB, AMB, T,
-      // row 10 .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 11 .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 12 ..BRRB..
-      0, 0, AMB, R, R, AMB, 0, 0,
-      // row 13 ..BRRB..
-      0, 0, AMB, R, R, AMB, 0, 0,
+      // row 0  ...FL.BB.FR...
+      0, 0, 0, fLeft, 0, B, B, 0, fRight, 0, 0, 0,
+      // row 1  ..BBBBBBBBBB..
+      0, 0, B, B, B, B, B, B, B, B, 0, 0,
+      // row 2  .BBBBBBBBBBBB.  (wait, width is 12, so 12 cols)
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 3  TBBBBBBBBBBT   (T at col 0 and col 10, col 11 = 0)
+      T, B, B, B, B, B, B, B, B, B, T, 0,
+      // row 4  TBBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, B, T,
+      // row 5  BWWWWWWWWWWB
+      B, W, W, W, W, W, W, W, W, W, W, B,
+      // row 6  BWWWWWWWWWWB
+      B, W, W, W, W, W, W, W, W, W, W, B,
+      // row 7  BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 8  BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 9  BBB.CCCC.BBB
+      B, B, B, 0, C, C, C, C, 0, B, B, B,
+      // row 10 BBBBCCCCBBBB
+      B, B, B, B, C, C, C, C, B, B, B, B,
+      // row 11 BBBBCCCCBBBB
+      B, B, B, B, C, C, C, C, B, B, B, B,
+      // row 12 BBB.CCCC.BBB
+      B, B, B, 0, C, C, C, C, 0, B, B, B,
+      // row 13 BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 14 BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 15 TBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, T, 0,
+      // row 16 TBBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, B, T,
+      // row 17 .BBBBBBBBBB.
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 18 .BBBBBBBBBB.
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 19 ..BRRRRRRB..
+      0, 0, B, R, R, R, R, R, B, 0, 0, 0,
+      // row 20 ..BRRRRRRB..
+      0, 0, B, R, R, R, R, R, B, 0, 0, 0,
     ];
   }
   return {
     name: 'ambulance_north',
-    width: 8,
-    height: 14,
+    width: 12,
+    height: 21,
     frames: [makeFrame(FB, FO), makeFrame(FO, FB)],
     frameDuration: 250,
   };
 })();
 
 /**
- * Ambulance south (8 × 14) — vertical mirror of north.
+ * Ambulance south (12 × 21) — vertical mirror of north.
  *
  * Layout:
- *   Row  0:  ..BRRB..
- *   Row  1:  ..BRRB..
- *   Row  2:  .BBBBBB.
- *   Row  3:  .BBBBBB.
- *   Row  4:  TBBBBBBT
- *   Row  5:  BBBBBBBB
- *   Row  6:  BB.CC.BB
- *   Row  7:  BBCCCCBB
- *   Row  8:  BB.CC.BB
- *   Row  9:  BBBBBBBB
- *   Row 10:  BWWWWWWB
- *   Row 11:  TBBBBBBT
- *   Row 12:  .BBBBBB.
- *   Row 13:  ..FBBF..
+ *   Row  0:  ..BRRRRRRB..     (taillights)
+ *   Row  1:  ..BRRRRRRB..
+ *   Row  2:  .BBBBBBBBBB.
+ *   Row  3:  .BBBBBBBBBB.
+ *   Row  4:  TBBBBBBBBBBT
+ *   Row  5:  TBBBBBBBBBBBT
+ *   Row  6:  BBBBBBBBBBBB
+ *   Row  7:  BBBBBBBBBBBB
+ *   Row  8:  BBB.CCCC.BBB
+ *   Row  9:  BBBBCCCCBBBB
+ *   Row 10:  BBBBCCCCBBBB
+ *   Row 11:  BBB.CCCC.BBB
+ *   Row 12:  BBBBBBBBBBBB
+ *   Row 13:  BBBBBBBBBBBB
+ *   Row 14:  BWWWWWWWWWWB
+ *   Row 15:  BWWWWWWWWWWB
+ *   Row 16:  TBBBBBBBBBBT
+ *   Row 17:  TBBBBBBBBBBBT
+ *   Row 18:  .BBBBBBBBBB.
+ *   Row 19:  ..BBBBBBBBBB..
+ *   Row 20:  ...FL.BB.FR...
  *
  * Frame 0: left flasher = 13, right = 22
  * Frame 1: left flasher = 22, right = 13
  */
 export const AMBULANCE_SOUTH: SpriteDefinition = (() => {
   function makeFrame(fLeft: number, fRight: number): number[] {
+    const B = AMB;
     // prettier-ignore
     return [
-      // row 0  ..BRRB..
-      0, 0, AMB, R, R, AMB, 0, 0,
-      // row 1  ..BRRB..
-      0, 0, AMB, R, R, AMB, 0, 0,
-      // row 2  .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 3  .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 4  TBBBBBBT
-      T, AMB, AMB, AMB, AMB, AMB, AMB, T,
-      // row 5  BBBBBBBB
-      AMB, AMB, AMB, AMB, AMB, AMB, AMB, AMB,
-      // row 6  BB.CC.BB
-      AMB, AMB, 0, C, C, 0, AMB, AMB,
-      // row 7  BBCCCCBB
-      AMB, AMB, C, C, C, C, AMB, AMB,
-      // row 8  BB.CC.BB
-      AMB, AMB, 0, C, C, 0, AMB, AMB,
-      // row 9  BBBBBBBB
-      AMB, AMB, AMB, AMB, AMB, AMB, AMB, AMB,
-      // row 10 BWWWWWWB
-      AMB, W, W, W, W, W, W, AMB,
-      // row 11 TBBBBBBT
-      T, AMB, AMB, AMB, AMB, AMB, AMB, T,
-      // row 12 .BBBBBB.
-      0, AMB, AMB, AMB, AMB, AMB, AMB, 0,
-      // row 13 ..FBBF..
-      0, 0, fLeft, AMB, AMB, fRight, 0, 0,
+      // row 0  ..BRRRRRRB..
+      0, 0, B, R, R, R, R, R, B, 0, 0, 0,
+      // row 1  ..BRRRRRRB..
+      0, 0, B, R, R, R, R, R, B, 0, 0, 0,
+      // row 2  .BBBBBBBBBB.
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 3  .BBBBBBBBBB.
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 4  TBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, T, 0,
+      // row 5  TBBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, B, T,
+      // row 6  BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 7  BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 8  BBB.CCCC.BBB
+      B, B, B, 0, C, C, C, C, 0, B, B, B,
+      // row 9  BBBBCCCCBBBB
+      B, B, B, B, C, C, C, C, B, B, B, B,
+      // row 10 BBBBCCCCBBBB
+      B, B, B, B, C, C, C, C, B, B, B, B,
+      // row 11 BBB.CCCC.BBB
+      B, B, B, 0, C, C, C, C, 0, B, B, B,
+      // row 12 BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 13 BBBBBBBBBBBB
+      B, B, B, B, B, B, B, B, B, B, B, B,
+      // row 14 BWWWWWWWWWWB
+      B, W, W, W, W, W, W, W, W, W, W, B,
+      // row 15 BWWWWWWWWWWB
+      B, W, W, W, W, W, W, W, W, W, W, B,
+      // row 16 TBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, T, 0,
+      // row 17 TBBBBBBBBBBBT
+      T, B, B, B, B, B, B, B, B, B, B, T,
+      // row 18 .BBBBBBBBBB.
+      0, B, B, B, B, B, B, B, B, B, B, 0,
+      // row 19 ..BBBBBBBB..
+      0, 0, B, B, B, B, B, B, B, B, 0, 0,
+      // row 20 ...FL.BB.FR...
+      0, 0, 0, fLeft, 0, B, B, 0, fRight, 0, 0, 0,
     ];
   }
   return {
     name: 'ambulance_south',
-    width: 8,
-    height: 14,
+    width: 12,
+    height: 21,
     frames: [makeFrame(FB, FO), makeFrame(FO, FB)],
     frameDuration: 250,
   };
 })();
 
 /**
- * Ambulance east (14 × 8) — derived by rotating north 90° clockwise.
+ * Ambulance east (21 × 12) — derived by rotating north 90° clockwise.
  *
  * Front (windshield) faces right; taillights on the left; flashers top-right/bottom-right.
  *
@@ -355,37 +459,42 @@ export const AMBULANCE_SOUTH: SpriteDefinition = (() => {
  * Frame 1: top flasher = 22 (off),  bottom flasher = 13 (blue)
  */
 export const AMBULANCE_EAST: SpriteDefinition = (() => {
-  // North frame grid (8 cols × 14 rows), using indices:
-  // new_east(r, c) = north(13 - c, r)   for r in [0..7], c in [0..13]
-  // We build the flat array row by row.
+  // North frame grid (12 cols × 21 rows)
+  // 90° CW rotation: new_east(r, c) = north(20 - c, r)
+  // new width = 21, new height = 12
 
   function makeFrameRotated(fLeft: number, fRight: number): number[] {
-    // Build north grid as 2D array [row][col]
     const B = AMB;
     const north: number[][] = [
-      [0, 0, fLeft, B, B, fRight, 0, 0], // row 0
-      [0, B, B, B, B, B, B, 0], // row 1
-      [T, B, B, B, B, B, B, T], // row 2
-      [B, W, W, W, W, W, W, B], // row 3
-      [B, B, B, B, B, B, B, B], // row 4
-      [B, B, 0, C, C, 0, B, B], // row 5
-      [B, B, C, C, C, C, B, B], // row 6
-      [B, B, 0, C, C, 0, B, B], // row 7
-      [B, B, B, B, B, B, B, B], // row 8
-      [T, B, B, B, B, B, B, T], // row 9
-      [0, B, B, B, B, B, B, 0], // row 10
-      [0, B, B, B, B, B, B, 0], // row 11
-      [0, 0, B, R, R, B, 0, 0], // row 12
-      [0, 0, B, R, R, B, 0, 0], // row 13
+      [0, 0, 0, fLeft, 0, B, B, 0, fRight, 0, 0, 0], // row 0
+      [0, 0, B, B, B, B, B, B, B, B, 0, 0], // row 1
+      [0, B, B, B, B, B, B, B, B, B, B, 0], // row 2
+      [T, B, B, B, B, B, B, B, B, B, T, 0], // row 3
+      [T, B, B, B, B, B, B, B, B, B, B, T], // row 4
+      [B, W, W, W, W, W, W, W, W, W, W, B], // row 5
+      [B, W, W, W, W, W, W, W, W, W, W, B], // row 6
+      [B, B, B, B, B, B, B, B, B, B, B, B], // row 7
+      [B, B, B, B, B, B, B, B, B, B, B, B], // row 8
+      [B, B, B, 0, C, C, C, C, 0, B, B, B], // row 9
+      [B, B, B, B, C, C, C, C, B, B, B, B], // row 10
+      [B, B, B, B, C, C, C, C, B, B, B, B], // row 11
+      [B, B, B, 0, C, C, C, C, 0, B, B, B], // row 12
+      [B, B, B, B, B, B, B, B, B, B, B, B], // row 13
+      [B, B, B, B, B, B, B, B, B, B, B, B], // row 14
+      [T, B, B, B, B, B, B, B, B, B, T, 0], // row 15
+      [T, B, B, B, B, B, B, B, B, B, B, T], // row 16
+      [0, B, B, B, B, B, B, B, B, B, B, 0], // row 17
+      [0, B, B, B, B, B, B, B, B, B, B, 0], // row 18
+      [0, 0, B, R, R, R, R, R, B, 0, 0, 0], // row 19
+      [0, 0, B, R, R, R, R, R, B, 0, 0, 0], // row 20
     ];
 
-    // 90° CW rotation: new(r, c) = north(13 - c, r)
-    // new width = 14, new height = 8
+    // 90° CW rotation: new(r, c) = north(20 - c, r)
+    // new width = 21, new height = 12
     const result: number[] = [];
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 14; c++) {
-        const northRow = north[13 - c];
-        // northRow is guaranteed defined since 13-c ranges 13..0 (c: 0..13)
+    for (let r = 0; r < 12; r++) {
+      for (let c = 0; c < 21; c++) {
+        const northRow = north[20 - c];
         const val = northRow![r];
         result.push(val ?? 0);
       }
@@ -395,20 +504,20 @@ export const AMBULANCE_EAST: SpriteDefinition = (() => {
 
   return {
     name: 'ambulance_east',
-    width: 14,
-    height: 8,
+    width: 21,
+    height: 12,
     frames: [makeFrameRotated(FB, FO), makeFrameRotated(FO, FB)],
     frameDuration: 250,
   };
 })();
 
 /**
- * Ambulance west (14 × 8) — horizontal mirror of east.
+ * Ambulance west (21 × 12) — horizontal mirror of east.
  *
  * Front (windshield) faces left; taillights on the right; flashers top-left/bottom-left.
  */
 export const AMBULANCE_WEST: SpriteDefinition = (() => {
-  // Mirror east frames horizontally: new(r, c) = east(r, 13 - c)
+  // Mirror east frames horizontally: new(r, c) = east(r, 20 - c)
   function mirrorHorizontal(frame: number[], width: number, height: number): number[] {
     const result: number[] = [];
     for (let r = 0; r < height; r++) {

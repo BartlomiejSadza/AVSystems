@@ -276,18 +276,18 @@ describe('Vehicle sprites', () => {
     CAR_WEST_CREAM,
   ];
 
-  it('all North/South cars are 8x12 with a single frame', () => {
+  it('all North/South cars are 12x18 with a single frame', () => {
     for (const car of northSouthCars) {
-      expect(car.width).toBe(8);
-      expect(car.height).toBe(12);
+      expect(car.width).toBe(12);
+      expect(car.height).toBe(18);
       expect(car.frames).toHaveLength(1);
     }
   });
 
-  it('all East/West cars are 12x8 with a single frame', () => {
+  it('all East/West cars are 18x12 with a single frame', () => {
     for (const car of eastWestCars) {
-      expect(car.width).toBe(12);
-      expect(car.height).toBe(8);
+      expect(car.width).toBe(18);
+      expect(car.height).toBe(12);
       expect(car.frames).toHaveLength(1);
     }
   });
@@ -314,30 +314,30 @@ describe('Vehicle sprites', () => {
     expect(CAR_WEST_CREAM).toBeDefined();
   });
 
-  it('AMBULANCE_NORTH is 8x14, 2 frames, frameDuration 250', () => {
-    expect(AMBULANCE_NORTH.width).toBe(8);
-    expect(AMBULANCE_NORTH.height).toBe(14);
+  it('AMBULANCE_NORTH is 12x21, 2 frames, frameDuration 250', () => {
+    expect(AMBULANCE_NORTH.width).toBe(12);
+    expect(AMBULANCE_NORTH.height).toBe(21);
     expect(AMBULANCE_NORTH.frames).toHaveLength(2);
     expect(AMBULANCE_NORTH.frameDuration).toBe(250);
   });
 
-  it('AMBULANCE_SOUTH is 8x14, 2 frames, frameDuration 250', () => {
-    expect(AMBULANCE_SOUTH.width).toBe(8);
-    expect(AMBULANCE_SOUTH.height).toBe(14);
+  it('AMBULANCE_SOUTH is 12x21, 2 frames, frameDuration 250', () => {
+    expect(AMBULANCE_SOUTH.width).toBe(12);
+    expect(AMBULANCE_SOUTH.height).toBe(21);
     expect(AMBULANCE_SOUTH.frames).toHaveLength(2);
     expect(AMBULANCE_SOUTH.frameDuration).toBe(250);
   });
 
-  it('AMBULANCE_EAST is 14x8, 2 frames, frameDuration 250', () => {
-    expect(AMBULANCE_EAST.width).toBe(14);
-    expect(AMBULANCE_EAST.height).toBe(8);
+  it('AMBULANCE_EAST is 21x12, 2 frames, frameDuration 250', () => {
+    expect(AMBULANCE_EAST.width).toBe(21);
+    expect(AMBULANCE_EAST.height).toBe(12);
     expect(AMBULANCE_EAST.frames).toHaveLength(2);
     expect(AMBULANCE_EAST.frameDuration).toBe(250);
   });
 
-  it('AMBULANCE_WEST is 14x8, 2 frames, frameDuration 250', () => {
-    expect(AMBULANCE_WEST.width).toBe(14);
-    expect(AMBULANCE_WEST.height).toBe(8);
+  it('AMBULANCE_WEST is 21x12, 2 frames, frameDuration 250', () => {
+    expect(AMBULANCE_WEST.width).toBe(21);
+    expect(AMBULANCE_WEST.height).toBe(12);
     expect(AMBULANCE_WEST.frames).toHaveLength(2);
     expect(AMBULANCE_WEST.frameDuration).toBe(250);
   });
@@ -367,46 +367,27 @@ describe('Vehicle sprites', () => {
     expect(f0).not.toEqual(f1);
   });
 
-  // W-05 regression: east-facing car taillights must be on the LEFT side (cols 0–1),
+  // W-05 regression: east-facing car taillights must be on the LEFT side,
   // not mirrored to the right. Protects against accidentally swapping east and west data.
-  it('W-05: east car taillights (index 9) appear in left columns (cols 0–1), not right', () => {
+  it('W-05: east car taillights (index 9) appear in left columns, not right', () => {
     const TAILLIGHT = 9;
-    const WIDTH = 12;
-    // Rows where taillights are expected on the left per the spec layout:
-    //   Row 1: RR.BBBBBBBB.  → col 0 and col 1
-    //   Row 2: RBBBBBBBBBBT  → col 0
-    //   Row 5: RBBBBBBBBBBT  → col 0
-    //   Row 6: RR.BBBBBBBB.  → col 0 and col 1
-    const leftTaillightPositions = [
-      1 * WIDTH + 0,
-      1 * WIDTH + 1,
-      2 * WIDTH + 0,
-      5 * WIDTH + 0,
-      6 * WIDTH + 0,
-      6 * WIDTH + 1,
-    ];
-    // Right-side columns that must NOT contain taillights (cols 10–11 for each taillight row)
-    const rightColumnPositions = [
-      1 * WIDTH + 10,
-      1 * WIDTH + 11,
-      2 * WIDTH + 11,
-      5 * WIDTH + 11,
-      6 * WIDTH + 10,
-      6 * WIDTH + 11,
-    ];
-
+    const WIDTH = 18;
+    // Check that taillight pixels (index 9) exist in left third of the sprite
+    // and do NOT exist in right third of the sprite.
     for (const car of [CAR_EAST_BLUE, CAR_EAST_PINK, CAR_EAST_GREEN, CAR_EAST_CREAM]) {
       const frame = car.frames[0]!;
-
-      // All expected left-side taillight positions must be index 9
-      for (const pos of leftTaillightPositions) {
-        expect(frame[pos]).toBe(TAILLIGHT);
+      let leftTaillights = 0;
+      let rightTaillights = 0;
+      for (let r = 0; r < car.height; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (frame[r * WIDTH + c] === TAILLIGHT) leftTaillights++;
+        }
+        for (let c = WIDTH - 3; c < WIDTH; c++) {
+          if (frame[r * WIDTH + c] === TAILLIGHT) rightTaillights++;
+        }
       }
-
-      // None of the right-side mirror positions should be index 9
-      for (const pos of rightColumnPositions) {
-        expect(frame[pos]).not.toBe(TAILLIGHT);
-      }
+      expect(leftTaillights).toBeGreaterThan(0);
+      expect(rightTaillights).toBe(0);
     }
   });
 });
@@ -416,9 +397,9 @@ describe('Vehicle sprites', () => {
 // ---------------------------------------------------------------------------
 
 describe('Traffic light sprites', () => {
-  it('LIGHT_HOUSING is 7x20 and static', () => {
-    expect(LIGHT_HOUSING.width).toBe(7);
-    expect(LIGHT_HOUSING.height).toBe(20);
+  it('LIGHT_HOUSING is 10x28 and static', () => {
+    expect(LIGHT_HOUSING.width).toBe(10);
+    expect(LIGHT_HOUSING.height).toBe(28);
     expect(LIGHT_HOUSING.frames).toHaveLength(1);
     expect(LIGHT_HOUSING.frameDuration).toBe(0);
   });
@@ -433,10 +414,10 @@ describe('Traffic light sprites', () => {
     LAMP_INACTIVE,
   ];
 
-  it('all lamp sprites are 5x5 and static', () => {
+  it('all lamp sprites are 7x7 and static', () => {
     for (const lamp of lampSprites) {
-      expect(lamp.width).toBe(5);
-      expect(lamp.height).toBe(5);
+      expect(lamp.width).toBe(7);
+      expect(lamp.height).toBe(7);
       expect(lamp.frames).toHaveLength(1);
       expect(lamp.frameDuration).toBe(0);
     }
@@ -459,27 +440,27 @@ describe('Traffic light sprites', () => {
   });
 
   it('GREEN_LAMP_NORTH shows a green arrow pointing up (top-center pixel is green)', () => {
-    // Row 0, col 2 (center top) should be 12 (green) for up-pointing arrow
+    // Row 0, col 3 (center top of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_NORTH.frames[0]!;
-    expect(frame[2]).toBe(12); // row 0, col 2
+    expect(frame[3]).toBe(12); // row 0, col 3
   });
 
   it('GREEN_LAMP_SOUTH shows a green arrow pointing down (bottom-center pixel is green)', () => {
-    // Row 4 (bottom), col 2 (center) should be 12 (green)
+    // Row 6 (bottom of 7-tall), col 3 (center of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_SOUTH.frames[0]!;
-    expect(frame[4 * 5 + 2]).toBe(12); // row 4, col 2
+    expect(frame[6 * 7 + 3]).toBe(12); // row 6, col 3
   });
 
   it('GREEN_LAMP_EAST shows a green arrow pointing right (right-center pixel is green)', () => {
-    // Row 2 (middle), col 4 (rightmost) should be 12 (green)
+    // Row 3 (middle of 7-tall), col 6 (rightmost of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_EAST.frames[0]!;
-    expect(frame[2 * 5 + 4]).toBe(12); // row 2, col 4
+    expect(frame[3 * 7 + 6]).toBe(12); // row 3, col 6
   });
 
   it('GREEN_LAMP_WEST shows a green arrow pointing left (left-center pixel is green)', () => {
-    // Row 2 (middle), col 0 (leftmost) should be 12 (green)
+    // Row 3 (middle of 7-tall), col 0 (leftmost) should be 12 (green)
     const frame = GREEN_LAMP_WEST.frames[0]!;
-    expect(frame[2 * 5 + 0]).toBe(12); // row 2, col 0
+    expect(frame[3 * 7 + 0]).toBe(12); // row 3, col 0
   });
 
   it('RED_LAMP_ACTIVE is entirely red (palette index 9)', () => {
