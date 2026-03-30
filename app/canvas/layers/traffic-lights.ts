@@ -14,9 +14,9 @@ import {
 import type { SpriteDefinition } from '../sprites/types';
 
 // Lamp offsets relative to housing anchor (x offset, y offset)
-const RED_LAMP_OFFSET = { dx: 1, dy: 2 } as const;
-const AMBER_LAMP_OFFSET = { dx: 1, dy: 8 } as const;
-const GREEN_LAMP_OFFSET = { dx: 1, dy: 14 } as const;
+const RED_LAMP_OFFSET = { dx: 2, dy: 2 } as const;
+const AMBER_LAMP_OFFSET = { dx: 2, dy: 10 } as const;
+const GREEN_LAMP_OFFSET = { dx: 2, dy: 18 } as const;
 
 interface TrafficLightConfig {
   /** Housing anchor position */
@@ -34,35 +34,35 @@ interface TrafficLightConfig {
 
 const LIGHTS: TrafficLightConfig[] = [
   {
-    x: 140,
-    y: 80,
+    x: 126, // NW corner — controls south-bound traffic
+    y: 68,
     facing: 'south',
     horizontal: false,
-    pole: { x: 143, y: 100, length: 8, axis: 'y', dir: 1 },
+    pole: { x: 131, y: 96, length: 10, axis: 'y', dir: 1 },
     greenSprite: GREEN_LAMP_SOUTH,
   },
   {
-    x: 174,
-    y: 130,
+    x: 184, // SE corner — controls north-bound traffic
+    y: 144,
     facing: 'north',
     horizontal: false,
-    pole: { x: 177, y: 128, length: 8, axis: 'y', dir: -1 },
+    pole: { x: 189, y: 142, length: 10, axis: 'y', dir: -1 },
     greenSprite: GREEN_LAMP_NORTH,
   },
   {
-    x: 124,
-    y: 130,
+    x: 108, // SW corner — controls east-bound traffic
+    y: 144,
     facing: 'east',
     horizontal: true,
-    pole: { x: 122, y: 133, length: 8, axis: 'x', dir: -1 },
+    pole: { x: 106, y: 149, length: 10, axis: 'x', dir: -1 },
     greenSprite: GREEN_LAMP_EAST,
   },
   {
-    x: 174,
-    y: 96,
+    x: 184, // NE corner — controls west-bound traffic
+    y: 86,
     facing: 'west',
     horizontal: true,
-    pole: { x: 194, y: 99, length: 8, axis: 'x', dir: 1 },
+    pole: { x: 212, y: 91, length: 10, axis: 'x', dir: 1 },
     greenSprite: GREEN_LAMP_WEST,
   },
 ];
@@ -79,14 +79,14 @@ function isGreen(
 }
 
 /**
- * Draw a horizontal housing (20×7) using fillRect.
+ * Draw a horizontal housing (28×10) using fillRect.
  * PALETTE[23] is used for the housing frame, PALETTE[22] for the interior.
  */
 function drawHorizontalHousing(ctx: CanvasRenderingContext2D, x: number, y: number): void {
   const frameColor = PALETTE[23]!;
   const offColor = PALETTE[22]!;
-  const w = 20;
-  const h = 7;
+  const w = 28;
+  const h = 10;
 
   // Top and bottom border row
   ctx.fillStyle = frameColor;
@@ -103,12 +103,12 @@ function drawHorizontalHousing(ctx: CanvasRenderingContext2D, x: number, y: numb
 }
 
 /**
- * Draw a single horizontal lamp (5×5) inside the horizontal housing.
- * Lamp areas are spaced within the 20-wide housing:
- *   - Red:   cols 1-5   (dx=1)
- *   - Amber: cols 7-11  (dx=7)
- *   - Green: cols 13-17 (dx=13)
- * All lamps are vertically centred at dy=1 inside the 7-tall housing.
+ * Draw a single horizontal lamp (7×7) inside the horizontal housing.
+ * Lamp areas are spaced within the 28-wide housing:
+ *   - Red:   (dx=2)
+ *   - Amber: (dx=11)
+ *   - Green: (dx=19)
+ * All lamps are vertically positioned at dy=2 inside the 10-tall housing.
  */
 function drawHorizontalLamps(
   ctx: CanvasRenderingContext2D,
@@ -121,15 +121,15 @@ function drawHorizontalLamps(
 ): void {
   // Red lamp
   ctx.globalAlpha = redSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
-  drawSprite(ctx, redSprite, 0, x + 1, y + 1);
+  drawSprite(ctx, redSprite, 0, x + 2, y + 2);
 
   // Amber lamp (always inactive)
   ctx.globalAlpha = 1.0;
-  drawSprite(ctx, amberSprite, 0, x + 7, y + 1);
+  drawSprite(ctx, amberSprite, 0, x + 11, y + 2);
 
   // Green lamp
   ctx.globalAlpha = greenSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
-  drawSprite(ctx, greenSprite, 0, x + 13, y + 1);
+  drawSprite(ctx, greenSprite, 0, x + 19, y + 2);
 
   ctx.globalAlpha = 1.0;
 }

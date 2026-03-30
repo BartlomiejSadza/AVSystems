@@ -213,16 +213,16 @@ describe('Environment sprites', () => {
     expect(SIDEWALK_TILE.frameDuration).toBe(0);
   });
 
-  it('TREE_ROUND is 10x14, 2 frames, frameDuration 1000', () => {
-    expect(TREE_ROUND.width).toBe(10);
-    expect(TREE_ROUND.height).toBe(14);
+  it('TREE_ROUND is 14x20, 2 frames, frameDuration 1000', () => {
+    expect(TREE_ROUND.width).toBe(14);
+    expect(TREE_ROUND.height).toBe(20);
     expect(TREE_ROUND.frames).toHaveLength(2);
     expect(TREE_ROUND.frameDuration).toBe(1000);
   });
 
-  it('TREE_POINTY is 10x14, 2 frames, frameDuration 1000', () => {
-    expect(TREE_POINTY.width).toBe(10);
-    expect(TREE_POINTY.height).toBe(14);
+  it('TREE_POINTY is 14x20, 2 frames, frameDuration 1000', () => {
+    expect(TREE_POINTY.width).toBe(14);
+    expect(TREE_POINTY.height).toBe(20);
     expect(TREE_POINTY.frames).toHaveLength(2);
     expect(TREE_POINTY.frameDuration).toBe(1000);
   });
@@ -241,8 +241,8 @@ describe('Environment sprites', () => {
     expect(CENTER_LANE_DASH.frameDuration).toBe(0);
   });
 
-  it('STOP_LINE is 24x1 and static', () => {
-    expect(STOP_LINE.width).toBe(24);
+  it('STOP_LINE is 40x1 and static', () => {
+    expect(STOP_LINE.width).toBe(40);
     expect(STOP_LINE.height).toBe(1);
     expect(STOP_LINE.frames).toHaveLength(1);
     expect(STOP_LINE.frameDuration).toBe(0);
@@ -483,16 +483,16 @@ describe('Traffic light sprites', () => {
 // ---------------------------------------------------------------------------
 
 describe('NPC sprites', () => {
-  it('OFFICER_IDLE is 16x24, 4 frames, frameDuration 500', () => {
-    expect(OFFICER_IDLE.width).toBe(16);
-    expect(OFFICER_IDLE.height).toBe(24);
+  it('OFFICER_IDLE is 24x36, 4 frames, frameDuration 500', () => {
+    expect(OFFICER_IDLE.width).toBe(24);
+    expect(OFFICER_IDLE.height).toBe(36);
     expect(OFFICER_IDLE.frames).toHaveLength(4);
     expect(OFFICER_IDLE.frameDuration).toBe(500);
   });
 
-  it('OFFICER_PORTRAIT is 24x24, 1 frame, static', () => {
-    expect(OFFICER_PORTRAIT.width).toBe(24);
-    expect(OFFICER_PORTRAIT.height).toBe(24);
+  it('OFFICER_PORTRAIT is 32x32, 1 frame, static', () => {
+    expect(OFFICER_PORTRAIT.width).toBe(32);
+    expect(OFFICER_PORTRAIT.height).toBe(32);
     expect(OFFICER_PORTRAIT.frames).toHaveLength(1);
     expect(OFFICER_PORTRAIT.frameDuration).toBe(0);
   });
