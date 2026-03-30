@@ -4,7 +4,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { ROADS } from '../types.js';
-import type { Road, Vehicle, AddVehicleCommand, StepCommand, SimulationState } from '../types.js';
+import type { Road, Vehicle, AddVehicleCommand, StepCommand } from '../types.js';
+import { createInitialState } from '../engine.js';
 
 describe('ROADS constant', () => {
   it('contains exactly four cardinal directions', () => {
@@ -61,14 +62,13 @@ describe('Command discriminated union', () => {
 });
 
 describe('SimulationState shape', () => {
-  it('initialises with the expected field types', () => {
-    const state: SimulationState = {
-      queues: new Map<Road, Vehicle[]>(),
-      stepCount: 0,
-      lastPhaseIndex: -1,
-    };
+  it('createInitialState returns expected core fields', () => {
+    const state = createInitialState();
     expect(state.queues).toBeInstanceOf(Map);
     expect(state.stepCount).toBe(0);
-    expect(state.lastPhaseIndex).toBe(-1);
+    expect(state.currentSignalPhaseId).toBe('NS_THROUGH');
+    expect(state.segmentKind).toBe('GREEN');
+    expect(state.lastServedPhaseIndex).toBe(-1);
+    expect(state.forcedPhaseAfterAllRed).toBeNull();
   });
 });

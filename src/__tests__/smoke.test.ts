@@ -163,9 +163,7 @@ describe('CLI smoke test — multi-vehicle scenario', () => {
         { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
         { type: 'addVehicle', vehicleId: 'N2', startRoad: 'north', endRoad: 'south' },
         { type: 'addVehicle', vehicleId: 'E1', startRoad: 'east', endRoad: 'west' },
-        { type: 'step' }, // NS wins (2 vs 1)
-        { type: 'step' }, // N2 remains, E1 remains; NS still has more
-        { type: 'step' }, // E1 finally departs
+        ...Array.from({ length: 40 }, () => ({ type: 'step' as const })),
       ],
     };
 
@@ -179,9 +177,8 @@ describe('CLI smoke test — multi-vehicle scenario', () => {
       stepStatuses: Array<{ leftVehicles: string[] }>;
     };
 
-    expect(output.stepStatuses).toHaveLength(3);
+    expect(output.stepStatuses).toHaveLength(40);
 
-    // All vehicles should depart across the three steps
     const allLeft = output.stepStatuses.flatMap((s) => s.leftVehicles);
     expect(allLeft).toContain('N1');
     expect(allLeft).toContain('N2');

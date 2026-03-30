@@ -63,6 +63,7 @@ Evidence from `pnpm test` output:
 - [x] README states "1095+" — accurate
 
 Test categories present (verified from test file names and STATUS.yaml evidence):
+
 - [x] Unit tests: `queue.test.ts`, `phase.test.ts`, `engine.test.ts`, `invariants.test.ts`, `telemetry.test.ts`, `types.test.ts`
 - [x] Property-based tests: `adaptive.test.ts`, `determinism.test.ts` (fast-check)
 - [x] Contract/schema tests: zod validation (32 schema tests per STATUS.yaml)
@@ -89,6 +90,7 @@ Per `specs/agents/09-technical-writer/TASK.md` scope:
 - [x] Tech stack table
 
 Per original problem statement evaluation criteria (confirmed in STATUS.yaml `quality_gates`):
+
 - [x] Safety invariant: no two conflicting green phases simultaneously — documented
 - [x] Deterministic tie-breaking — documented
 - [x] Emergency vehicle priority — documented
@@ -102,6 +104,7 @@ Per original problem statement evaluation criteria (confirmed in STATUS.yaml `qu
 All checklist items: PASS
 
 Gate criteria met:
+
 - README is complete and verified against codebase
 - All stage tests: PASS
 - Ready for handoff to `10-git-workflow-master`

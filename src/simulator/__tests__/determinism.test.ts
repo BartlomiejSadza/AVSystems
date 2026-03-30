@@ -20,6 +20,9 @@ import { parseInput } from '../../io/parser.js';
 import { writeOutput } from '../../io/writer.js';
 import type { Command, Road } from '../types.js';
 import { ROADS } from '../types.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
+
+const fast = { signalTimings: FAST_SIGNAL_TIMINGS };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -62,9 +65,9 @@ describe('T9 — fixed replay determinism', () => {
       { type: 'step' },
     ];
 
-    const run1 = simulate(commands);
-    const run2 = simulate(commands);
-    const run3 = simulate(commands);
+    const run1 = simulate(commands, fast);
+    const run2 = simulate(commands, fast);
+    const run3 = simulate(commands, fast);
 
     expect(run1).toEqual(run2);
     expect(run2).toEqual(run3);
@@ -78,8 +81,8 @@ describe('T9 — fixed replay determinism', () => {
 
   it('step-only commands always produce empty leftVehicles arrays', () => {
     const commands: Command[] = Array.from({ length: 5 }, () => ({ type: 'step' }));
-    const run1 = simulate(commands);
-    const run2 = simulate(commands);
+    const run1 = simulate(commands, fast);
+    const run2 = simulate(commands, fast);
     expect(run1).toEqual(run2);
     run1.forEach((s) => expect(s.leftVehicles).toHaveLength(0));
   });
@@ -96,9 +99,9 @@ describe('T9 — fixed replay determinism', () => {
       { type: 'step' },
     ];
 
-    const reference = simulate(commands);
+    const reference = simulate(commands, fast);
     for (let i = 0; i < 10; i++) {
-      expect(simulate(commands)).toEqual(reference);
+      expect(simulate(commands, fast)).toEqual(reference);
     }
   });
 
@@ -114,9 +117,9 @@ describe('T9 — fixed replay determinism', () => {
       commands.push({ type: 'step' });
     }
 
-    const reference = simulate(commands);
+    const reference = simulate(commands, fast);
     for (let i = 0; i < 5; i++) {
-      expect(simulate(commands)).toEqual(reference);
+      expect(simulate(commands, fast)).toEqual(reference);
     }
   });
 });
@@ -133,8 +136,8 @@ describe('T9 — simulation instance independence', () => {
     ];
 
     // Start run1, then run2 — they must not affect each other
-    const run1 = simulate(commands);
-    const run2 = simulate(commands);
+    const run1 = simulate(commands, fast);
+    const run2 = simulate(commands, fast);
     expect(run1).toEqual(run2);
   });
 
@@ -150,9 +153,9 @@ describe('T9 — simulation instance independence', () => {
       { type: 'step' },
     ];
 
-    simulate(short); // run and discard
-    const longResult = simulate(long);
-    const longAlone = simulate(long);
+    simulate(short, fast); // run and discard
+    const longResult = simulate(long, fast);
+    const longAlone = simulate(long, fast);
     expect(longResult).toEqual(longAlone);
   });
 });
@@ -168,7 +171,7 @@ describe('T9 — JSON output determinism', () => {
       { type: 'step' },
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     const json1 = writeOutput(result);
     const json2 = writeOutput(result);
     expect(json1).toBe(json2);
@@ -185,7 +188,10 @@ describe('T9 — JSON output determinism', () => {
       ],
     });
 
-    const pipeline = () => writeOutput(simulate(parseInput(rawJson)));
+    const pipeline = () => {
+      const { commands } = parseInput(rawJson);
+      return writeOutput(simulate(commands));
+    };
 
     const out1 = pipeline();
     const out2 = pipeline();
@@ -201,7 +207,7 @@ describe('T9 — JSON output determinism', () => {
       { type: 'step' },
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     const pretty1 = writeOutput(result, true);
     const pretty2 = writeOutput(result, true);
     const compact1 = writeOutput(result, false);
@@ -250,8 +256,8 @@ describe('T9 — property-based reproducibility', () => {
   it('any random command sequence produces identical results when replayed', () => {
     fc.assert(
       fc.property(arbCommandSequence, (commands) => {
-        const run1 = simulate(commands);
-        const run2 = simulate(commands);
+        const run1 = simulate(commands, fast);
+        const run2 = simulate(commands, fast);
         expect(run1).toEqual(run2);
       }),
       { numRuns: 200 }
@@ -262,10 +268,9 @@ describe('T9 — property-based reproducibility', () => {
     fc.assert(
       fc.property(arbCommandSequence, (commands) => {
         const stepCount = commands.filter((c) => c.type === 'step').length;
-        const result = simulate(commands);
+        const result = simulate(commands, fast);
         expect(result).toHaveLength(stepCount);
-        // Run again — same count
-        expect(simulate(commands)).toHaveLength(stepCount);
+        expect(simulate(commands, fast)).toHaveLength(stepCount);
       }),
       { numRuns: 200 }
     );
@@ -274,8 +279,8 @@ describe('T9 — property-based reproducibility', () => {
   it('JSON output is byte-identical across two runs for any random input', () => {
     fc.assert(
       fc.property(arbCommandSequence, (commands) => {
-        const out1 = writeOutput(simulate(commands), false);
-        const out2 = writeOutput(simulate(commands), false);
+        const out1 = writeOutput(simulate(commands, fast), false);
+        const out2 = writeOutput(simulate(commands, fast), false);
         expect(out1).toBe(out2);
       }),
       { numRuns: 100 }
@@ -300,25 +305,23 @@ describe('T9 — property-based reproducibility', () => {
       { type: 'step' },
     ];
 
-    const resultA = simulate(a);
-    const resultB = simulate(b);
+    const resultA = simulate(a, fast);
+    const resultB = simulate(b, fast);
 
-    // Both should be deterministic within themselves
-    expect(simulate(a)).toEqual(resultA);
-    expect(simulate(b)).toEqual(resultB);
+    expect(simulate(a, fast)).toEqual(resultA);
+    expect(simulate(b, fast)).toEqual(resultB);
 
-    // But the two different orderings produce different phase distributions
-    // (N1 departs in step 1 for sequence A; E1 departs in step 1 for sequence B)
     expect(resultA[0]?.leftVehicles).toContain('N1');
-    expect(resultB[0]?.leftVehicles).toContain('E1');
+    expect(resultB.some((s) => s.leftVehicles.includes('E1'))).toBe(true);
+    expect(resultB[0]?.leftVehicles).not.toContain('E1');
   });
 
   it('seed-based deterministic scenarios are reproducible', () => {
     for (let seed = 0; seed < 10; seed++) {
       const commands = buildCommands(seed);
-      const reference = simulate(commands);
+      const reference = simulate(commands, fast);
       for (let run = 0; run < 3; run++) {
-        expect(simulate(commands)).toEqual(reference);
+        expect(simulate(commands, fast)).toEqual(reference);
       }
     }
   });

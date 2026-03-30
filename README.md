@@ -41,11 +41,11 @@ pnpm simulate --input <path-to-input.json> --output <path-to-output.json>
 
 **Options:**
 
-| Flag | Description |
-|------|-------------|
-| `--input <path>` | Path to the input JSON file (required) |
+| Flag              | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `--input <path>`  | Path to the input JSON file (required)        |
 | `--output <path>` | Path to write the output JSON file (required) |
-| `--help` | Print usage information |
+| `--help`          | Print usage information                       |
 
 **Example with the included sample files:**
 
@@ -67,13 +67,13 @@ The input file contains a JSON object with a `commands` array. Two command types
 
 **`addVehicle`** — places a vehicle in the queue for its starting road:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `type` | `"addVehicle"` | yes | Command discriminator |
-| `vehicleId` | `string` | yes | Unique vehicle identifier |
-| `startRoad` | `"north" \| "south" \| "east" \| "west"` | yes | Road the vehicle enters from |
-| `endRoad` | `"north" \| "south" \| "east" \| "west"` | yes | Road the vehicle exits onto |
-| `priority` | `"normal" \| "emergency"` | no | Defaults to `"normal"`. Emergency vehicles jump to the front of their road queue and force their phase active. |
+| Field       | Type                                     | Required | Description                                                                                                    |
+| ----------- | ---------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `type`      | `"addVehicle"`                           | yes      | Command discriminator                                                                                          |
+| `vehicleId` | `string`                                 | yes      | Unique vehicle identifier                                                                                      |
+| `startRoad` | `"north" \| "south" \| "east" \| "west"` | yes      | Road the vehicle enters from                                                                                   |
+| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | yes      | Road the vehicle exits onto                                                                                    |
+| `priority`  | `"normal" \| "emergency"`                | no       | Defaults to `"normal"`. Emergency vehicles jump to the front of their road queue and force their phase active. |
 
 **`step`** — advances the simulation by one tick. The engine selects the active phase, dequeues the front vehicle from each road in that phase, and records which vehicles left.
 
@@ -98,8 +98,8 @@ The input file contains a JSON object with a `commands` array. Two command types
 
 The output file contains a JSON object with a `stepStatuses` array — one entry per `step` command, in order.
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field          | Type       | Description                                                                                  |
+| -------------- | ---------- | -------------------------------------------------------------------------------------------- |
 | `leftVehicles` | `string[]` | IDs of vehicles that cleared the intersection this tick. Empty array if no vehicle departed. |
 
 **Full example (`output.json`):**
@@ -123,10 +123,10 @@ The output file contains a JSON object with a `stepStatuses` array — one entry
 
 The intersection operates with two mutually exclusive phases:
 
-| Phase | Roads with green light |
-|-------|----------------------|
-| `NS_STRAIGHT` | north + south |
-| `EW_STRAIGHT` | east + west |
+| Phase         | Roads with green light |
+| ------------- | ---------------------- |
+| `NS_STRAIGHT` | north + south          |
+| `EW_STRAIGHT` | east + west            |
 
 Each `step` command, the engine selects one phase using this algorithm:
 
@@ -260,18 +260,18 @@ Key constraint: `src/simulator/` has zero dependencies on the GUI layer, I/O lay
 
 ## Tech Stack
 
-| Tool | Version | Role |
-|------|---------|------|
-| Next.js | >=15 | GUI framework |
-| TypeScript | >=5.6 (strict) | Language |
-| pnpm | >=10 | Package manager |
-| Node.js | >=22 | Runtime |
-| Vitest | >=2 | Test runner |
-| fast-check | >=3 | Property-based testing |
-| zod | >=3 | JSON schema validation |
-| tinybench | >=2 | Performance benchmarks |
-| ESLint + Prettier | latest | Linting and formatting |
-| GitHub Actions | — | CI |
+| Tool              | Version        | Role                   |
+| ----------------- | -------------- | ---------------------- |
+| Next.js           | >=15           | GUI framework          |
+| TypeScript        | >=5.6 (strict) | Language               |
+| pnpm              | >=10           | Package manager        |
+| Node.js           | >=22           | Runtime                |
+| Vitest            | >=2            | Test runner            |
+| fast-check        | >=3            | Property-based testing |
+| zod               | >=3            | JSON schema validation |
+| tinybench         | >=2            | Performance benchmarks |
+| ESLint + Prettier | latest         | Linting and formatting |
+| GitHub Actions    | —              | CI                     |
 
 ## Contributing
 

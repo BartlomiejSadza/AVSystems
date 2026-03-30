@@ -2,12 +2,12 @@
  * Input JSON parser.
  *
  * Reads and validates the raw JSON string against `InputSchema`.
- * Returns strongly-typed `Command[]` ready for the simulation engine.
+ * Returns commands and optional simulate options (only fields present in JSON).
  */
 
 import { ZodError } from 'zod';
-import { InputSchema } from './schemas.js';
-import type { Command } from '../simulator/types.js';
+import { InputSchema, type InputSchemaType } from './schemas.js';
+import type { Command, SimulateOptions } from '../simulator/types.js';
 
 export class ParseError extends Error {
   override readonly cause?: unknown;
@@ -19,12 +19,48 @@ export class ParseError extends Error {
   }
 }
 
+/** Result of parsing and validating simulator input JSON. */
+export interface ParseResult {
+  commands: Command[];
+  /**
+   * Present when `options` included at least one non-empty field among
+   * `signalTimings` or `roadPriorities`.
+   */
+  options?: SimulateOptions;
+}
+
+function simulateOptionsFromParsed(data: InputSchemaType): SimulateOptions | undefined {
+  const opts = data.options;
+  if (opts === undefined) {
+    return undefined;
+  }
+
+  const st = opts.signalTimings;
+  const hasSignalTimings = st !== undefined && Object.keys(st).length > 0;
+
+  const rp = opts.roadPriorities;
+  const hasRoadPriorities = rp !== undefined && Object.keys(rp).length > 0;
+
+  if (!hasSignalTimings && !hasRoadPriorities) {
+    return undefined;
+  }
+
+  const out: SimulateOptions = {};
+  if (hasSignalTimings) {
+    out.signalTimings = st;
+  }
+  if (hasRoadPriorities) {
+    out.roadPriorities = rp;
+  }
+  return out;
+}
+
 /**
- * Parse a raw JSON string into a validated list of commands.
+ * Parse a raw JSON string into validated commands and optional simulate options.
  *
  * @throws {ParseError} if the string is not valid JSON or fails schema validation.
  */
-export function parseInput(rawJson: string): Command[] {
+export function parseInput(rawJson: string): ParseResult {
   let parsed: unknown;
 
   try {
@@ -39,8 +75,11 @@ export function parseInput(rawJson: string): Command[] {
     throw new ParseError(`Input failed schema validation:\n${message}`, result.error);
   }
 
-  // Zod ensures the shape matches Command[] — cast is safe here.
-  return result.data.commands as Command[];
+  const options = simulateOptionsFromParsed(result.data);
+  return {
+    commands: result.data.commands as Command[],
+    ...(options !== undefined ? { options } : {}),
+  };
 }
 
 /**

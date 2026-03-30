@@ -10,26 +10,40 @@
 import { describe, it, expect } from 'vitest';
 import { simulate, createInitialState } from '../engine.js';
 import { enqueueVehicle, queueLength } from '../queue.js';
-import { selectPhase } from '../phase.js';
+import { getEmergencyTargetPhase } from '../signal-controller.js';
 import type { Command, SimulationState, Vehicle } from '../types.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+const OPP_CMD: Record<Vehicle['startRoad'], Vehicle['startRoad']> = {
+  north: 'south',
+  south: 'north',
+  east: 'west',
+  west: 'east',
+};
+
 function addVehicle(
   vehicleId: string,
   startRoad: Vehicle['startRoad'],
-  endRoad: Vehicle['startRoad'] = 'south',
+  endRoad?: Vehicle['startRoad'],
   priority: 'normal' | 'emergency' = 'normal'
 ): Command {
-  return { type: 'addVehicle', vehicleId, startRoad, endRoad, priority };
+  return {
+    type: 'addVehicle',
+    vehicleId,
+    startRoad,
+    endRoad: endRoad ?? OPP_CMD[startRoad],
+    priority,
+  };
 }
 
 function addEmergency(
   vehicleId: string,
   startRoad: Vehicle['startRoad'],
-  endRoad: Vehicle['startRoad'] = 'south'
+  endRoad?: Vehicle['startRoad']
 ): Command {
   return addVehicle(vehicleId, startRoad, endRoad, 'emergency');
 }
@@ -37,8 +51,15 @@ function addEmergency(
 const step: Command = { type: 'step' };
 
 function makeState(): SimulationState {
-  return createInitialState();
+  return createInitialState(FAST_SIGNAL_TIMINGS);
 }
+
+const OPPOSITE: Record<Vehicle['startRoad'], Vehicle['startRoad']> = {
+  north: 'south',
+  south: 'north',
+  east: 'west',
+  west: 'east',
+};
 
 function enqueue(
   state: SimulationState,
@@ -46,7 +67,7 @@ function enqueue(
   road: Vehicle['startRoad'],
   priority: 'normal' | 'emergency' = 'normal'
 ): void {
-  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: 'south', priority });
+  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: OPPOSITE[road], priority });
 }
 
 // ---------------------------------------------------------------------------
@@ -123,57 +144,43 @@ describe('enqueueVehicle — emergency priority ordering', () => {
 // Phase selection — emergency vehicle forces the phase
 // ---------------------------------------------------------------------------
 
-describe('selectPhase — emergency vehicle phase forcing', () => {
-  it('forces EW phase when east queue has an emergency vehicle at front', () => {
+describe('getEmergencyTargetPhase — queue-head emergency', () => {
+  it('targets EW_THROUGH when east queue head is emergency (straight movement)', () => {
     const state = makeState();
-    // NS has more vehicles — would normally win
     enqueue(state, 'N1', 'north', 'normal');
     enqueue(state, 'N2', 'north', 'normal');
     enqueue(state, 'S1', 'south', 'normal');
-    // EW has one emergency vehicle
     enqueue(state, 'E_EMG', 'east', 'emergency');
 
-    // Emergency override: EW phase forced
-    const chosen = selectPhase(state);
-    expect(chosen.id).toBe('EW_STRAIGHT');
+    expect(getEmergencyTargetPhase(state)).toBe('EW_THROUGH');
   });
 
-  it('forces NS phase when south queue has an emergency vehicle at front', () => {
+  it('targets NS_THROUGH when south queue head is emergency (straight movement)', () => {
     const state = makeState();
-    // EW would normally win by vehicle count
     enqueue(state, 'E1', 'east', 'normal');
     enqueue(state, 'W1', 'west', 'normal');
     enqueue(state, 'W2', 'west', 'normal');
-    // NS has one emergency on south
     enqueue(state, 'S_EMG', 'south', 'emergency');
 
-    const chosen = selectPhase(state);
-    expect(chosen.id).toBe('NS_STRAIGHT');
+    expect(getEmergencyTargetPhase(state)).toBe('NS_THROUGH');
   });
 
-  it('does NOT force a phase when emergency vehicle is not at the head of the queue', () => {
-    // A normal vehicle is at the front; emergency is behind it.
-    // This means the emergency has already been queued behind a normal vehicle,
-    // which cannot happen with valid insertions — but we test the guard anyway.
+  it('returns null when emergency vehicle is not at the head of the queue', () => {
     const state = makeState();
 
-    // Manually construct: put normal first, emergency second (bypass enqueue)
     const queue = state.queues.get('east')!;
     queue.push({ vehicleId: 'N1', startRoad: 'east', endRoad: 'south', priority: 'normal' });
     queue.push({ vehicleId: 'E_EMG', startRoad: 'east', endRoad: 'south', priority: 'emergency' });
 
-    // NS has more vehicles
     enqueue(state, 'NV1', 'north', 'normal');
     enqueue(state, 'NV2', 'north', 'normal');
 
-    // Emergency is NOT at head → no override → NS wins by load
-    const chosen = selectPhase(state);
-    expect(chosen.id).toBe('NS_STRAIGHT');
+    expect(getEmergencyTargetPhase(state)).toBeNull();
   });
 
-  it('returns a valid phase when no queues are present at all', () => {
+  it('returns null when no queues are present at all', () => {
     const state = makeState();
-    expect(() => selectPhase(state)).not.toThrow();
+    expect(getEmergencyTargetPhase(state)).toBeNull();
   });
 });
 
@@ -190,7 +197,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step, // NS phase: NE should depart (not N1)
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('NE');
     expect(result[0]?.leftVehicles).not.toContain('N1');
     expect(result[0]?.leftVehicles).not.toContain('N2');
@@ -205,7 +212,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step,
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     // EW phase forced — only east/west vehicles depart
     expect(result[0]?.leftVehicles).toContain('E_EMG');
     expect(result[0]?.leftVehicles).not.toContain('N1');
@@ -221,7 +228,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step, // step 2: no emergency → NS wins (2 vs 0) → N1 departs
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('E_EMG');
     expect(result[1]?.leftVehicles).toContain('N1');
   });
@@ -237,7 +244,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
     // Both phases have emergency at front → fall back to weighted load
     // NS: north(emergency)=1 + south(normal)=1 = 2, EW: east(emergency)=1 + west=0 = 1
     // NS wins by load
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('NE');
     expect(result[0]?.leftVehicles).toContain('S1');
     expect(result[0]?.leftVehicles).not.toContain('EE');
@@ -251,7 +258,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step,
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('WE');
   });
 
@@ -269,7 +276,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step,
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     // V1 is emergency → departs first
     expect(result[0]?.leftVehicles).toContain('V1');
   });
@@ -281,8 +288,8 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step,
     ];
 
-    expect(() => simulate(commands)).not.toThrow();
-    const result = simulate(commands);
+    expect(() => simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS })).not.toThrow();
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('A');
     expect(result[0]?.leftVehicles).toContain('B');
   });
@@ -295,7 +302,7 @@ describe('simulate — emergency vehicle end-to-end', () => {
       step, // EB departs (second emergency)
     ];
 
-    const result = simulate(commands);
+    const result = simulate(commands, { signalTimings: FAST_SIGNAL_TIMINGS });
     expect(result[0]?.leftVehicles).toContain('EA');
     expect(result[1]?.leftVehicles).toContain('EB');
   });

@@ -1,140 +1,124 @@
 /**
- * Tests for phase definitions and the adaptive phase selection algorithm.
+ * Tests for protected phase definitions, demand, and adaptive selection (pickNextGreenPhase).
  */
 
 import { describe, it, expect } from 'vitest';
-import { PHASES, selectPhase, phaseLoad } from '../phase.js';
-import { createQueues, enqueueVehicle } from '../queue.js';
+import { PHASES, demandForPhase } from '../phase.js';
+import { pickNextGreenPhase } from '../signal-controller.js';
+import { createInitialState } from '../engine.js';
+import { enqueueVehicle } from '../queue.js';
 import type { SimulationState, Vehicle } from '../types.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
 
-function makeState(lastPhaseIndex = -1): SimulationState {
-  return {
-    queues: createQueues(),
-    stepCount: 0,
-    lastPhaseIndex,
-  };
+function makeState(lastServedPhaseIndex = -1): SimulationState {
+  const s = createInitialState(FAST_SIGNAL_TIMINGS);
+  s.lastServedPhaseIndex = lastServedPhaseIndex;
+  return s;
 }
 
-function addVehicle(state: SimulationState, id: string, road: Vehicle['startRoad']): void {
-  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: 'north' });
+function addVehicle(
+  state: SimulationState,
+  id: string,
+  road: Vehicle['startRoad'],
+  endRoad: Vehicle['endRoad'] = 'north'
+): void {
+  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad });
 }
 
 describe('PHASES constant', () => {
-  it('has exactly two phases', () => {
-    expect(PHASES).toHaveLength(2);
+  it('has exactly four protected phases', () => {
+    expect(PHASES).toHaveLength(4);
   });
 
-  it('Phase 0 covers north + south', () => {
-    const ns = PHASES.find((p) => p.id === 'NS_STRAIGHT');
-    expect(ns).toBeDefined();
-    expect(ns!.roads).toContain('north');
-    expect(ns!.roads).toContain('south');
-    expect(ns!.roads).toHaveLength(2);
+  it('NS_THROUGH and NS_LEFT cover north + south', () => {
+    const nt = PHASES.find((p) => p.id === 'NS_THROUGH');
+    const nl = PHASES.find((p) => p.id === 'NS_LEFT');
+    expect(nt?.roads).toEqual(['north', 'south']);
+    expect(nl?.roads).toEqual(['north', 'south']);
   });
 
-  it('Phase 1 covers east + west', () => {
-    const ew = PHASES.find((p) => p.id === 'EW_STRAIGHT');
-    expect(ew).toBeDefined();
-    expect(ew!.roads).toContain('east');
-    expect(ew!.roads).toContain('west');
-    expect(ew!.roads).toHaveLength(2);
+  it('EW_THROUGH and EW_LEFT cover east + west', () => {
+    const et = PHASES.find((p) => p.id === 'EW_THROUGH');
+    const el = PHASES.find((p) => p.id === 'EW_LEFT');
+    expect(et?.roads).toEqual(['east', 'west']);
+    expect(el?.roads).toEqual(['east', 'west']);
   });
 
-  it('indices are 0 and 1', () => {
-    const indices = PHASES.map((p) => p.index).sort();
-    expect(indices).toEqual([0, 1]);
+  it('indices are 0..3 in ring order', () => {
+    expect(PHASES.map((p) => p.index)).toEqual([0, 1, 2, 3]);
   });
 });
 
-describe('phaseLoad', () => {
+describe('demandForPhase', () => {
   it('returns 0 when queues are empty', () => {
     const state = makeState();
-    expect(phaseLoad(state, PHASES[0]!)).toBe(0);
-    expect(phaseLoad(state, PHASES[1]!)).toBe(0);
+    expect(demandForPhase(state, 'NS_THROUGH')).toBe(0);
+    expect(demandForPhase(state, 'EW_THROUGH')).toBe(0);
   });
 
-  it('counts vehicles on phase roads only', () => {
+  it('counts only vehicles whose movement matches the phase', () => {
     const state = makeState();
-    addVehicle(state, 'V1', 'north');
-    addVehicle(state, 'V2', 'north');
-    addVehicle(state, 'V3', 'east');
+    addVehicle(state, 'V1', 'north', 'south'); // straight → NS_THROUGH
+    addVehicle(state, 'V2', 'north', 'west'); // left → NS_LEFT
+    addVehicle(state, 'V3', 'east', 'west'); // straight → EW_THROUGH
 
-    const nsPhase = PHASES.find((p) => p.id === 'NS_STRAIGHT')!;
-    const ewPhase = PHASES.find((p) => p.id === 'EW_STRAIGHT')!;
-
-    expect(phaseLoad(state, nsPhase)).toBe(2); // north=2, south=0
-    expect(phaseLoad(state, ewPhase)).toBe(1); // east=1, west=0
+    expect(demandForPhase(state, 'NS_THROUGH')).toBe(1);
+    expect(demandForPhase(state, 'NS_LEFT')).toBe(1);
+    expect(demandForPhase(state, 'EW_THROUGH')).toBe(1);
+    expect(demandForPhase(state, 'EW_LEFT')).toBe(0);
   });
 });
 
-describe('selectPhase — clear winner', () => {
-  it('picks NS when north + south have more vehicles than east + west', () => {
+describe('pickNextGreenPhase — clear winner', () => {
+  it('picks NS_THROUGH when north+south through demand exceeds EW', () => {
     const state = makeState();
-    addVehicle(state, 'V1', 'north');
-    addVehicle(state, 'V2', 'south');
-    addVehicle(state, 'V3', 'east'); // EW total = 1, NS total = 2
+    addVehicle(state, 'V1', 'north', 'south');
+    addVehicle(state, 'V2', 'south', 'north');
+    addVehicle(state, 'V3', 'east', 'north'); // left on east → EW_LEFT, not THROUGH
 
-    const chosen = selectPhase(state);
-    expect(chosen.id).toBe('NS_STRAIGHT');
+    expect(pickNextGreenPhase(state, undefined, -1)).toBe('NS_THROUGH');
   });
 
-  it('picks EW when east + west have more vehicles than north + south', () => {
+  it('picks EW_THROUGH when east+west through demand dominates', () => {
     const state = makeState();
-    addVehicle(state, 'V1', 'east');
-    addVehicle(state, 'V2', 'west');
-    addVehicle(state, 'V3', 'north'); // NS total = 1, EW total = 2
+    addVehicle(state, 'V1', 'east', 'west');
+    addVehicle(state, 'V2', 'west', 'east');
+    addVehicle(state, 'V3', 'north', 'south');
 
-    const chosen = selectPhase(state);
-    expect(chosen.id).toBe('EW_STRAIGHT');
+    expect(pickNextGreenPhase(state, undefined, -1)).toBe('EW_THROUGH');
   });
 });
 
-describe('selectPhase — tie-breaking', () => {
-  it('defaults to Phase 0 (NS) when no step has been run yet (lastPhaseIndex = -1)', () => {
-    const state = makeState(-1); // no prior phase
-    // Equal load (0 vs 0)
-    const chosen = selectPhase(state);
-    expect(chosen.index).toBe(0);
-    expect(chosen.id).toBe('NS_STRAIGHT');
+describe('pickNextGreenPhase — tie-breaking (full ring)', () => {
+  it('when all demands are 0 and lastServed is -1, picks NS_THROUGH (next after -1 → index 0)', () => {
+    const state = makeState(-1);
+    expect(pickNextGreenPhase(state, undefined, -1)).toBe('NS_THROUGH');
   });
 
-  it('alternates to Phase 1 (EW) when last phase was 0 and loads are equal', () => {
-    const state = makeState(0); // last was NS
-    addVehicle(state, 'V1', 'north');
-    addVehicle(state, 'V2', 'east'); // tie: 1 vs 1
-
-    const chosen = selectPhase(state);
-    expect(chosen.index).toBe(1);
-    expect(chosen.id).toBe('EW_STRAIGHT');
+  it('among tied positive demand, picks next ring index after lastServed', () => {
+    const state = makeState(0); // last NS_THROUGH
+    addVehicle(state, 'N', 'north', 'south'); // NS_THROUGH
+    addVehicle(state, 'E', 'east', 'west'); // EW_THROUGH — same weighted 1 vs 1 for “through” phases only…
+    // NS_LEFT and EW_LEFT have 0; tied max might be NS_THROUGH and EW_THROUGH at 1.
+    const chosen = pickNextGreenPhase(state, undefined, 0);
+    expect(chosen).toBe('EW_THROUGH');
   });
 
-  it('alternates back to Phase 0 (NS) when last phase was 1 and loads are equal', () => {
-    const state = makeState(1); // last was EW
-    addVehicle(state, 'V1', 'north');
-    addVehicle(state, 'V2', 'east'); // tie: 1 vs 1
-
-    const chosen = selectPhase(state);
-    expect(chosen.index).toBe(0);
-    expect(chosen.id).toBe('NS_STRAIGHT');
-  });
-
-  it('alternates even when both loads are 0', () => {
-    const state0 = makeState(0);
-    expect(selectPhase(state0).index).toBe(1);
-
-    const state1 = makeState(1);
-    expect(selectPhase(state1).index).toBe(0);
+  it('when lastServed is EW_THROUGH (index 2), tie wraps to NS_THROUGH', () => {
+    const state = makeState(2);
+    addVehicle(state, 'N', 'north', 'south');
+    addVehicle(state, 'E', 'east', 'west');
+    expect(pickNextGreenPhase(state, undefined, 2)).toBe('NS_THROUGH');
   });
 });
 
-describe('selectPhase — determinism', () => {
+describe('pickNextGreenPhase — determinism', () => {
   it('returns the same phase for identical state inputs', () => {
     const state1 = makeState(0);
-    addVehicle(state1, 'A', 'east');
-
+    addVehicle(state1, 'A', 'east', 'west');
     const state2 = makeState(0);
-    addVehicle(state2, 'B', 'east');
+    addVehicle(state2, 'B', 'east', 'west');
 
-    expect(selectPhase(state1).id).toBe(selectPhase(state2).id);
+    expect(pickNextGreenPhase(state1, undefined, 0)).toBe(pickNextGreenPhase(state2, undefined, 0));
   });
 });

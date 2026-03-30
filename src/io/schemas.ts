@@ -44,11 +44,79 @@ export const CommandSchema = z.discriminatedUnion('type', [
 ]);
 
 // ---------------------------------------------------------------------------
+// Simulate options (optional top-level `options`, specs/REALISTIC-SIGNALIZATION.md §9)
+// ---------------------------------------------------------------------------
+
+/** Non-negative integer tick count (signal segments, min/max green). */
+const NonNegativeIntSchema = z.number().int('must be an integer').min(0, 'must be >= 0');
+
+/**
+ * Per-phase min/max green overrides. All numeric fields optional; each must be >= 0 when set.
+ */
+export const PerPhaseTimingOverrideSchema = z
+  .object({
+    minGreenTicks: NonNegativeIntSchema.optional(),
+    maxGreenTicks: NonNegativeIntSchema.optional(),
+  })
+  .strict();
+
+/**
+ * Partial signal timing overrides from JSON. Omitted keys use engine defaults
+ * (`DEFAULT_SIGNAL_TIMING_CONFIG` / `mergeSignalTimingConfig` in simulator types).
+ */
+export const SignalTimingsPartialSchema = z
+  .object({
+    minGreenTicks: NonNegativeIntSchema.optional(),
+    maxGreenTicks: NonNegativeIntSchema.optional(),
+    yellowTicks: NonNegativeIntSchema.optional(),
+    allRedTicks: NonNegativeIntSchema.optional(),
+    skipEmptyPhases: z.boolean().optional(),
+    perPhase: z
+      .object({
+        NS_THROUGH: PerPhaseTimingOverrideSchema.optional(),
+        NS_LEFT: PerPhaseTimingOverrideSchema.optional(),
+        EW_THROUGH: PerPhaseTimingOverrideSchema.optional(),
+        EW_LEFT: PerPhaseTimingOverrideSchema.optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
+/** Non-negative number (road priority weights may be fractional). */
+const NonNegativeNumberSchema = z.number().min(0, 'must be >= 0');
+
+/**
+ * Per-road priority weights from JSON. Omitted roads use engine default (1.0).
+ * Unknown keys are rejected (strict).
+ */
+export const RoadPrioritiesSchema = z
+  .object({
+    north: NonNegativeNumberSchema.optional(),
+    south: NonNegativeNumberSchema.optional(),
+    east: NonNegativeNumberSchema.optional(),
+    west: NonNegativeNumberSchema.optional(),
+  })
+  .strict();
+
+/**
+ * Optional CLI/API input options. Only documented keys allowed (strict).
+ */
+export const OptionsSchema = z
+  .object({
+    signalTimings: SignalTimingsPartialSchema.optional(),
+    roadPriorities: RoadPrioritiesSchema.optional(),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
 // Top-level input schema
 // ---------------------------------------------------------------------------
 
 export const InputSchema = z.object({
   commands: z.array(CommandSchema).min(0),
+  /** Optional simulation options (e.g. signal timing profile). */
+  options: OptionsSchema.optional(),
 });
 
 export type InputSchemaType = z.infer<typeof InputSchema>;

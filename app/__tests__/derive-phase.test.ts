@@ -14,44 +14,44 @@ describe('derivePhasePerStep', () => {
     expect(result).toEqual([null]);
   });
 
-  it('returns NS_STRAIGHT for a north departure', () => {
+  it('returns NS_THROUGH for a north departure', () => {
     const commands: Command[] = [
       { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
       { type: 'step' },
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['N1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['NS_STRAIGHT']);
+    expect(result).toEqual(['NS_THROUGH']);
   });
 
-  it('returns NS_STRAIGHT for a south departure', () => {
+  it('returns NS_THROUGH for a south departure', () => {
     const commands: Command[] = [
       { type: 'addVehicle', vehicleId: 'S1', startRoad: 'south', endRoad: 'north' },
       { type: 'step' },
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['S1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['NS_STRAIGHT']);
+    expect(result).toEqual(['NS_THROUGH']);
   });
 
-  it('returns EW_STRAIGHT for an east departure', () => {
+  it('returns EW_THROUGH for an east departure', () => {
     const commands: Command[] = [
       { type: 'addVehicle', vehicleId: 'E1', startRoad: 'east', endRoad: 'west' },
       { type: 'step' },
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['E1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['EW_STRAIGHT']);
+    expect(result).toEqual(['EW_THROUGH']);
   });
 
-  it('returns EW_STRAIGHT for a west departure', () => {
+  it('returns EW_THROUGH for a west departure', () => {
     const commands: Command[] = [
       { type: 'addVehicle', vehicleId: 'W1', startRoad: 'west', endRoad: 'east' },
       { type: 'step' },
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['W1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['EW_STRAIGHT']);
+    expect(result).toEqual(['EW_THROUGH']);
   });
 
   it('handles multiple steps with different phases', () => {
@@ -63,7 +63,7 @@ describe('derivePhasePerStep', () => {
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['N1'] }, { leftVehicles: ['E1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['NS_STRAIGHT', 'EW_STRAIGHT']);
+    expect(result).toEqual(['NS_THROUGH', 'EW_THROUGH']);
   });
 
   it('returns null for steps where departing vehicle has no known startRoad', () => {
@@ -88,7 +88,7 @@ describe('derivePhasePerStep', () => {
     ];
     const statuses: StepStatus[] = [{ leftVehicles: ['N1', 'S1'] }];
     const result = derivePhasePerStep(commands, statuses);
-    expect(result).toEqual(['NS_STRAIGHT']);
+    expect(result).toEqual(['NS_THROUGH']);
   });
 
   it('does not mutate input arrays', () => {

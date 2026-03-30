@@ -8,18 +8,20 @@
 
 import type { Road, SimulateOptions, SimulationState, StepStatus } from './types.js';
 import { ROADS } from './types.js';
-import { PHASES } from './phase.js';
-import type { PhaseId } from './phase.js';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 /**
- * Distribution of how often each phase was selected across all steps.
- * Keys are PhaseId strings; values are the count of steps that used that phase.
+ * Phase label for a single step: active green/yellow sub-phase or ALL_RED clearance.
  */
-export type PhaseDistribution = Record<PhaseId, number>;
+export type TelemetryPhaseKey = 'NS_THROUGH' | 'NS_LEFT' | 'EW_THROUGH' | 'EW_LEFT' | 'ALL_RED';
+
+/**
+ * Distribution of how often each telemetry phase key was active at step start.
+ */
+export type PhaseDistribution = Record<TelemetryPhaseKey, number>;
 
 /**
  * Telemetry snapshot produced by a single simulate() run.
@@ -36,13 +38,12 @@ export interface TelemetryData {
   totalVehiclesProcessed: number;
   /**
    * Average queue length across all roads and all steps.
-   * Computed as the mean of per-road queue snapshots taken BEFORE each dequeue.
+   * Computed as the mean of per-road queue snapshots taken AFTER each step's dequeue.
    * Returns 0 if there were no steps.
    */
   averageQueueLength: number;
   /**
-   * How many steps used each phase.
-   * All phases are always present as keys; absent phases have a count of 0.
+   * How many steps had each phase key active at tick start (discharge basis).
    */
   phaseDistribution: PhaseDistribution;
 }
@@ -65,18 +66,34 @@ export interface TelemetryAccumulator {
 // Factory
 // ---------------------------------------------------------------------------
 
+const ZERO_DISTRIBUTION: PhaseDistribution = {
+  NS_THROUGH: 0,
+  NS_LEFT: 0,
+  EW_THROUGH: 0,
+  EW_LEFT: 0,
+  ALL_RED: 0,
+};
+
+/**
+ * Phase key at tick start (before discharge) for telemetry bucketing.
+ */
+export function telemetryPhaseKeyAtStepStart(state: SimulationState): TelemetryPhaseKey {
+  if (state.segmentKind === 'ALL_RED') {
+    return 'ALL_RED';
+  }
+  return state.currentSignalPhaseId;
+}
+
 /**
  * Create a fresh accumulator with all counters at zero.
  */
 export function createAccumulator(): TelemetryAccumulator {
-  const phaseDistribution = Object.fromEntries(PHASES.map((p) => [p.id, 0])) as PhaseDistribution;
-
   return {
     totalSteps: 0,
     totalVehiclesProcessed: 0,
     queueLengthSum: 0,
     queueLengthSampleCount: 0,
-    phaseDistribution,
+    phaseDistribution: { ...ZERO_DISTRIBUTION },
   };
 }
 
@@ -85,31 +102,31 @@ export function createAccumulator(): TelemetryAccumulator {
 // ---------------------------------------------------------------------------
 
 /**
- * Record per-step telemetry: queue snapshot (before dequeue), step count, phase,
+ * Record per-step telemetry: queue snapshot (after dequeue), step count, phase at tick start,
  * and vehicle throughput.
  *
  * @param acc - The running accumulator (mutated in place).
- * @param state - The current simulation state (read-only after the snapshot is taken).
- * @param phaseId - The phase selected for this step.
+ * @param state - The current simulation state (after dequeue and controller advance).
+ * @param phaseKeyAtStepStart - Signal phase active at the beginning of the tick.
  * @param stepResult - The StepStatus produced by this step.
  */
 export function recordStep(
   acc: TelemetryAccumulator,
   state: SimulationState,
-  phaseId: PhaseId,
+  phaseKeyAtStepStart: TelemetryPhaseKey,
   stepResult: StepStatus
 ): void {
   acc.totalSteps += 1;
   acc.totalVehiclesProcessed += stepResult.leftVehicles.length;
 
-  // Snapshot current queue lengths across all roads.
   for (const road of ROADS) {
     const queue = state.queues.get(road as Road);
     acc.queueLengthSum += queue?.length ?? 0;
     acc.queueLengthSampleCount += 1;
   }
 
-  acc.phaseDistribution[phaseId] = (acc.phaseDistribution[phaseId] ?? 0) + 1;
+  acc.phaseDistribution[phaseKeyAtStepStart] =
+    (acc.phaseDistribution[phaseKeyAtStepStart] ?? 0) + 1;
 }
 
 // ---------------------------------------------------------------------------

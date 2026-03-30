@@ -8,70 +8,87 @@
  * The engine is completely free of I/O and framework dependencies.
  */
 
-import type { Command, SimulateOptions, SimulationState, StepStatus, Vehicle } from './types.js';
-import { createQueues, dequeueVehicle, enqueueVehicle } from './queue.js';
-import { selectPhase } from './phase.js';
+import type {
+  Command,
+  SignalTimingConfig,
+  SimulateOptions,
+  SimulationState,
+  StepStatus,
+  Vehicle,
+} from './types.js';
+import { mergeSignalTimingConfig } from './types.js';
+import { createQueues, enqueueVehicle } from './queue.js';
 import { assertInvariants } from './invariants.js';
+import {
+  dischargeEligibleVehicles,
+  advanceSignalController,
+  reconcileEmergencyBeforeDischarge,
+} from './signal-controller.js';
 import {
   createAccumulator,
   finalizeTelemetry,
   isTelemetryEnabled,
   recordStep,
+  telemetryPhaseKeyAtStepStart,
   type SimulationResult,
   type TelemetryAccumulator,
 } from './telemetry.js';
 
+const DEFAULT_SIMULATE_OPTIONS: SimulateOptions = {
+  enableInvariantChecks: false,
+  enableTelemetry: false,
+};
+
+function normalizeSimulateOptions(options: SimulateOptions): SimulateOptions {
+  return {
+    ...DEFAULT_SIMULATE_OPTIONS,
+    ...options,
+    signalTimings: mergeSignalTimingConfig(options.signalTimings),
+  };
+}
+
 /**
  * Create a blank, valid initial simulation state.
+ * Starts in NS_THROUGH GREEN per specs/REALISTIC-SIGNALIZATION.md.
  */
-export function createInitialState(): SimulationState {
+export function createInitialState(signalTimings?: Partial<SignalTimingConfig>): SimulationState {
+  const timing = mergeSignalTimingConfig(signalTimings);
   return {
     queues: createQueues(),
     stepCount: 0,
-    lastPhaseIndex: -1,
+    signalTiming: timing,
+    currentSignalPhaseId: 'NS_THROUGH',
+    segmentKind: 'GREEN',
+    segmentTicksRemaining: 0,
+    greenTicksElapsedInCurrentGreen: 0,
+    lastServedPhaseIndex: -1,
+    forcedPhaseAfterAllRed: null,
   };
 }
 
 /**
  * Process a single `step` command against the current state.
  *
- * Steps:
- *  1. Select the active phase using adaptive load balancing (with optional weights).
- *  2. For each road in the phase, dequeue the front vehicle (if any).
- *  3. Record departed vehicle IDs in the returned StepStatus.
- *  4. Advance stepCount and remember the chosen phase index.
+ * Order (per spec): apply signal at tick start → dequeue eligible heads → advance controller.
  *
  * Mutates `state` in place.
- *
- * NOTE — Transition phases:
- *   Real-world traffic lights include yellow and all-red clearance intervals
- *   between green phases.  This simulation models those transitions as
- *   **instantaneous** — there is no intermediate tick where roads are neither
- *   green nor red.  Each `step` command moves directly from the previous phase
- *   to the next phase with no in-between state.
  */
 function processStep(
   state: SimulationState,
   options: SimulateOptions,
   acc: TelemetryAccumulator | null
 ): StepStatus {
-  const phase = selectPhase(state, options.roadPriorities);
-  const leftVehicles: string[] = [];
-
-  for (const road of phase.roads) {
-    const vehicle: Vehicle | undefined = dequeueVehicle(state, road);
-    if (vehicle !== undefined) {
-      leftVehicles.push(vehicle.vehicleId);
-    }
-  }
+  reconcileEmergencyBeforeDischarge(state, options);
+  const phaseKeyForTelemetry = telemetryPhaseKeyAtStepStart(state);
+  const leftVehicles = dischargeEligibleVehicles(state);
 
   state.stepCount += 1;
-  state.lastPhaseIndex = phase.index;
+  advanceSignalController(state, options);
 
   const status: StepStatus = { leftVehicles };
 
   if (acc !== null) {
-    recordStep(acc, state, phase.id, status);
+    recordStep(acc, state, phaseKeyForTelemetry, status);
   }
 
   return status;
@@ -86,7 +103,7 @@ function runCommands(
   options: SimulateOptions,
   acc: TelemetryAccumulator | null
 ): StepStatus[] {
-  const state = createInitialState();
+  const state = createInitialState(options.signalTimings);
   const results: StepStatus[] = [];
 
   for (const command of commands) {
@@ -127,14 +144,14 @@ export function simulate(
   commands: Command[],
   optionsOrChecks: SimulateOptions | boolean = {}
 ): StepStatus[] {
-  // Backwards-compatible overload: accept plain boolean as enableInvariantChecks.
   const options: SimulateOptions =
     typeof optionsOrChecks === 'boolean'
       ? { enableInvariantChecks: optionsOrChecks }
       : optionsOrChecks;
 
-  const acc = isTelemetryEnabled(options) ? createAccumulator() : null;
-  return runCommands(commands, options, acc);
+  const normalized = normalizeSimulateOptions(options);
+  const acc = isTelemetryEnabled(normalized) ? createAccumulator() : null;
+  return runCommands(commands, normalized, acc);
 }
 
 /**
@@ -148,8 +165,9 @@ export function simulateWithTelemetry(
   commands: Command[],
   options: SimulateOptions = {}
 ): SimulationResult {
+  const normalized = normalizeSimulateOptions({ ...options, enableTelemetry: true });
   const acc = createAccumulator();
-  const stepStatuses = runCommands(commands, options, acc);
+  const stepStatuses = runCommands(commands, normalized, acc);
   return {
     stepStatuses,
     telemetry: finalizeTelemetry(acc),

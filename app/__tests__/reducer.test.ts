@@ -96,7 +96,13 @@ describe('simulationReducer', () => {
         totalSteps: 2,
         totalVehiclesProcessed: 1,
         averageQueueLength: 0.5,
-        phaseDistribution: { NS_STRAIGHT: 1, EW_STRAIGHT: 1 },
+        phaseDistribution: {
+          NS_THROUGH: 1,
+          NS_LEFT: 0,
+          EW_THROUGH: 1,
+          EW_LEFT: 0,
+          ALL_RED: 0,
+        },
       };
       const state = simulationReducer(initialState, {
         type: 'STEP_RESULT',
@@ -110,7 +116,13 @@ describe('simulationReducer', () => {
         totalSteps: 1,
         totalVehiclesProcessed: 0,
         averageQueueLength: 0,
-        phaseDistribution: { NS_STRAIGHT: 1, EW_STRAIGHT: 0 },
+        phaseDistribution: {
+          NS_THROUGH: 1,
+          NS_LEFT: 0,
+          EW_THROUGH: 0,
+          EW_LEFT: 0,
+          ALL_RED: 0,
+        },
       };
       const stateWithTelemetry: SimulationState = { ...initialState, telemetry: existing };
       const state = simulationReducer(stateWithTelemetry, {

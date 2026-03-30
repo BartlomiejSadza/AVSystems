@@ -73,8 +73,12 @@ function isGreen(
   phase: RenderContext['simulationSnapshot']['phase']
 ): boolean {
   if (phase === null) return false;
-  if (phase === 'NS_STRAIGHT') return facing === 'south' || facing === 'north';
-  if (phase === 'EW_STRAIGHT') return facing === 'east' || facing === 'west';
+  if (phase === 'NS_THROUGH' || phase === 'NS_LEFT') {
+    return facing === 'south' || facing === 'north';
+  }
+  if (phase === 'EW_THROUGH' || phase === 'EW_LEFT') {
+    return facing === 'east' || facing === 'west';
+  }
   return false;
 }
 

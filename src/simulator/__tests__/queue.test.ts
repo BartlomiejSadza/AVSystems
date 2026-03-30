@@ -13,13 +13,11 @@ import {
 } from '../queue.js';
 import type { SimulationState, Vehicle } from '../types.js';
 import { ROADS } from '../types.js';
+import { createInitialState } from '../engine.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
 
 function makeState(): SimulationState {
-  return {
-    queues: createQueues(),
-    stepCount: 0,
-    lastPhaseIndex: -1,
-  };
+  return createInitialState(FAST_SIGNAL_TIMINGS);
 }
 
 function makeVehicle(id: string, startRoad: Vehicle['startRoad'] = 'north'): Vehicle {

@@ -71,14 +71,14 @@ describe('StepLog', () => {
 
   it('renders step entries with step number and phase', () => {
     const entries: StepLogEntry[] = [
-      { stepIndex: 1, phase: 'NS_STRAIGHT', departed: [] },
-      { stepIndex: 2, phase: 'EW_STRAIGHT', departed: [] },
+      { stepIndex: 1, phase: 'NS_THROUGH', departed: [] },
+      { stepIndex: 2, phase: 'EW_THROUGH', departed: [] },
     ];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/Step 1/)).toBeInTheDocument();
-    expect(screen.getByText('NS_STRAIGHT')).toBeInTheDocument();
+    expect(screen.getByText('NS_THROUGH')).toBeInTheDocument();
     expect(screen.getByText(/Step 2/)).toBeInTheDocument();
-    expect(screen.getByText('EW_STRAIGHT')).toBeInTheDocument();
+    expect(screen.getByText('EW_THROUGH')).toBeInTheDocument();
   });
 
   it('renders null phase as "NONE"', () => {
@@ -89,7 +89,7 @@ describe('StepLog', () => {
 
   it('shows departed vehicle IDs in entries', () => {
     const entries: StepLogEntry[] = [
-      { stepIndex: 3, phase: 'NS_STRAIGHT', departed: ['car-1', 'car-2'] },
+      { stepIndex: 3, phase: 'NS_THROUGH', departed: ['car-1', 'car-2'] },
     ];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/car-1/)).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('StepLog', () => {
   });
 
   it('shows "No vehicles departed" when departed array is empty', () => {
-    const entries: StepLogEntry[] = [{ stepIndex: 4, phase: 'EW_STRAIGHT', departed: [] }];
+    const entries: StepLogEntry[] = [{ stepIndex: 4, phase: 'EW_THROUGH', departed: [] }];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/No vehicles departed/i)).toBeInTheDocument();
   });

@@ -6,17 +6,27 @@
 import { describe, it, expect } from 'vitest';
 import { simulate, createInitialState } from '../engine.js';
 import type { Command } from '../types.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
+
+const fast = { signalTimings: FAST_SIGNAL_TIMINGS };
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+const OPPOSITE: Record<'north' | 'south' | 'east' | 'west', 'north' | 'south' | 'east' | 'west'> = {
+  north: 'south',
+  south: 'north',
+  east: 'west',
+  west: 'east',
+};
+
 function addVehicle(
   vehicleId: string,
   startRoad: 'north' | 'south' | 'east' | 'west',
-  endRoad: 'north' | 'south' | 'east' | 'west' = 'north'
+  endRoad?: 'north' | 'south' | 'east' | 'west'
 ): Command {
-  return { type: 'addVehicle', vehicleId, startRoad, endRoad };
+  return { type: 'addVehicle', vehicleId, startRoad, endRoad: endRoad ?? OPPOSITE[startRoad] };
 }
 
 const step: Command = { type: 'step' };
@@ -26,10 +36,13 @@ const step: Command = { type: 'step' };
 // ---------------------------------------------------------------------------
 
 describe('createInitialState', () => {
-  it('returns an empty state with stepCount 0 and lastPhaseIndex -1', () => {
+  it('returns an empty state with stepCount 0 and NS_THROUGH GREEN', () => {
     const state = createInitialState();
     expect(state.stepCount).toBe(0);
-    expect(state.lastPhaseIndex).toBe(-1);
+    expect(state.lastServedPhaseIndex).toBe(-1);
+    expect(state.currentSignalPhaseId).toBe('NS_THROUGH');
+    expect(state.segmentKind).toBe('GREEN');
+    expect(state.forcedPhaseAfterAllRed).toBeNull();
     for (const q of state.queues.values()) {
       expect(q).toHaveLength(0);
     }
@@ -41,16 +54,6 @@ describe('createInitialState', () => {
 // ---------------------------------------------------------------------------
 
 describe('simulate — canonical spec example', () => {
-  /**
-   * Input:
-   *   addVehicle V1 south → north
-   *   step
-   *   addVehicle V2 north → south
-   *   step
-   *
-   * Expected output:
-   *   stepStatuses: [{ leftVehicles: ["V1"] }, { leftVehicles: ["V2"] }]
-   */
   it('matches the example from the specification', () => {
     const commands: Command[] = [
       addVehicle('V1', 'south', 'north'),
@@ -76,7 +79,7 @@ describe('simulate — edge cases', () => {
   });
 
   it('returns empty step statuses when only step commands are given', () => {
-    const result = simulate([step, step, step]);
+    const result = simulate([step, step, step], fast);
     expect(result).toHaveLength(3);
     result.forEach((s) => expect(s.leftVehicles).toHaveLength(0));
   });
@@ -94,7 +97,7 @@ describe('simulate — edge cases', () => {
 describe('simulate — FIFO ordering', () => {
   it('dequeues the first vehicle added to a road, not the last', () => {
     const commands: Command[] = [addVehicle('FIRST', 'north'), addVehicle('SECOND', 'north'), step];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     expect(result[0]?.leftVehicles).toContain('FIRST');
     expect(result[0]?.leftVehicles).not.toContain('SECOND');
   });
@@ -108,9 +111,8 @@ describe('simulate — FIFO ordering', () => {
       step,
       step,
     ];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     const allLeft = result.flatMap((s) => s.leftVehicles);
-    // North queue should drain in order A → B → C
     const northLeft = allLeft.filter((id) => ['A', 'B', 'C'].includes(id));
     expect(northLeft).toEqual(['A', 'B', 'C']);
   });
@@ -122,44 +124,32 @@ describe('simulate — FIFO ordering', () => {
 
 describe('simulate — adaptive phase selection', () => {
   it('gives green to NS when north/south have more vehicles', () => {
-    // 2 NS vehicles vs 0 EW vehicles → NS wins
     const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     const left = result[0]!.leftVehicles;
     expect(left).toContain('N1');
     expect(left).toContain('S1');
   });
 
-  it('gives green to EW when east/west have more vehicles', () => {
-    // 2 EW vehicles vs 0 NS vehicles → EW wins
-    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step];
-    const result = simulate(commands);
-    const left = result[0]!.leftVehicles;
-    expect(left).toContain('E1');
-    expect(left).toContain('W1');
+  it('gives green to EW when east/west have more vehicles (after initial NS_THROUGH cycle)', () => {
+    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step, step];
+    const result = simulate(commands, fast);
+    const ewStep = result.find((s) => s.leftVehicles.includes('E1'));
+    expect(ewStep?.leftVehicles).toEqual(expect.arrayContaining(['E1', 'W1']));
   });
 
   it('alternates phase when loads are equal, starting with NS', () => {
-    // 1 NS vehicle vs 1 EW vehicle → tie → Phase 0 (NS) first
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('E1', 'east'),
-      step, // should be NS
-      step, // loads now: NS=0, EW=1 → EW wins (no tie)
-    ];
-    const result = simulate(commands);
-    // Step 1: NS phase — N1 departs
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('E1', 'east'), step, step];
+    const result = simulate(commands, fast);
     expect(result[0]?.leftVehicles).toContain('N1');
     expect(result[0]?.leftVehicles).not.toContain('E1');
-    // Step 2: EW phase — E1 departs
     expect(result[1]?.leftVehicles).toContain('E1');
   });
 
   it('alternates when both phases are empty (tie on 0)', () => {
     const commands: Command[] = [step, step, step, step];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     result.forEach((s) => expect(s.leftVehicles).toHaveLength(0));
-    // Importantly, it should NOT throw or infinite-loop
     expect(result).toHaveLength(4);
   });
 });
@@ -171,18 +161,18 @@ describe('simulate — adaptive phase selection', () => {
 describe('simulate — simultaneous clearing', () => {
   it('clears both north and south in the same step', () => {
     const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     expect(result[0]?.leftVehicles).toHaveLength(2);
     expect(result[0]?.leftVehicles).toContain('N1');
     expect(result[0]?.leftVehicles).toContain('S1');
   });
 
-  it('clears both east and west in the same step', () => {
-    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step];
-    const result = simulate(commands);
-    expect(result[0]?.leftVehicles).toHaveLength(2);
-    expect(result[0]?.leftVehicles).toContain('E1');
-    expect(result[0]?.leftVehicles).toContain('W1');
+  it('clears both east and west in the same step once EW through is active', () => {
+    const commands: Command[] = [addVehicle('E1', 'east'), addVehicle('W1', 'west'), step, step];
+    const result = simulate(commands, fast);
+    const ewStep = result.find((s) => s.leftVehicles.length === 2 && s.leftVehicles.includes('E1'));
+    expect(ewStep?.leftVehicles).toContain('E1');
+    expect(ewStep?.leftVehicles).toContain('W1');
   });
 });
 
@@ -192,24 +182,14 @@ describe('simulate — simultaneous clearing', () => {
 
 describe('simulate — empty green roads', () => {
   it('returns leftVehicles = [] when no vehicles are present at all', () => {
-    // No vehicles anywhere — both phases have 0 load, tie resolved to NS first,
-    // but NS roads are empty, so nothing departs.
     const commands: Command[] = [step];
-    const result = simulate(commands);
+    const result = simulate(commands, fast);
     expect(result[0]?.leftVehicles).toHaveLength(0);
   });
 
   it('returns leftVehicles = [] for the phase that has no waiting vehicles', () => {
-    // Force NS phase to win (2 NS vehicles vs 0 EW), then step again when NS is empty.
-    // Second step: NS has 0 vehicles (already departed), EW has 0 vehicles as well.
-    // Tie broken → alternate → EW (lastPhaseIndex was 0 = NS), still produces [].
-    const commands: Command[] = [
-      addVehicle('N1', 'north'),
-      addVehicle('S1', 'south'),
-      step, // NS wins: N1 + S1 depart
-      step, // both phases empty: leftVehicles = []
-    ];
-    const result = simulate(commands);
+    const commands: Command[] = [addVehicle('N1', 'north'), addVehicle('S1', 'south'), step, step];
+    const result = simulate(commands, fast);
     expect(result[0]?.leftVehicles).toHaveLength(2);
     expect(result[1]?.leftVehicles).toHaveLength(0);
   });
@@ -227,14 +207,13 @@ describe('simulate — many steps', () => {
       const road = roads[i % 4]!;
       commands.push(addVehicle(`V${i}`, road));
     }
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 120; i++) {
       commands.push(step);
     }
 
-    const result = simulate(commands);
-    expect(result).toHaveLength(60);
+    const result = simulate(commands, fast);
+    expect(result).toHaveLength(120);
     const allLeft = result.flatMap((s) => s.leftVehicles);
-    // All vehicle IDs should be unique (no vehicle leaves twice)
     expect(new Set(allLeft).size).toBe(allLeft.length);
   });
 });
@@ -246,6 +225,6 @@ describe('simulate — many steps', () => {
 describe('simulate — with invariant checks enabled', () => {
   it('does not throw for valid input when invariant checks are on', () => {
     const commands: Command[] = [addVehicle('V1', 'north'), step, addVehicle('V2', 'east'), step];
-    expect(() => simulate(commands, true)).not.toThrow();
+    expect(() => simulate(commands, { ...fast, enableInvariantChecks: true })).not.toThrow();
   });
 });
