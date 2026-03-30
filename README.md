@@ -41,11 +41,11 @@ pnpm simulate --input <sciezka-do-input.json> --output <sciezka-do-output.json>
 
 **Opcje:**
 
-| Flaga             | Opis                                          |
-| ----------------- | --------------------------------------------- |
-| `--input <path>`  | Ścieżka do wejściowego pliku JSON (wymagane)  |
+| Flaga             | Opis                                         |
+| ----------------- | -------------------------------------------- |
+| `--input <path>`  | Ścieżka do wejściowego pliku JSON (wymagane) |
 | `--output <path>` | Ścieżka do wyjściowego pliku JSON (wymagane) |
-| `--help`          | Wyświetl informacje o użyciu                  |
+| `--help`          | Wyświetl informacje o użyciu                 |
 
 **Przykład z dołączonymi plikami próbkowymi:**
 
@@ -67,12 +67,12 @@ Plik wejściowy zawiera obiekt JSON z tablicą `commands`. Obsługiwane są dwa 
 
 **`addVehicle`** — umieszcza pojazd w kolejce dla drogi wjazdowej:
 
-| Pole        | Typ                                      | Wymagane | Opis                                                                                                                               |
-| ----------- | ---------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `type`      | `"addVehicle"`                           | tak      | Dyskryminator komendy                                                                                                              |
-| `vehicleId` | `string`                                 | tak      | Unikalny identyfikator pojazdu                                                                                                     |
-| `startRoad` | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, z której pojazd wjeżdża                                                                                                     |
-| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, na którą pojazd zjeżdża                                                                                                     |
+| Pole        | Typ                                      | Wymagane | Opis                                                                                                                          |
+| ----------- | ---------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `type`      | `"addVehicle"`                           | tak      | Dyskryminator komendy                                                                                                         |
+| `vehicleId` | `string`                                 | tak      | Unikalny identyfikator pojazdu                                                                                                |
+| `startRoad` | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, z której pojazd wjeżdża                                                                                                |
+| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, na którą pojazd zjeżdża                                                                                                |
 | `priority`  | `"normal" \| "emergency"`                | nie      | Domyślnie `"normal"`. Pojazdy uprzywilejowane przeskakują na początek kolejki i wymuszają aktywację swojej fazy sygnalizacji. |
 
 **`step`** — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
@@ -98,8 +98,8 @@ Plik wejściowy zawiera obiekt JSON z tablicą `commands`. Obsługiwane są dwa 
 
 Plik wyjściowy zawiera obiekt JSON z tablicą `stepStatuses` — jeden wpis na każdą komendę `step`, w kolejności występowania.
 
-| Pole           | Typ        | Opis                                                                                                          |
-| -------------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
+| Pole           | Typ        | Opis                                                                                                              |
+| -------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
 | `leftVehicles` | `string[]` | Identyfikatory pojazdów, które opuściły skrzyżowanie w tym kroku. Pusta tablica, jeśli żaden pojazd nie odjechał. |
 
 **Pełny przykład (`output.json`):**
@@ -122,6 +122,7 @@ Plik wyjściowy zawiera obiekt JSON z tablicą `stepStatuses` — jeden wpis na 
 Silnik symulacji to deterministyczny automat skończony oparty na krokach czasowych (tick-based state machine), zarządzający skrzyżowaniem 4-kierunkowym. Priorytetyzuje bezpieczeństwo (unikanie kolizji) i wydajność (przepustowość) poprzez wielowarstwową logikę sterowania.
 
 ### 1. Klasyfikacja Ruchu
+
 Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą arytmetyki modularnej:
 `d = (endIndex - startIndex + 4) % 4`
 
@@ -131,7 +132,9 @@ Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zg
 - `d = 0`: **Zawracanie** (Obsługiwane przez fazy `LEFT`)
 
 ### 2. Chronione Fazy Sygnalizacji
+
 Kontroler przełącza się między czterema chronionymi fazami w kanonicznej kolejności pierścienia:
+
 1. `NS_THROUGH` (Północ/Południe Prosto i w Prawo)
 2. `NS_LEFT` (Północ/Południe w Lewo i Zawracanie)
 3. `EW_THROUGH` (Wschód/Zachód Prosto i w Prawo)
@@ -140,6 +143,7 @@ Kontroler przełącza się między czterema chronionymi fazami w kanonicznej kol
 **Niezmiennik bezpieczeństwa:** Tylko jedna oś (NS lub EW) może mieć światło inne niż czerwone w danym momencie. Silnik wymusza to poprzez przechodzenie przez segmenty `YELLOW` (żółte) i `ALL_RED` (wszystkie czerwone).
 
 ### 3. Adaptacyjna Logika Wyboru
+
 Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną fazę `GREEN` za pomocą algorytmu ważonego zapotrzebowania:
 
 - **Obliczanie zapotrzebowania:** Dla każdej fazy zapotrzebowanie $D$ jest obliczane jako:
@@ -149,12 +153,16 @@ Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną f
 - **Pomijanie pustych faz:** Jeśli opcja `skipEmptyPhases` jest włączona, kontroler automatycznie pominie fazy z zerowym zapotrzebowaniem, natychmiast przechodząc do kolejnej uprawnionej fazy.
 
 ### 4. Priorytetyzacja Pojazdów Uprzywilejowanych
+
 Pojazdy uprzywilejowane (`priority: "emergency"`) uruchamiają specjalną ścieżkę nadpisującą standardową logikę:
+
 - **Wskakiwanie do kolejki:** Pojazdy uprzywilejowane są wstawiane na początek swoich kolejek (zachowując FIFO tylko względem innych pojazdów uprzywilejowanych).
 - **Wymuszanie fazy:** Jeśli pojazd uprzywilejowany dotrze na czoło kolejki, logika `reconcileEmergencyBeforeDischarge` identyfikuje wymaganą fazę. Jeśli aktywna faza jest kolizyjna, kontroler natychmiast inicjuje przejście (Zielone -> Żółte -> Wszystkie Czerwone), aby obsłużyć pojazd uprzywilejowany tak szybko, jak to możliwe.
 
 ### 5. Maszyna Stanów Przejść
+
 Każda faza sygnalizacji składa się z trzech segmentów:
+
 - **GREEN (Zielone):** Pojazdy opuszczają skrzyżowanie. Trwa od `minGreenTicks` do `maxGreenTicks`. Jeśli zapotrzebowanie spadnie do zera po upływie `minGreenTicks`, faza kończy się wcześniej.
 - **YELLOW (Żółte):** Segment ostrzegawczy. Żaden pojazd nie opuszcza skrzyżowania.
 - **ALL_RED (Wszystkie Czerwone):** Interwał oczyszczania. Wszystkie światła są czerwone, aby upewnić się, że skrzyżowanie jest puste przed zmianą osi ruchu.
@@ -162,13 +170,16 @@ Każda faza sygnalizacji składa się z trzech segmentów:
 ## Wydajność i Niezawodność
 
 ### Niezmienniki Bezpieczeństwa
+
 System utrzymuje zestaw **niezmienników bezpieczeństwa** sprawdzanych po każdej zmianie stanu:
+
 - **Kompletność:** Wszystkie 4 drogi muszą zawsze posiadać kolejkę.
 - **Unikalność:** ID pojazdu nie może istnieć w dwóch miejscach jednocześnie.
 - **Spójność:** Pojazdy muszą znajdować się w kolejce odpowiadającej ich drodze wjazdowej (`startRoad`).
 - **Brak Kolizji:** Aktywne zielone drogi muszą należeć do tej samej osi.
 
 ### Determinizm
+
 Symulacja jest **funkcją czystą** swoich komend wejściowych. Dla tej samej sekwencji komend `addVehicle` i `step`, silnik wygeneruje dokładnie taką samą tablicę `leftVehicles` za każdym razem, niezależnie od środowiska wykonawczego.
 
 ## Możliwe Rozszerzenia
@@ -185,6 +196,7 @@ pnpm test
 ```
 
 Uruchamia ponad 1138 testów obejmujących:
+
 - Testy jednostkowe, integracyjne, regresyjne (fixture-based).
 - Testy niezmienników i bezpieczeństwa.
 - Testy oparte na właściwościach (property-based) przy użyciu `fast-check`.
@@ -200,16 +212,16 @@ Wyniki typowe: **100 000 komend w średnio ~9ms**.
 
 ## Stos Technologiczny
 
-| Narzędzie         | Wersja         | Rola                   |
-| ----------------- | -------------- | ---------------------- |
-| Next.js           | >=15           | Framework GUI          |
-| TypeScript        | >=5.6 (strict) | Język                  |
-| pnpm              | >=10           | Menedżer pakietów      |
-| Node.js           | >=22           | Środowisko uruchomieniowe |
-| Vitest            | >=2            | Runner testowy         |
-| fast-check        | >=3            | Testy property-based   |
-| zod               | >=3            | Walidacja schematów JSON |
-| tinybench         | >=2            | Benchmarki wydajności  |
+| Narzędzie  | Wersja         | Rola                      |
+| ---------- | -------------- | ------------------------- |
+| Next.js    | >=15           | Framework GUI             |
+| TypeScript | >=5.6 (strict) | Język                     |
+| pnpm       | >=10           | Menedżer pakietów         |
+| Node.js    | >=22           | Środowisko uruchomieniowe |
+| Vitest     | >=2            | Runner testowy            |
+| fast-check | >=3            | Testy property-based      |
+| zod        | >=3            | Walidacja schematów JSON  |
+| tinybench  | >=2            | Benchmarki wydajności     |
 
 ## Licencja
 
