@@ -1,12 +1,11 @@
 import { SimulationProvider } from './components/SimulationProvider';
-import { SimulationApp } from './components/SimulationApp';
+import { PixelSimulatorApp } from './components/PixelSimulatorApp';
 
 export default function Home() {
   return (
-    <main className="p-6 min-h-screen">
-      <h1 className="text-xl font-semibold mb-6">Traffic Lights Simulation</h1>
+    <main className="min-h-screen bg-[#1D2B53]">
       <SimulationProvider>
-        <SimulationApp />
+        <PixelSimulatorApp />
       </SimulationProvider>
     </main>
   );
