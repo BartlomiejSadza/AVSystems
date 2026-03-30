@@ -120,6 +120,7 @@ function drawHorizontalLamps(
 
   // Amber lamp
   ctx.globalAlpha = amberSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
+
   drawSprite(ctx, amberSprite, 0, x + 11, y + 2);
 
   // Green lamp
