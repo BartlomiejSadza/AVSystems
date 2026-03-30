@@ -45,11 +45,11 @@ export function AddVehiclePanel() {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-start gap-1 md:items-end">
       <span className="font-[family-name:var(--font-pixel)] text-[8px] uppercase tracking-widest text-[#9ca3af]">
         Add Vehicle
       </span>
-      <div className="flex items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1 md:flex-nowrap">
         {VEHICLE_SPECS.map((spec) => (
           <PixelButton
             key={spec.label}

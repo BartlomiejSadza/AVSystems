@@ -1,9 +1,9 @@
 import type { Road } from '@/simulator/types';
-import type { PhaseId } from '@/simulator/phase';
+import type { DisplayPhase } from '../lib/phase-display';
 
 /** Frozen simulation state for a single frame — read by canvas layers. */
 export interface SimulationSnapshot {
-  phase: PhaseId | null;
+  phase: DisplayPhase | null;
   queues: Record<Road, string[]>;
   stepCount: number;
   totalDeparted: number;

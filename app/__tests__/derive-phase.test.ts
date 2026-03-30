@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { derivePhasePerStep, deriveQueuesAtStep } from '../lib/derive-phase';
+import {
+  derivePhasePerStep,
+  deriveQueuesAtStep,
+  deriveEmergencyQueuesAtStep,
+  selectSimulationUiState,
+} from '../lib/derive-phase';
 import type { Command, StepStatus } from '../lib/simulation-adapter';
 
 // ---------------------------------------------------------------------------
@@ -14,7 +19,7 @@ describe('derivePhasePerStep', () => {
     expect(result).toEqual([null]);
   });
 
-  it('returns NS_THROUGH for a north departure', () => {
+  it('returns NS_THROUGH for a north straight departure', () => {
     const commands: Command[] = [
       { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
       { type: 'step' },
@@ -22,6 +27,42 @@ describe('derivePhasePerStep', () => {
     const statuses: StepStatus[] = [{ leftVehicles: ['N1'] }];
     const result = derivePhasePerStep(commands, statuses);
     expect(result).toEqual(['NS_THROUGH']);
+  });
+
+  it('returns NS_LEFT for a north left turn (to west)', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'L1', startRoad: 'north', endRoad: 'west' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['L1'] }];
+    expect(derivePhasePerStep(commands, statuses)).toEqual(['NS_LEFT']);
+  });
+
+  it('returns NS_LEFT for u-turn from north', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'U1', startRoad: 'north', endRoad: 'north' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['U1'] }];
+    expect(derivePhasePerStep(commands, statuses)).toEqual(['NS_LEFT']);
+  });
+
+  it('returns NS_THROUGH for a north right turn (to east)', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'R1', startRoad: 'north', endRoad: 'east' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['R1'] }];
+    expect(derivePhasePerStep(commands, statuses)).toEqual(['NS_THROUGH']);
+  });
+
+  it('returns EW_LEFT for an east left turn (to north)', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'L2', startRoad: 'east', endRoad: 'north' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['L2'] }];
+    expect(derivePhasePerStep(commands, statuses)).toEqual(['EW_LEFT']);
   });
 
   it('returns NS_THROUGH for a south departure', () => {
@@ -196,5 +237,117 @@ describe('deriveQueuesAtStep', () => {
     expect(queues.south).toHaveLength(0);
     expect(queues.east).toHaveLength(0);
     expect(queues.west).toHaveLength(0);
+  });
+});
+
+describe('deriveEmergencyQueuesAtStep', () => {
+  it('returns empty queues when there are no emergency vehicles', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: [] }];
+    expect(deriveEmergencyQueuesAtStep(commands, statuses, 0)).toEqual({
+      north: [],
+      south: [],
+      east: [],
+      west: [],
+    });
+  });
+
+  it('keeps emergency vehicles in simulator queue order', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
+      {
+        type: 'addVehicle',
+        vehicleId: 'E1',
+        startRoad: 'north',
+        endRoad: 'south',
+        priority: 'emergency',
+      },
+      {
+        type: 'addVehicle',
+        vehicleId: 'E2',
+        startRoad: 'north',
+        endRoad: 'south',
+        priority: 'emergency',
+      },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: [] }];
+    expect(deriveEmergencyQueuesAtStep(commands, statuses, 0).north).toEqual(['E1', 'E2']);
+  });
+
+  it('removes emergency vehicles that already departed', () => {
+    const commands: Command[] = [
+      {
+        type: 'addVehicle',
+        vehicleId: 'E1',
+        startRoad: 'north',
+        endRoad: 'south',
+        priority: 'emergency',
+      },
+      { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
+      { type: 'step' },
+    ];
+    const statuses: StepStatus[] = [{ leftVehicles: ['E1'] }];
+    expect(deriveEmergencyQueuesAtStep(commands, statuses, 0)).toEqual({
+      north: [],
+      south: [],
+      east: [],
+      west: [],
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// selectSimulationUiState
+// ---------------------------------------------------------------------------
+
+describe('selectSimulationUiState', () => {
+  it('returns empty view state before any step is selected', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' },
+    ];
+    const stepStatuses: StepStatus[] = [];
+
+    const uiState = selectSimulationUiState({
+      commands,
+      stepStatuses,
+      currentStepIndex: -1,
+      isPlaying: false,
+    });
+
+    expect(uiState.activePhase).toBeNull();
+    expect(uiState.totalQueued).toBe(1);
+    expect(uiState.totalEmergencyQueued).toBe(0);
+    expect(uiState.totalDeparted).toBe(0);
+    expect(uiState.queues).toEqual({ north: ['V1'], south: [], east: [], west: [] });
+    expect(uiState.emergencyQueues).toEqual({ north: [], south: [], east: [], west: [] });
+  });
+
+  it('derives active phase, queues, and counters from the selected step', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
+      { type: 'addVehicle', vehicleId: 'E1', startRoad: 'east', endRoad: 'west' },
+      { type: 'step' },
+      { type: 'step' },
+    ];
+    const stepStatuses: StepStatus[] = [{ leftVehicles: ['N1'] }, { leftVehicles: [] }];
+
+    const uiState = selectSimulationUiState({
+      commands,
+      stepStatuses,
+      currentStepIndex: 0,
+      isPlaying: true,
+    });
+
+    expect(uiState.activePhase).toBe('NS_THROUGH');
+    expect(uiState.queues).toEqual({ north: [], south: [], east: ['E1'], west: [] });
+    expect(uiState.totalQueued).toBe(1);
+    expect(uiState.totalEmergencyQueued).toBe(0);
+    expect(uiState.totalDeparted).toBe(1);
+    expect(uiState.stepCount).toBe(2);
+    expect(uiState.isPlaying).toBe(true);
   });
 });

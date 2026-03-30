@@ -6,7 +6,7 @@ import { useSimulationContext } from '../SimulationProvider';
 import { useGameLoop } from '../../hooks/useGameLoop';
 import { useHitDetection, type TooltipState } from '../../hooks/useHitDetection';
 import { layers } from '../../canvas/layers';
-import { derivePhasePerStep, deriveQueuesAtStep } from '../../lib/derive-phase';
+import { selectSimulationUiState } from '../../lib/derive-phase';
 import type { SimulationSnapshot } from '../../canvas/types';
 import type { HitZone } from '../../canvas/hit-detection';
 
@@ -22,18 +22,7 @@ export function CanvasViewport({ onTooltipChange }: CanvasViewportProps) {
     setCanvasEl(node);
   }, []);
 
-  // Derive simulation data for the snapshot
-  const phases = derivePhasePerStep(state.commands, state.stepStatuses);
-  const activePhase = state.currentStepIndex >= 0 ? (phases[state.currentStepIndex] ?? null) : null;
-  const queues =
-    state.currentStepIndex >= 0
-      ? deriveQueuesAtStep(state.commands, state.stepStatuses, state.currentStepIndex)
-      : {
-          north: [] as string[],
-          south: [] as string[],
-          east: [] as string[],
-          west: [] as string[],
-        };
+  const uiState = selectSimulationUiState(state);
 
   // Snapshot ref — updated by useEffect, read by game loop
   const snapshotRef = useRef<SimulationSnapshot>({
@@ -46,13 +35,13 @@ export function CanvasViewport({ onTooltipChange }: CanvasViewportProps) {
 
   useEffect(() => {
     snapshotRef.current = {
-      phase: activePhase,
-      queues,
-      stepCount: state.stepStatuses.length,
-      totalDeparted: state.stepStatuses.reduce((s, st) => s + st.leftVehicles.length, 0),
-      isPlaying: state.isPlaying,
+      phase: uiState.activePhase,
+      queues: uiState.queues,
+      stepCount: uiState.stepCount,
+      totalDeparted: uiState.totalDeparted,
+      isPlaying: uiState.isPlaying,
     };
-  }, [activePhase, queues, state.stepStatuses, state.isPlaying]);
+  }, [uiState]);
 
   // Game loop
   useGameLoop(canvasEl, snapshotRef, layers);

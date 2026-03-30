@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import {
+  formatPhaseForDisplay,
+  type DisplayPhase,
+  type LegacyDisplayPhase,
+} from '../../lib/phase-display';
 
 export interface StepLogEntry {
   stepIndex: number;
-  phase: string | null;
+  phase: DisplayPhase | LegacyDisplayPhase | null;
   departed: string[];
 }
 
@@ -23,7 +28,7 @@ export function StepLog({ entries }: StepLogProps) {
   }, [entries]);
 
   return (
-    <div className="max-h-[200px] overflow-y-auto border-2 border-[#7E2553] bg-[#1D2B53] px-2 py-1.5">
+    <div className="min-w-0 max-h-[200px] overflow-y-auto border-2 border-[#7E2553] bg-[#1D2B53] px-2 py-1.5">
       {entries.length === 0 ? (
         <p className="m-0 font-[family-name:var(--font-pixel)] text-[10px] leading-tight text-[#C2C3C7]">
           No steps yet. Click Step to begin!
@@ -35,11 +40,11 @@ export function StepLog({ entries }: StepLogProps) {
               {/* Step number + phase */}
               <div className="font-[family-name:var(--font-pixel)] text-[10px] leading-tight text-[#29ADFF]">
                 Step {entry.stepIndex} —{' '}
-                <span className="text-[#FFF1E8]">{entry.phase ?? 'NONE'}</span>
+                <span className="text-[#FFF1E8]">{formatPhaseForDisplay(entry.phase)}</span>
               </div>
 
               {/* Departed vehicles */}
-              <div className="mt-0.5 font-[family-name:var(--font-pixel)] text-[9px] leading-tight text-[#C2C3C7]">
+              <div className="mt-0.5 break-all font-[family-name:var(--font-pixel)] text-[9px] leading-tight text-[#C2C3C7]">
                 {entry.departed.length > 0
                   ? `Departed: ${entry.departed.join(', ')}`
                   : 'No vehicles departed'}

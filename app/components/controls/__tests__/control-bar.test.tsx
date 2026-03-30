@@ -6,6 +6,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { SimulationProvider } from '../../SimulationProvider';
 import { ControlBar } from '../ControlBar';
 import { AddVehiclePanel } from '../AddVehiclePanel';
@@ -68,6 +69,13 @@ describe('ControlBar', () => {
     expect(screen.getByText('W')).toBeTruthy();
     expect(screen.getByText('SOS')).toBeTruthy();
   });
+
+  it('uses responsive wrapping classes to avoid horizontal overflow on narrow widths', () => {
+    const { container } = renderInProvider(<ControlBar />);
+    const row = container.querySelector('.md\\:flex-nowrap');
+    expect(row?.className).toContain('flex-wrap');
+    expect(row?.className).toContain('md:flex-nowrap');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -86,6 +94,17 @@ describe('AddVehiclePanel', () => {
   it('renders the "Add Vehicle" label', () => {
     renderInProvider(<AddVehiclePanel />);
     expect(screen.getByText(/add vehicle/i)).toBeTruthy();
+  });
+
+  it('uses responsive alignment and wrapping for touch-friendly small screens', () => {
+    renderInProvider(<AddVehiclePanel />);
+    const label = screen.getByText(/add vehicle/i);
+    const panel = label.parentElement;
+    const buttonsRow = label.nextElementSibling as HTMLElement | null;
+    expect(panel?.className).toContain('items-start');
+    expect(panel?.className).toContain('md:items-end');
+    expect(buttonsRow?.className).toContain('flex-wrap');
+    expect(buttonsRow?.className).toContain('md:flex-nowrap');
   });
 
   it('SOS button has danger variant styling', () => {

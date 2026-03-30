@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SimulationProvider } from '../SimulationProvider';
 import { PixelSimulatorApp } from '../PixelSimulatorApp';
+import { resetNpcMessageCounter } from '../../lib/npc-messages';
 
 // Mock simulation-adapter
 vi.mock('../../lib/simulation-adapter', () => ({
@@ -39,6 +40,10 @@ vi.mock('../../canvas/animation', () => ({
 }));
 
 describe('Integration: PixelSimulatorApp', () => {
+  beforeEach(() => {
+    resetNpcMessageCounter();
+  });
+
   it('renders without crashing', () => {
     render(
       <SimulationProvider>
@@ -89,10 +94,10 @@ describe('Integration: PixelSimulatorApp', () => {
         <PixelSimulatorApp />
       </SimulationProvider>
     );
-    expect(screen.getByText('N')).toBeTruthy();
-    expect(screen.getByText('S')).toBeTruthy();
-    expect(screen.getByText('E')).toBeTruthy();
-    expect(screen.getByText('W')).toBeTruthy();
-    expect(screen.getByText('SOS')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'N' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'S' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'E' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'W' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'SOS' })).toBeTruthy();
   });
 });

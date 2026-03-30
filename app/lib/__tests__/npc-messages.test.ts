@@ -124,6 +124,8 @@ describe('npc-messages', () => {
     it('returns a non-empty message for known phases', () => {
       expect(generatePhaseMessage('NS').text.length).toBeGreaterThan(0);
       expect(generatePhaseMessage('EW').text.length).toBeGreaterThan(0);
+      expect(generatePhaseMessage('NS_LEFT').text.length).toBeGreaterThan(0);
+      expect(generatePhaseMessage('EW_LEFT').text.length).toBeGreaterThan(0);
     });
 
     it('returns a non-empty message for unknown phases', () => {

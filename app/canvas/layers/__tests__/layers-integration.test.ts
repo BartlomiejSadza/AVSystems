@@ -194,4 +194,16 @@ describe('drawTrafficLights', () => {
     const rc = createMockRenderContext({ phase: 'EW_THROUGH' });
     expect(() => drawTrafficLights(rc)).not.toThrow();
   });
+
+  it('does not throw with phase: NS_THROUGH_YELLOW', () => {
+    const rc = createMockRenderContext({
+      phase: 'NS_THROUGH_YELLOW' as SimulationSnapshot['phase'],
+    });
+    expect(() => drawTrafficLights(rc)).not.toThrow();
+  });
+
+  it('does not throw with phase: ALL_RED', () => {
+    const rc = createMockRenderContext({ phase: 'ALL_RED' as SimulationSnapshot['phase'] });
+    expect(() => drawTrafficLights(rc)).not.toThrow();
+  });
 });

@@ -1,20 +1,39 @@
 import type { Command, StepStatus, PhaseId, Road } from './simulation-adapter';
-import { PHASES } from './simulation-adapter';
+import { phaseForVehicle } from '../../src/simulator/phase';
+
+export interface SimulationUiStateInput {
+  commands: readonly Command[];
+  stepStatuses: readonly StepStatus[];
+  currentStepIndex: number;
+  isPlaying: boolean;
+}
+
+export interface SimulationUiState {
+  phases: (PhaseId | null)[];
+  activePhase: PhaseId | null;
+  queues: Record<Road, string[]>;
+  emergencyQueues: Record<Road, string[]>;
+  totalQueued: number;
+  totalEmergencyQueued: number;
+  totalDeparted: number;
+  stepCount: number;
+  isPlaying: boolean;
+}
 
 /**
- * For each step, derive which phase was likely active by inspecting
- * which vehicles departed. The startRoad of the first departing vehicle
- * indicates which phase was green. Falls back to null when no vehicles left.
+ * For each step, derive which protected phase was active by inspecting the first
+ * departing vehicle's startRoad + endRoad (movement-qualified), matching the
+ * simulator's phase model (NS_THROUGH / NS_LEFT / EW_THROUGH / EW_LEFT).
+ * Falls back to null when no vehicles left or the vehicle is unknown.
  */
 export function derivePhasePerStep(
   commands: readonly Command[],
   stepStatuses: readonly StepStatus[]
 ): (PhaseId | null)[] {
-  // Build a vehicle → startRoad map
-  const vehicleRoads = new Map<string, Road>();
+  const vehicles = new Map<string, { startRoad: Road; endRoad: Road }>();
   for (const cmd of commands) {
     if (cmd.type === 'addVehicle') {
-      vehicleRoads.set(cmd.vehicleId, cmd.startRoad);
+      vehicles.set(cmd.vehicleId, { startRoad: cmd.startRoad, endRoad: cmd.endRoad });
     }
   }
 
@@ -22,10 +41,13 @@ export function derivePhasePerStep(
     if (status.leftVehicles.length === 0) return null;
     const firstVehicleId = status.leftVehicles[0];
     if (firstVehicleId === undefined) return null;
-    const road = vehicleRoads.get(firstVehicleId);
-    if (!road) return null;
-    const phase = PHASES.find((p) => (p.roads as readonly string[]).includes(road));
-    return phase?.id ?? null;
+    const v = vehicles.get(firstVehicleId);
+    if (!v) return null;
+    return phaseForVehicle({
+      vehicleId: firstVehicleId,
+      startRoad: v.startRoad,
+      endRoad: v.endRoad,
+    });
   });
 }
 
@@ -34,32 +56,115 @@ export function derivePhasePerStep(
  * steps up to and including targetStepIndex.
  *
  * Vehicles that departed in steps 0..targetStepIndex are excluded.
- * The order within each road queue matches the order addVehicle commands appear.
+ * The order within each road queue follows simulator insertion rules, including
+ * emergency vehicles being grouped at the front while preserving emergency FIFO.
  */
 export function deriveQueuesAtStep(
   commands: readonly Command[],
   stepStatuses: readonly StepStatus[],
   targetStepIndex: number
 ): Record<Road, string[]> {
-  const queues: Record<Road, string[]> = { north: [], south: [], east: [], west: [] };
+  return deriveFilteredQueuesAtStep(commands, stepStatuses, targetStepIndex, () => true);
+}
 
-  // Collect all departed vehicles up to and including targetStepIndex
+/**
+ * Reconstruct only emergency queues after processing steps up to targetStepIndex.
+ */
+export function deriveEmergencyQueuesAtStep(
+  commands: readonly Command[],
+  stepStatuses: readonly StepStatus[],
+  targetStepIndex: number
+): Record<Road, string[]> {
+  return deriveFilteredQueuesAtStep(
+    commands,
+    stepStatuses,
+    targetStepIndex,
+    (cmd) => (cmd.priority ?? 'normal') === 'emergency'
+  );
+}
+
+/**
+ * Single source of truth for deriving view-ready UI state from simulation state.
+ */
+export function selectSimulationUiState(input: SimulationUiStateInput): SimulationUiState {
+  const phases = derivePhasePerStep(input.commands, input.stepStatuses);
+  const activePhase = input.currentStepIndex >= 0 ? (phases[input.currentStepIndex] ?? null) : null;
+  const queues = deriveQueuesAtStep(input.commands, input.stepStatuses, input.currentStepIndex);
+  const emergencyQueues = deriveEmergencyQueuesAtStep(
+    input.commands,
+    input.stepStatuses,
+    input.currentStepIndex
+  );
+
+  return {
+    phases,
+    activePhase,
+    queues,
+    emergencyQueues,
+    totalQueued: Object.values(queues).reduce((sum, queue) => sum + queue.length, 0),
+    totalEmergencyQueued: Object.values(emergencyQueues).reduce(
+      (sum, queue) => sum + queue.length,
+      0
+    ),
+    totalDeparted: input.stepStatuses.reduce((sum, st) => sum + st.leftVehicles.length, 0),
+    stepCount: input.stepStatuses.length,
+    isPlaying: input.isPlaying,
+  };
+}
+
+function deriveFilteredQueuesAtStep(
+  commands: readonly Command[],
+  stepStatuses: readonly StepStatus[],
+  targetStepIndex: number,
+  include: (cmd: Extract<Command, { type: 'addVehicle' }>) => boolean
+): Record<Road, string[]> {
+  const queues: Record<Road, DerivedQueuedVehicle[]> = createEmptyQueuesWithMeta();
+
   const departed = new Set<string>();
   for (let i = 0; i <= targetStepIndex && i < stepStatuses.length; i++) {
     const status = stepStatuses[i];
-    if (status) {
-      for (const vid of status.leftVehicles) {
-        departed.add(vid);
-      }
+    if (!status) continue;
+    for (const vehicleId of status.leftVehicles) {
+      departed.add(vehicleId);
     }
   }
 
-  // Build queues from addVehicle commands, excluding departed vehicles
-  for (const cmd of commands) {
-    if (cmd.type === 'addVehicle' && !departed.has(cmd.vehicleId)) {
-      queues[cmd.startRoad].push(cmd.vehicleId);
-    }
+  for (const command of commands) {
+    if (command.type !== 'addVehicle') continue;
+    if (departed.has(command.vehicleId) || !include(command)) continue;
+    enqueueDerivedVehicle(queues[command.startRoad], command.vehicleId, command.priority);
   }
 
-  return queues;
+  return {
+    north: queues.north.map((vehicle) => vehicle.vehicleId),
+    south: queues.south.map((vehicle) => vehicle.vehicleId),
+    east: queues.east.map((vehicle) => vehicle.vehicleId),
+    west: queues.west.map((vehicle) => vehicle.vehicleId),
+  };
+}
+
+function enqueueDerivedVehicle(
+  queue: DerivedQueuedVehicle[],
+  vehicleId: string,
+  priority: 'normal' | 'emergency' | undefined
+): void {
+  if ((priority ?? 'normal') !== 'emergency') {
+    queue.push({ vehicleId, priority: 'normal' });
+    return;
+  }
+
+  let insertAt = 0;
+  while (insertAt < queue.length && queue[insertAt]?.priority === 'emergency') {
+    insertAt += 1;
+  }
+  queue.splice(insertAt, 0, { vehicleId, priority: 'emergency' });
+}
+
+interface DerivedQueuedVehicle {
+  vehicleId: string;
+  priority: 'normal' | 'emergency';
+}
+
+function createEmptyQueuesWithMeta(): Record<Road, DerivedQueuedVehicle[]> {
+  return { north: [], south: [], east: [], west: [] };
 }
