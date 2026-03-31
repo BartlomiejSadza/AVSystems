@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { SimulationProvider } from '../../SimulationProvider';
 import { ControlBar } from '../ControlBar';
-import { AddVehiclePanel } from '../AddVehiclePanel';
+import { AddVehiclePanel, resolveSosEndRoad } from '../AddVehiclePanel';
 
 // ---------------------------------------------------------------------------
 // Mock simulation-adapter so useSimulation does not invoke the real engine
@@ -124,5 +124,12 @@ describe('AddVehiclePanel', () => {
     renderInProvider(<AddVehiclePanel />);
     const nBtn = screen.getByText('N').closest('button') as HTMLButtonElement;
     expect(nBtn.disabled).toBe(false);
+  });
+
+  it('resolveSosEndRoad selects opposite road when From equals To', () => {
+    expect(resolveSosEndRoad('north', 'north')).toBe('south');
+    expect(resolveSosEndRoad('south', 'south')).toBe('north');
+    expect(resolveSosEndRoad('east', 'east')).toBe('west');
+    expect(resolveSosEndRoad('west', 'west')).toBe('east');
   });
 });

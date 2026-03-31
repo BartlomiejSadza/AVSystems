@@ -350,4 +350,22 @@ describe('selectSimulationUiState', () => {
     expect(uiState.stepCount).toBe(2);
     expect(uiState.isPlaying).toBe(true);
   });
+
+  it('uses phase from currentStepIndex instead of last non-null phase in history', () => {
+    const commands: Command[] = [
+      { type: 'addVehicle', vehicleId: 'N1', startRoad: 'north', endRoad: 'south' },
+      { type: 'step' },
+      { type: 'step' },
+    ];
+    const stepStatuses: StepStatus[] = [{ leftVehicles: ['N1'] }, { leftVehicles: [] }];
+
+    const uiState = selectSimulationUiState({
+      commands,
+      stepStatuses,
+      currentStepIndex: 1,
+      isPlaying: false,
+    });
+
+    expect(uiState.activePhase).toBeNull();
+  });
 });
