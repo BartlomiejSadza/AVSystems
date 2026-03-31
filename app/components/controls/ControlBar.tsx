@@ -26,9 +26,9 @@ export function ControlBar() {
   return (
     <div className="w-full border-t-2 border-[#374151] bg-[#1D2B53]">
       <div className="max-w-[960px] mx-auto px-4 py-3">
-        <div className="flex flex-wrap items-end gap-3 md:flex-nowrap md:items-center md:gap-4">
+        <div className="flex flex-wrap items-end gap-2 md:flex-nowrap md:items-center md:gap-3">
           {/* Left: action buttons */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-1">
             <PixelButton
               label="Step"
               variant="primary"
@@ -61,7 +61,7 @@ export function ControlBar() {
           </div>
 
           {/* Right: add vehicle panel */}
-          <div className="w-full md:ml-auto md:w-auto">
+          <div className="min-w-0 w-full md:ml-auto md:w-auto">
             <AddVehiclePanel />
           </div>
         </div>

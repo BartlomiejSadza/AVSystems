@@ -1,4 +1,5 @@
-import type { Command, StepStatus, PhaseId, Road } from './simulation-adapter';
+import type { Command, StepStatus, Road } from './simulation-adapter';
+import type { DisplayPhase } from './phase-display';
 import { phaseForVehicle } from '../../src/simulator/phase';
 
 export interface SimulationUiStateInput {
@@ -9,8 +10,8 @@ export interface SimulationUiStateInput {
 }
 
 export interface SimulationUiState {
-  phases: (PhaseId | null)[];
-  activePhase: PhaseId | null;
+  phases: (DisplayPhase | null)[];
+  activePhase: DisplayPhase | null;
   queues: Record<Road, string[]>;
   emergencyQueues: Record<Road, string[]>;
   totalQueued: number;
@@ -21,15 +22,16 @@ export interface SimulationUiState {
 }
 
 /**
- * For each step, derive which protected phase was active by inspecting the first
- * departing vehicle's startRoad + endRoad (movement-qualified), matching the
- * simulator's phase model (NS_THROUGH / NS_LEFT / EW_THROUGH / EW_LEFT).
- * Falls back to null when no vehicles left or the vehicle is unknown.
+ * For each step, derive which signal phase (including YELLOW / ALL_RED) was active.
+ *
+ * Prefers `status.displayPhase` emitted directly by the engine (accurate, includes
+ * YELLOW and ALL_RED segments).  Falls back to the legacy leftVehicles heuristic
+ * for older StepStatus objects that do not carry displayPhase.
  */
 export function derivePhasePerStep(
   commands: readonly Command[],
   stepStatuses: readonly StepStatus[]
-): (PhaseId | null)[] {
+): (DisplayPhase | null)[] {
   const vehicles = new Map<string, { startRoad: Road; endRoad: Road }>();
   for (const cmd of commands) {
     if (cmd.type === 'addVehicle') {
@@ -38,6 +40,12 @@ export function derivePhasePerStep(
   }
 
   return stepStatuses.map((status) => {
+    // Prefer the authoritative displayPhase from the engine.
+    if (status.displayPhase !== undefined) {
+      return (status.displayPhase as DisplayPhase) ?? null;
+    }
+
+    // Legacy fallback: infer phase from the first departing vehicle.
     if (status.leftVehicles.length === 0) return null;
     const firstVehicleId = status.leftVehicles[0];
     if (firstVehicleId === undefined) return null;
@@ -47,7 +55,7 @@ export function derivePhasePerStep(
       vehicleId: firstVehicleId,
       startRoad: v.startRoad,
       endRoad: v.endRoad,
-    });
+    }) as DisplayPhase | null;
   });
 }
 
@@ -88,7 +96,7 @@ export function deriveEmergencyQueuesAtStep(
  */
 export function selectSimulationUiState(input: SimulationUiStateInput): SimulationUiState {
   const phases = derivePhasePerStep(input.commands, input.stepStatuses);
-  const activePhase = input.currentStepIndex >= 0 ? (phases[input.currentStepIndex] ?? null) : null;
+  const activePhase = [...phases].reverse().find((p) => p !== null) ?? null;
   const queues = deriveQueuesAtStep(input.commands, input.stepStatuses, input.currentStepIndex);
   const emergencyQueues = deriveEmergencyQueuesAtStep(
     input.commands,

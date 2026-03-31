@@ -45,9 +45,13 @@ export type Command = AddVehicleCommand | StepCommand;
 /**
  * The result produced by a single step tick.
  * `leftVehicles` holds the IDs of vehicles that cleared the intersection.
+ * `displayPhase` carries the full signal state at the tick start, including
+ * YELLOW and ALL_RED segments that are invisible to the leftVehicles heuristic.
+ * Format: 'NS_THROUGH' | 'NS_THROUGH_YELLOW' | 'ALL_RED' | null (null = phase unknown / idle).
  */
 export interface StepStatus {
   leftVehicles: string[];
+  displayPhase?: string | null;
 }
 
 /**

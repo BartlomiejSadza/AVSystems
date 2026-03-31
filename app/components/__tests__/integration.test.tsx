@@ -101,3 +101,64 @@ describe('Integration: PixelSimulatorApp', () => {
     expect(screen.getByRole('button', { name: 'SOS' })).toBeTruthy();
   });
 });
+
+describe('Integration: 4-phase routing', () => {
+  beforeEach(() => {
+    resetNpcMessageCounter();
+  });
+
+  it('AddVehiclePanel renders FROM/TO selects', () => {
+    render(
+      <SimulationProvider>
+        <PixelSimulatorApp />
+      </SimulationProvider>
+    );
+    // PixelSelect renders a <label> with text "From" and "To"
+    expect(screen.getByLabelText('From')).toBeTruthy();
+    expect(screen.getByLabelText('To')).toBeTruthy();
+  });
+
+  it('ADD button is disabled when startRoad equals endRoad', () => {
+    render(
+      <SimulationProvider>
+        <PixelSimulatorApp />
+      </SimulationProvider>
+    );
+    const fromSelect = screen.getByLabelText('From');
+    const toSelect = screen.getByLabelText('To');
+
+    // Set both selects to the same road value
+    fireEvent.change(fromSelect, { target: { value: 'east' } });
+    fireEvent.change(toSelect, { target: { value: 'east' } });
+
+    const addBtn = screen.getByRole('button', { name: 'ADD' });
+    expect((addBtn as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('ADD button is enabled when startRoad differs from endRoad', () => {
+    render(
+      <SimulationProvider>
+        <PixelSimulatorApp />
+      </SimulationProvider>
+    );
+    // Default state: north (From) vs south (To) — they differ
+    const addBtn = screen.getByRole('button', { name: 'ADD' });
+    expect((addBtn as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('SOS button dispatches an emergency vehicle', () => {
+    render(
+      <SimulationProvider>
+        <PixelSimulatorApp />
+      </SimulationProvider>
+    );
+    const sosBtn = screen.getByRole('button', { name: 'SOS' });
+    fireEvent.click(sosBtn);
+
+    // After SOS dispatch the simulation engine is called (runSimulation mock is invoked)
+    // and the Step button should still be functional (no crash)
+    const stepBtn = screen.getByText('Step');
+    fireEvent.click(stepBtn);
+    expect(screen.getByText(/Step 0/)).toBeTruthy();
+  });
+});

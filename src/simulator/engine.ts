@@ -10,6 +10,7 @@
 
 import type {
   Command,
+  SignalSegmentKind,
   SignalTimingConfig,
   SimulateOptions,
   SimulationState,
@@ -67,6 +68,17 @@ export function createInitialState(signalTimings?: Partial<SignalTimingConfig>):
 }
 
 /**
+ * Build the displayPhase string from raw signal state.
+ * Used to populate StepStatus.displayPhase so the GUI can show YELLOW / ALL_RED.
+ */
+function buildDisplayPhase(segmentKind: SignalSegmentKind, phaseId: string): string | null {
+  if (segmentKind === 'GREEN') return phaseId;
+  if (segmentKind === 'YELLOW') return `${phaseId}_YELLOW`;
+  if (segmentKind === 'ALL_RED') return 'ALL_RED';
+  return null;
+}
+
+/**
  * Process a single `step` command against the current state.
  *
  * Order (per spec): apply signal at tick start → dequeue eligible heads → advance controller.
@@ -80,12 +92,16 @@ function processStep(
 ): StepStatus {
   reconcileEmergencyBeforeDischarge(state, options);
   const phaseKeyForTelemetry = telemetryPhaseKeyAtStepStart(state);
+
+  // Capture display phase at tick start (before advanceSignalController mutates segmentKind).
+  const displayPhase = buildDisplayPhase(state.segmentKind, state.currentSignalPhaseId);
+
   const leftVehicles = dischargeEligibleVehicles(state);
 
   state.stepCount += 1;
   advanceSignalController(state, options);
 
-  const status: StepStatus = { leftVehicles };
+  const status: StepStatus = { leftVehicles, displayPhase };
 
   if (acc !== null) {
     recordStep(acc, state, phaseKeyForTelemetry, status);

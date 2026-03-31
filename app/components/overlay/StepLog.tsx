@@ -30,7 +30,7 @@ export function StepLog({ entries }: StepLogProps) {
   return (
     <div className="min-w-0 max-h-[200px] overflow-y-auto border-2 border-[#7E2553] bg-[#1D2B53] px-2 py-1.5">
       {entries.length === 0 ? (
-        <p className="m-0 font-[family-name:var(--font-pixel)] text-[10px] leading-tight text-[#C2C3C7]">
+        <p className="m-0 font-[family-name:var(--font-pixel)] text-[10px] leading-tight text-[#C2C3C7] break-words whitespace-normal">
           No steps yet. Click Step to begin!
         </p>
       ) : (

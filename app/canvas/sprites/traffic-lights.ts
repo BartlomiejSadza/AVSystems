@@ -97,82 +97,60 @@ export const RED_LAMP_ACTIVE: SpriteDefinition = {
 };
 
 // ---------------------------------------------------------------------------
-// GREEN_LAMP_NORTH — 7 × 7, arrow pointing UP
+// GREEN_SOLID — 7 × 7, solid green circle (shared by all green lamps)
 // ---------------------------------------------------------------------------
 // prettier-ignore
+const GREEN_SOLID: number[] = [
+  T, T, G, G, G, T, T,
+  T, G, G, G, G, G, T,
+  G, G, G, G, G, G, G,
+  G, G, G, G, G, G, G,
+  G, G, G, G, G, G, G,
+  T, G, G, G, G, G, T,
+  T, T, G, G, G, T, T,
+];
+
+// ---------------------------------------------------------------------------
+// GREEN_LAMP_NORTH — 7 × 7, solid green circle
+// ---------------------------------------------------------------------------
 export const GREEN_LAMP_NORTH: SpriteDefinition = {
   name: 'GREEN_LAMP_NORTH',
   width: 7,
   height: 7,
-  frames: [[
-    T, T, T, G, T, T, T,
-    T, T, G, G, G, T, T,
-    T, G, G, G, G, G, T,
-    G, G, G, G, G, G, G,
-    T, T, T, G, T, T, T,
-    T, T, T, G, T, T, T,
-    T, T, T, G, T, T, T,
-  ]],
+  frames: [GREEN_SOLID],
   frameDuration: 0,
 };
 
 // ---------------------------------------------------------------------------
-// GREEN_LAMP_SOUTH — 7 × 7, arrow pointing DOWN
+// GREEN_LAMP_SOUTH — 7 × 7, solid green circle
 // ---------------------------------------------------------------------------
-// prettier-ignore
 export const GREEN_LAMP_SOUTH: SpriteDefinition = {
   name: 'GREEN_LAMP_SOUTH',
   width: 7,
   height: 7,
-  frames: [[
-    T, T, T, G, T, T, T,
-    T, T, T, G, T, T, T,
-    T, T, T, G, T, T, T,
-    G, G, G, G, G, G, G,
-    T, G, G, G, G, G, T,
-    T, T, G, G, G, T, T,
-    T, T, T, G, T, T, T,
-  ]],
+  frames: [GREEN_SOLID],
   frameDuration: 0,
 };
 
 // ---------------------------------------------------------------------------
-// GREEN_LAMP_EAST — 7 × 7, arrow pointing RIGHT
+// GREEN_LAMP_EAST — 7 × 7, solid green circle
 // ---------------------------------------------------------------------------
-// prettier-ignore
 export const GREEN_LAMP_EAST: SpriteDefinition = {
   name: 'GREEN_LAMP_EAST',
   width: 7,
   height: 7,
-  frames: [[
-    T, T, T, G, T, T, T,
-    T, T, T, T, G, T, T,
-    G, G, G, G, G, G, T,
-    G, G, G, G, G, G, G,
-    G, G, G, G, G, G, T,
-    T, T, T, T, G, T, T,
-    T, T, T, G, T, T, T,
-  ]],
+  frames: [GREEN_SOLID],
   frameDuration: 0,
 };
 
 // ---------------------------------------------------------------------------
-// GREEN_LAMP_WEST — 7 × 7, arrow pointing LEFT
+// GREEN_LAMP_WEST — 7 × 7, solid green circle
 // ---------------------------------------------------------------------------
-// prettier-ignore
 export const GREEN_LAMP_WEST: SpriteDefinition = {
   name: 'GREEN_LAMP_WEST',
   width: 7,
   height: 7,
-  frames: [[
-    T, T, T, G, T, T, T,
-    T, T, G, T, T, T, T,
-    T, G, G, G, G, G, G,
-    G, G, G, G, G, G, G,
-    T, G, G, G, G, G, G,
-    T, T, G, T, T, T, T,
-    T, T, T, G, T, T, T,
-  ]],
+  frames: [GREEN_SOLID],
   frameDuration: 0,
 };
 
