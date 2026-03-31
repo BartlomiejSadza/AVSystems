@@ -2,13 +2,16 @@
 
 > Symulator ruchu na skrzyżowaniu 4-kierunkowym: przekaż komendy JSON, otrzymaj listę pojazdów opuszczających skrzyżowanie w każdym kroku.
 
-[TypeScript](https://www.typescriptlang.org/)
-[Node.js](https://nodejs.org/)
-[Tests](#uruchamianie-testów)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
+[![Tests](https://img.shields.io/badge/testy-1138%2B%20zaliczone-brightgreen.svg)](#uruchamianie-testów)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Dlaczego to powstało?
 
 Task rekrutacyjny
+
+Skrzyżowania wymagają sprawdzalnych, bezpiecznych sekwencji świateł — w żadnym momencie dwa kolizyjne kierunki nie mogą mieć zielonego światła. Ten symulator modeluje skrzyżowanie 4-kierunkowe z adaptacyjnym algorytmem wyboru fazy, który maksymalizuje przepustowość przy jednoczesnym zachowaniu niezmienników bezpieczeństwa. Został zaprojektowany jako czysty silnik domenowy: deterministyczny, w pełni przetestowany i całkowicie niezależny od interfejsu graficznego (GUI) czy frameworków I/O.
 
 ## Szybki start
 
@@ -67,17 +70,17 @@ Simulation complete. 4 step(s) written to "./output.json".
 
 Plik wejściowy zawiera obiekt JSON z tablicą `commands`. Obsługiwane są dwa typy komend.
 
-`**addVehicle**` — umieszcza pojazd w kolejce dla drogi wjazdowej:
+**`addVehicle`** — umieszcza pojazd w kolejce dla drogi wjazdowej:
 
-| Pole        | Typ            | Wymagane     | Opis                           |
-| ----------- | -------------- | ------------ | ------------------------------ |
-| `type`      | `"addVehicle"` | tak          | Dyskryminator komendy          |
-| `vehicleId` | `string`       | tak          | Unikalny identyfikator pojazdu |
-| `startRoad` | `"north"       | "south"      | "east"                         |
-| `endRoad`   | `"north"       | "south"      | "east"                         |
-| `priority`  | `"normal"      | "emergency"` | nie                            |
+| Pole        | Typ                                      | Wymagane | Opis                                                                                                                          |
+| ----------- | ---------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `type`      | `"addVehicle"`                           | tak      | Dyskryminator komendy                                                                                                         |
+| `vehicleId` | `string`                                 | tak      | Unikalny identyfikator pojazdu                                                                                                |
+| `startRoad` | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, z której pojazd wjeżdża                                                                                                |
+| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, na którą pojazd zjeżdża                                                                                                |
+| `priority`  | `"normal" \| "emergency"`                | nie      | Domyślnie `"normal"`. Pojazdy uprzywilejowane przeskakują na początek kolejki i wymuszają aktywację swojej fazy sygnalizacji. |
 
-`**step**` — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
+**`step`** — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
 
 **Pełny przykład (`input.json`):**
 
@@ -125,7 +128,7 @@ Generalnie inspiracją był system **V2I (Vehicle-to-Infrastructure)**
 
 ### 1. Klasyfikacja Ruchu
 
-Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą takiego oto sprytnego równania:  
+Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą arytmetyki modularnej:
 `d = (endIndex - startIndex + 4) % 4`
 
 - `d = 2`: **Prosto** (Obsługiwane przez fazy `THROUGH`)
@@ -151,7 +154,7 @@ Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną f
 - **Obliczanie zapotrzebowania:** Dla każdej fazy zapotrzebowanie $D$ jest obliczane jako:
   $D_{faza} = \sum_{droga \in faza} (dlugoscKolejki_{droga} \times waga_{droga})$
 - **Wybór zwycięzcy:** Wygrywa faza o najwyższym zapotrzebowaniu.
-- **Rozstrzyganie remisów:** Jeśli zapotrzebowania są równe (np. wszystkie wynoszą zero), silnik używa **algorytmu Round-Robin**. Wybiera następną fazę w pierścieniu względem `lastServedPhaseIndex`.  
+- **Rozstrzyganie remisów:** Jeśli zapotrzebowania są równe (np. wszystkie wynoszą zero), silnik używa **algorytmu Round-Robin**. Wybiera następną fazę w pierścieniu względem `lastServedPhaseIndex`.
   [https://en.wikipedia.org/wiki/Round-robin_scheduling](https://en.wikipedia.org/wiki/Round-robin_scheduling)
 - **Pomijanie pustych faz:** Jeśli opcja `skipEmptyPhases` jest włączona, kontroler automatycznie pominie fazy z zerowym zapotrzebowaniem, natychmiast przechodząc do kolejnej uprawnionej fazy.
 
