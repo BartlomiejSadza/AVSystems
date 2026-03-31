@@ -4,3 +4,5 @@ dist/
 *.tsbuildinfo
 .DS_Store
 /output.json
+.playwright-mcp/
+qa-screenshots/
