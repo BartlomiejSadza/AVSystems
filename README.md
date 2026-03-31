@@ -5,13 +5,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
 [![Tests](https://img.shields.io/badge/testy-1138%2B%20zaliczone-brightgreen.svg)](#uruchamianie-testów)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Dlaczego to powstało?
 
-Task rekrutacyjny
-
-Skrzyżowania wymagają sprawdzalnych, bezpiecznych sekwencji świateł — w żadnym momencie dwa kolizyjne kierunki nie mogą mieć zielonego światła. Ten symulator modeluje skrzyżowanie 4-kierunkowe z adaptacyjnym algorytmem wyboru fazy, który maksymalizuje przepustowość przy jednoczesnym zachowaniu niezmienników bezpieczeństwa. Został zaprojektowany jako czysty silnik domenowy: deterministyczny, w pełni przetestowany i całkowicie niezależny od interfejsu graficznego (GUI) czy frameworków I/O.
+Task rekrutacyjny. Stronka Live: https://avsystems-bsadza-20260331.azurewebsites.net/
 
 ## Szybki start
 
