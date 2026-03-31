@@ -2,14 +2,13 @@
 
 > Symulator ruchu na skrzyżowaniu 4-kierunkowym: przekaż komendy JSON, otrzymaj listę pojazdów opuszczających skrzyżowanie w każdym kroku.
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
-[![Tests](https://img.shields.io/badge/testy-1138%2B%20zaliczone-brightgreen.svg)](#uruchamianie-testów)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[TypeScript](https://www.typescriptlang.org/)
+[Node.js](https://nodejs.org/)
+[Tests](#uruchamianie-testów)
 
 ## Dlaczego to powstało?
 
-Skrzyżowania wymagają sprawdzalnych, bezpiecznych sekwencji świateł — w żadnym momencie dwa kolizyjne kierunki nie mogą mieć zielonego światła. Ten symulator modeluje skrzyżowanie 4-kierunkowe z adaptacyjnym algorytmem wyboru fazy, który maksymalizuje przepustowość przy jednoczesnym zachowaniu niezmienników bezpieczeństwa. Został zaprojektowany jako czysty silnik domenowy: deterministyczny, w pełni przetestowany i całkowicie niezależny od interfejsu graficznego (GUI) czy frameworków I/O.
+Task rekrutacyjny
 
 ## Szybki start
 
@@ -30,7 +29,10 @@ git clone https://github.com/your-org/traffic-lights-simulation.git
 cd traffic-lights-simulation
 
 # Zainstaluj zależności
-pnpm install
+pnpm install # albo npm, yarn
+
+# dev server
+pnpm dev # przechodzi do GUI, polecam serdecznie zerknąć :P
 ```
 
 ## Użycie CLI
@@ -53,7 +55,7 @@ pnpm simulate --input <sciezka-do-input.json> --output <sciezka-do-output.json>
 pnpm simulate --input ./input.json --output ./output.json
 ```
 
-Po sukcesie CLI wypisze:
+Po sukcesie CLI wypisze coś takiego:
 
 ```
 Simulation complete. 4 step(s) written to "./output.json".
@@ -65,17 +67,17 @@ Simulation complete. 4 step(s) written to "./output.json".
 
 Plik wejściowy zawiera obiekt JSON z tablicą `commands`. Obsługiwane są dwa typy komend.
 
-**`addVehicle`** — umieszcza pojazd w kolejce dla drogi wjazdowej:
+`**addVehicle**` — umieszcza pojazd w kolejce dla drogi wjazdowej:
 
-| Pole        | Typ                                      | Wymagane | Opis                                                                                                                          |
-| ----------- | ---------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `type`      | `"addVehicle"`                           | tak      | Dyskryminator komendy                                                                                                         |
-| `vehicleId` | `string`                                 | tak      | Unikalny identyfikator pojazdu                                                                                                |
-| `startRoad` | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, z której pojazd wjeżdża                                                                                                |
-| `endRoad`   | `"north" \| "south" \| "east" \| "west"` | tak      | Droga, na którą pojazd zjeżdża                                                                                                |
-| `priority`  | `"normal" \| "emergency"`                | nie      | Domyślnie `"normal"`. Pojazdy uprzywilejowane przeskakują na początek kolejki i wymuszają aktywację swojej fazy sygnalizacji. |
+| Pole        | Typ            | Wymagane     | Opis                           |
+| ----------- | -------------- | ------------ | ------------------------------ |
+| `type`      | `"addVehicle"` | tak          | Dyskryminator komendy          |
+| `vehicleId` | `string`       | tak          | Unikalny identyfikator pojazdu |
+| `startRoad` | `"north"       | "south"      | "east"                         |
+| `endRoad`   | `"north"       | "south"      | "east"                         |
+| `priority`  | `"normal"      | "emergency"` | nie                            |
 
-**`step`** — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
+`**step**` — przesuwa symulację o jeden krok (tyknięcie). Silnik wybiera aktywną fazę, usuwa pierwszy pojazd z każdej drogi w tej fazie i rejestruje, które pojazdy opuściły skrzyżowanie.
 
 **Pełny przykład (`input.json`):**
 
@@ -107,7 +109,7 @@ Plik wyjściowy zawiera obiekt JSON z tablicą `stepStatuses` — jeden wpis na 
 ```json
 {
   "stepStatuses": [
-    { "leftVehicles": ["vehicle21", "vehicle1"] },
+    { "leftVehicles": ["vehicle1", "vehicle2"] },
     { "leftVehicles": [] },
     { "leftVehicles": ["vehicle3"] },
     { "leftVehicles": ["vehicle4"] }
@@ -115,15 +117,15 @@ Plik wyjściowy zawiera obiekt JSON z tablicą `stepStatuses` — jeden wpis na 
 }
 ```
 
-> Uwaga: `vehicle21` w przykładowym wyjściu to pojazd załadowany do stanu przed uruchomieniem przykładowych komend.
-
 ## Algorytm i Projekt Systemu
 
-Silnik symulacji to deterministyczny automat skończony oparty na krokach czasowych (tick-based state machine), zarządzający skrzyżowaniem 4-kierunkowym. Priorytetyzuje bezpieczeństwo (unikanie kolizji) i wydajność (przepustowość) poprzez wielowarstwową logikę sterowania.
+Silnik symulacji to automat oparty na krokach czasowych (tick-based state machine), zarządzający skrzyżowaniem 4-kierunkowym. Priorytetyzuje unikanie kolizji i wydajność (przepustowość) poprzez wielowarstwową logikę sterowania.
+
+Generalnie inspiracją był system **V2I (Vehicle-to-Infrastructure)**
 
 ### 1. Klasyfikacja Ruchu
 
-Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą arytmetyki modularnej:
+Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zgodnego z ruchem wskazówek zegara** (Północ=0, Wschód=1, Południe=2, Zachód=3). Kierunek ruchu jest obliczany za pomocą takiego oto sprytnego równania:  
 `d = (endIndex - startIndex + 4) % 4`
 
 - `d = 2`: **Prosto** (Obsługiwane przez fazy `THROUGH`)
@@ -133,23 +135,24 @@ Zamiar każdego pojazdu jest klasyfikowany przy użyciu **modelu pierścienia zg
 
 ### 2. Chronione Fazy Sygnalizacji
 
-Kontroler przełącza się między czterema chronionymi fazami w kanonicznej kolejności pierścienia:
+Kontroler przełącza się między czterema chronionymi fazami w kolejności pierścienia:
 
 1. `NS_THROUGH` (Północ/Południe Prosto i w Prawo)
 2. `NS_LEFT` (Północ/Południe w Lewo i Zawracanie)
 3. `EW_THROUGH` (Wschód/Zachód Prosto i w Prawo)
 4. `EW_LEFT` (Wschód/Zachód w Lewo i Zawracanie)
 
-**Niezmiennik bezpieczeństwa:** Tylko jedna oś (NS lub EW) może mieć światło inne niż czerwone w danym momencie. Silnik wymusza to poprzez przechodzenie przez segmenty `YELLOW` (żółte) i `ALL_RED` (wszystkie czerwone).
+**Wazne:** Tylko jedna oś (NS lub EW) może mieć światło inne niż czerwone w danym momencie. Silnik wymusza to poprzez przechodzenie przez segmenty `YELLOW` (żółte) i `ALL_RED` (wszystkie czerwone).
 
-### 3. Adaptacyjna Logika Wyboru
+### 3. Logika Wyboru
 
 Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną fazę `GREEN` za pomocą algorytmu ważonego zapotrzebowania:
 
 - **Obliczanie zapotrzebowania:** Dla każdej fazy zapotrzebowanie $D$ jest obliczane jako:
   $D_{faza} = \sum_{droga \in faza} (dlugoscKolejki_{droga} \times waga_{droga})$
 - **Wybór zwycięzcy:** Wygrywa faza o najwyższym zapotrzebowaniu.
-- **Rozstrzyganie remisów:** Jeśli zapotrzebowania są równe (np. wszystkie wynoszą zero), silnik używa **algorytmu Round-Robin**. Wybiera następną fazę w pierścieniu względem `lastServedPhaseIndex`.
+- **Rozstrzyganie remisów:** Jeśli zapotrzebowania są równe (np. wszystkie wynoszą zero), silnik używa **algorytmu Round-Robin**. Wybiera następną fazę w pierścieniu względem `lastServedPhaseIndex`.  
+  [https://en.wikipedia.org/wiki/Round-robin_scheduling](https://en.wikipedia.org/wiki/Round-robin_scheduling)
 - **Pomijanie pustych faz:** Jeśli opcja `skipEmptyPhases` jest włączona, kontroler automatycznie pominie fazy z zerowym zapotrzebowaniem, natychmiast przechodząc do kolejnej uprawnionej fazy.
 
 ### 4. Priorytetyzacja Pojazdów Uprzywilejowanych
@@ -157,7 +160,7 @@ Po zakończeniu interwału oczyszczania (`ALL_RED`), silnik wybiera następną f
 Pojazdy uprzywilejowane (`priority: "emergency"`) uruchamiają specjalną ścieżkę nadpisującą standardową logikę:
 
 - **Wskakiwanie do kolejki:** Pojazdy uprzywilejowane są wstawiane na początek swoich kolejek (zachowując FIFO tylko względem innych pojazdów uprzywilejowanych).
-- **Wymuszanie fazy:** Jeśli pojazd uprzywilejowany dotrze na czoło kolejki, logika `reconcileEmergencyBeforeDischarge` identyfikuje wymaganą fazę. Jeśli aktywna faza jest kolizyjna, kontroler natychmiast inicjuje przejście (Zielone -> Żółte -> Wszystkie Czerwone), aby obsłużyć pojazd uprzywilejowany tak szybko, jak to możliwe.
+- **Wymuszanie fazy:** Jeśli pojazd uprzywilejowany dotrze na czoło kolejki, logika `reconcileEmergencyBeforeDischarge` identyfikuje wymaganą fazę. Jeśli aktywna faza jest kolizyjna, kontroler natychmiast forsuje przejście (Zielone -> Żółte -> Wszystkie Czerwone), aby obsłużyć pojazd uprzywilejowany tak szybko, jak to możliwe.
 
 ### 5. Maszyna Stanów Przejść
 
@@ -169,7 +172,7 @@ Każda faza sygnalizacji składa się z trzech segmentów:
 
 ## Wydajność i Niezawodność
 
-### Niezmienniki Bezpieczeństwa
+### Bezpieczeństwo owego "ruchu drogowego"
 
 System utrzymuje zestaw **niezmienników bezpieczeństwa** sprawdzanych po każdej zmianie stanu:
 
@@ -210,7 +213,7 @@ pnpm bench
 
 Wyniki typowe: **100 000 komend w średnio ~9ms**.
 
-## Stos Technologiczny
+## Stack Technologiczny
 
 | Narzędzie  | Wersja         | Rola                      |
 | ---------- | -------------- | ------------------------- |
@@ -222,7 +225,3 @@ Wyniki typowe: **100 000 komend w średnio ~9ms**.
 | fast-check | >=3            | Testy property-based      |
 | zod        | >=3            | Walidacja schematów JSON  |
 | tinybench  | >=2            | Benchmarki wydajności     |
-
-## Licencja
-
-MIT
