@@ -96,7 +96,7 @@ export function deriveEmergencyQueuesAtStep(
  */
 export function selectSimulationUiState(input: SimulationUiStateInput): SimulationUiState {
   const phases = derivePhasePerStep(input.commands, input.stepStatuses);
-  const activePhase = [...phases].reverse().find((p) => p !== null) ?? null;
+  const activePhase = input.currentStepIndex >= 0 ? (phases[input.currentStepIndex] ?? null) : null;
   const queues = deriveQueuesAtStep(input.commands, input.stepStatuses, input.currentStepIndex);
   const emergencyQueues = deriveEmergencyQueuesAtStep(
     input.commands,

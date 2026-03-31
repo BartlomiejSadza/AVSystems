@@ -4,6 +4,7 @@
  */
 
 import type {
+  Road,
   RoadPriorities,
   SignalTimingConfig,
   SimulateOptions,
@@ -30,7 +31,9 @@ export function dischargeEligibleVehicles(state: SimulationState): string[] {
     return [];
   }
   const phase = state.currentSignalPhaseId;
-  const left: string[] = [];
+  // Collect all eligible head vehicles first, then sort by insertion order
+  // so leftVehicles reflects the global FIFO order across roads.
+  const eligible: { addOrder: number; road: Road }[] = [];
   for (const road of roadsInPhase(phase)) {
     const head = peekVehicle(state, road);
     if (head === undefined) {
@@ -39,6 +42,11 @@ export function dischargeEligibleVehicles(state: SimulationState): string[] {
     if (!isMovementServedInPhase(head, phase)) {
       continue;
     }
+    eligible.push({ addOrder: head.addOrder ?? Infinity, road });
+  }
+  eligible.sort((a, b) => a.addOrder - b.addOrder);
+  const left: string[] = [];
+  for (const { road } of eligible) {
     const v = dequeueVehicle(state, road);
     if (v !== undefined) {
       left.push(v.vehicleId);
@@ -140,6 +148,15 @@ function enterGreenFromSelection(
 }
 
 function completeAllRed(state: SimulationState, priorities: RoadPriorities | undefined): void {
+  if (state.signalTiming.lazyGreenSelection && state.forcedPhaseAfterAllRed === null) {
+    // Defer phase selection to the start of the next step so that vehicles
+    // added between steps are visible to the demand calculation.
+    state.pendingGreenSelection = true;
+    state.segmentKind = 'GREEN'; // Placeholder; currentSignalPhaseId will be resolved at step start.
+    state.greenTicksElapsedInCurrentGreen = 0;
+    state.segmentTicksRemaining = 0;
+    return;
+  }
   const forced = state.forcedPhaseAfterAllRed;
   state.forcedPhaseAfterAllRed = null;
   const next = forced ?? pickNextGreenPhase(state, priorities, state.lastServedPhaseIndex);
@@ -164,6 +181,21 @@ function startYellow(state: SimulationState, priorities: RoadPriorities | undefi
   } else {
     beginAllRed(state, priorities);
   }
+}
+
+/**
+ * If `pendingGreenSelection` is set, select the best green phase now using
+ * current demand (which may include vehicles added since the last step ended).
+ * Must be called at step start, before discharge.
+ */
+export function resolveGreenSelection(state: SimulationState, options: SimulateOptions): void {
+  if (!state.pendingGreenSelection) {
+    return;
+  }
+  state.pendingGreenSelection = false;
+  const priorities = options.roadPriorities;
+  const next = pickNextGreenPhase(state, priorities, state.lastServedPhaseIndex);
+  enterGreenFromSelection(state, next, priorities);
 }
 
 /**

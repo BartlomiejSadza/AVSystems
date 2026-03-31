@@ -28,6 +28,17 @@ const QUICK_SPECS: QuickSpec[] = [
   { label: 'W', startRoad: 'west', endRoad: 'east', variant: 'secondary' },
 ];
 
+const OPPOSITE_ROAD: Record<Road, Road> = {
+  north: 'south',
+  south: 'north',
+  east: 'west',
+  west: 'east',
+};
+
+export function resolveSosEndRoad(startRoad: Road, endRoad: Road): Road {
+  return endRoad !== startRoad ? endRoad : OPPOSITE_ROAD[startRoad];
+}
+
 export function AddVehiclePanel() {
   const { dispatch } = useSimulationContext();
 
@@ -69,7 +80,7 @@ export function AddVehiclePanel() {
       payload: {
         vehicleId,
         startRoad,
-        endRoad: endRoad !== startRoad ? endRoad : startRoad === 'north' ? 'south' : 'north',
+        endRoad: resolveSosEndRoad(startRoad, endRoad),
         priority: 'emergency',
       },
     });

@@ -36,6 +36,12 @@ export function enqueueVehicle(state: SimulationState, vehicle: Vehicle): void {
     throw new Error(`Unknown road: ${vehicle.startRoad}`);
   }
 
+  // Stamp insertion order if not already set (allows engine to pre-assign it too).
+  if (vehicle.addOrder === undefined) {
+    vehicle.addOrder = state.vehicleAddCount;
+  }
+  state.vehicleAddCount += 1;
+
   if ((vehicle.priority ?? 'normal') === 'emergency') {
     // Find the index after the last emergency vehicle in the queue.
     let insertAt = 0;

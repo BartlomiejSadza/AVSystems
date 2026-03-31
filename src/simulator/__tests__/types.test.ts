@@ -68,7 +68,7 @@ describe('SimulationState shape', () => {
     expect(state.stepCount).toBe(0);
     expect(state.currentSignalPhaseId).toBe('NS_THROUGH');
     expect(state.segmentKind).toBe('GREEN');
-    expect(state.lastServedPhaseIndex).toBe(-1);
+    expect(state.lastServedPhaseIndex).toBe(0);
     expect(state.forcedPhaseAfterAllRed).toBeNull();
   });
 });

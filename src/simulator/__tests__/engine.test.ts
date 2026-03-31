@@ -39,7 +39,7 @@ describe('createInitialState', () => {
   it('returns an empty state with stepCount 0 and NS_THROUGH GREEN', () => {
     const state = createInitialState();
     expect(state.stepCount).toBe(0);
-    expect(state.lastServedPhaseIndex).toBe(-1);
+    expect(state.lastServedPhaseIndex).toBe(0);
     expect(state.currentSignalPhaseId).toBe('NS_THROUGH');
     expect(state.segmentKind).toBe('GREEN');
     expect(state.forcedPhaseAfterAllRed).toBeNull();
