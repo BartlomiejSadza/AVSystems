@@ -22,6 +22,12 @@ export interface Vehicle {
    * Emergency vehicles jump to the front of their road queue.
    */
   priority?: VehiclePriority;
+  /**
+   * Monotonically increasing insertion counter assigned by enqueueVehicle.
+   * Used to sort discharged vehicles in FIFO (insertion) order across roads.
+   * Assigned automatically — callers may omit it.
+   */
+  addOrder?: number;
 }
 
 /** Command to add a vehicle to the simulation. */
@@ -79,6 +85,14 @@ export interface SignalTimingConfig {
   yellowTicks: number;
   allRedTicks: number;
   skipEmptyPhases: boolean;
+  /**
+   * When true, next-green-phase selection is deferred to the START of the
+   * following step rather than the end of the current step.  This ensures
+   * that vehicles added between two steps are visible to the demand
+   * calculation and the correct phase is chosen.
+   * Default is false (immediate selection, for realistic mode).
+   */
+  lazyGreenSelection: boolean;
   perPhase: Partial<Record<SignalPhaseTimingKey, PerPhaseTimingOverride>>;
 }
 
@@ -88,6 +102,7 @@ export const DEFAULT_SIGNAL_TIMING_CONFIG: SignalTimingConfig = {
   yellowTicks: 3,
   allRedTicks: 2,
   skipEmptyPhases: false,
+  lazyGreenSelection: false,
   perPhase: {},
 };
 
@@ -137,6 +152,11 @@ export interface SimulationState {
   queues: Map<Road, Vehicle[]>;
   /** Total number of `step` commands processed so far. */
   stepCount: number;
+  /**
+   * Monotonically increasing counter incremented on each enqueueVehicle call.
+   * Assigned to Vehicle.addOrder to preserve cross-road insertion order.
+   */
+  vehicleAddCount: number;
   /** Merged signal configuration for this run. */
   signalTiming: SignalTimingConfig;
   /** Active protected phase (sub-phase row). */
@@ -162,4 +182,11 @@ export interface SimulationState {
    * instead of adaptive selection. Cleared when entering GREEN.
    */
   forcedPhaseAfterAllRed: SignalPhaseTimingKey | null;
+  /**
+   * When true, the next green phase has not yet been selected.
+   * Phase selection is deferred to the start of the next step so that
+   * vehicles added between steps are visible to the demand calculation.
+   * Resolved by resolveGreenSelection() before discharge.
+   */
+  pendingGreenSelection: boolean;
 }

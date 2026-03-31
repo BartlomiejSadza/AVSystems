@@ -11,4 +11,5 @@ export const DEGENERATE_SIGNAL_TIMINGS: Partial<SignalTimingConfig> = {
   yellowTicks: 0,
   allRedTicks: 0,
   skipEmptyPhases: false,
+  lazyGreenSelection: true,
 };

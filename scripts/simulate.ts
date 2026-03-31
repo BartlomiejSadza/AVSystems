@@ -17,10 +17,12 @@ import { parseInput } from '../src/io/parser.js';
 import { writeOutput } from '../src/io/writer.js';
 import { simulate } from '../src/simulator/engine.js';
 import type { SimulateOptions } from '../src/simulator/types.js';
+import { DEGENERATE_SIGNAL_TIMINGS } from '../src/simulator/degenerate-signal-timings.js';
 
 const CLI_DEFAULT_OPTIONS: SimulateOptions = {
   enableInvariantChecks: false,
   enableTelemetry: false,
+  signalTimings: DEGENERATE_SIGNAL_TIMINGS, // backward-compatible default (minGreen=1)
 };
 
 // ---------------------------------------------------------------------------
@@ -96,7 +98,11 @@ function main(): void {
   try {
     const parsed = parseInput(rawJson);
     commands = parsed.commands;
-    mergedOptions = { ...CLI_DEFAULT_OPTIONS, ...parsed.options };
+    mergedOptions = {
+      ...CLI_DEFAULT_OPTIONS,
+      ...parsed.options,
+      signalTimings: parsed.options?.signalTimings ?? DEGENERATE_SIGNAL_TIMINGS,
+    };
   } catch (err) {
     console.error(`Error: ${(err as Error).message}`);
     process.exit(1);

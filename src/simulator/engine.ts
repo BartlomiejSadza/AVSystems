@@ -24,6 +24,7 @@ import {
   dischargeEligibleVehicles,
   advanceSignalController,
   reconcileEmergencyBeforeDischarge,
+  resolveGreenSelection,
 } from './signal-controller.js';
 import {
   createAccumulator,
@@ -57,13 +58,15 @@ export function createInitialState(signalTimings?: Partial<SignalTimingConfig>):
   return {
     queues: createQueues(),
     stepCount: 0,
+    vehicleAddCount: 0,
     signalTiming: timing,
     currentSignalPhaseId: 'NS_THROUGH',
     segmentKind: 'GREEN',
     segmentTicksRemaining: 0,
     greenTicksElapsedInCurrentGreen: 0,
-    lastServedPhaseIndex: -1,
+    lastServedPhaseIndex: 0, // NS_THROUGH is index 0 — ensures round-robin advances from the initial phase
     forcedPhaseAfterAllRed: null,
+    pendingGreenSelection: false,
   };
 }
 
@@ -90,6 +93,8 @@ function processStep(
   options: SimulateOptions,
   acc: TelemetryAccumulator | null
 ): StepStatus {
+  // Resolve deferred green-phase selection (lazyGreenSelection mode) before discharge.
+  resolveGreenSelection(state, options);
   reconcileEmergencyBeforeDischarge(state, options);
   const phaseKeyForTelemetry = telemetryPhaseKeyAtStepStart(state);
 
