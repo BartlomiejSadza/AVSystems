@@ -1,0 +1,21 @@
+name: 'Wybór Trasy (Route Selection) v2'
+version: '1.0.0'
+status: 'done'
+last_updated: '2026-03-31'
+progress: 100
+goals:
+  - 'Dodanie selektorów startRoad i endRoad w AddVehiclePanel'
+  - 'Odblokowanie 4-fazowej symulacji poprzez dowolne trasy'
+  - 'Wdrożenie logiki walidacji tras'
+  - 'Weryfikacja testami integracyjnymi'
+current_sprint: 1
+milestones:
+  - id: 'design_ui'
+    title: 'Projekt interfejsu i komponentów'
+    status: 'done'
+  - id: 'implementation'
+    title: 'Implementacja logiki React'
+    status: 'done'
+  - id: 'testing'
+    title: 'Weryfikacja 4-fazowa'
+    status: 'done'

@@ -10,9 +10,11 @@
  */
 
 import { ROADS, type Road, type SimulationState } from './types.js';
-import { PHASES } from './phase.js';
+import { PHASES, SIGNAL_PHASE_RING } from './phase.js';
 
 export type InvariantResult = { ok: true } | { ok: false; reason: string };
+
+const SEGMENTS = new Set(['GREEN', 'YELLOW', 'ALL_RED']);
 
 /** Check that the queues map contains exactly the four road keys. */
 export function checkQueuesComplete(state: SimulationState): InvariantResult {
@@ -73,22 +75,57 @@ export function checkStepCount(state: SimulationState): InvariantResult {
   return { ok: true };
 }
 
-/** Check that lastPhaseIndex is -1 or a valid phase index. */
-export function checkLastPhaseIndex(state: SimulationState): InvariantResult {
-  const validIndices = [-1, ...PHASES.map((p) => p.index)];
-  if (!validIndices.includes(state.lastPhaseIndex)) {
+/** Check signal phase id and segment fields. */
+export function checkSignalControllerState(state: SimulationState): InvariantResult {
+  if (!SIGNAL_PHASE_RING.includes(state.currentSignalPhaseId)) {
     return {
       ok: false,
-      reason: `lastPhaseIndex must be one of ${validIndices.join(', ')}, got ${state.lastPhaseIndex}`,
+      reason: `currentSignalPhaseId must be a known phase, got ${state.currentSignalPhaseId}`,
+    };
+  }
+  if (!SEGMENTS.has(state.segmentKind)) {
+    return {
+      ok: false,
+      reason: `segmentKind must be GREEN, YELLOW, or ALL_RED, got ${state.segmentKind}`,
+    };
+  }
+  if (!Number.isInteger(state.segmentTicksRemaining) || state.segmentTicksRemaining < 0) {
+    return {
+      ok: false,
+      reason: `segmentTicksRemaining must be a non-negative integer, got ${state.segmentTicksRemaining}`,
+    };
+  }
+  if (
+    !Number.isInteger(state.greenTicksElapsedInCurrentGreen) ||
+    state.greenTicksElapsedInCurrentGreen < 0
+  ) {
+    return {
+      ok: false,
+      reason: `greenTicksElapsedInCurrentGreen must be a non-negative integer, got ${state.greenTicksElapsedInCurrentGreen}`,
+    };
+  }
+  if (
+    !Number.isInteger(state.lastServedPhaseIndex) ||
+    state.lastServedPhaseIndex < -1 ||
+    state.lastServedPhaseIndex > 3
+  ) {
+    return {
+      ok: false,
+      reason: `lastServedPhaseIndex must be -1..3, got ${state.lastServedPhaseIndex}`,
+    };
+  }
+  const f = state.forcedPhaseAfterAllRed;
+  if (f !== null && !SIGNAL_PHASE_RING.includes(f)) {
+    return {
+      ok: false,
+      reason: `forcedPhaseAfterAllRed must be null or a known phase, got ${f}`,
     };
   }
   return { ok: true };
 }
 
-/** Check that roads in any active phase do not conflict (no two simultaneously-green roads cross). */
+/** Check that roads in any active phase do not conflict (no NS mixed with EW in one row). */
 export function checkPhaseRoadsNonConflicting(_state: SimulationState): InvariantResult {
-  // Each phase has a fixed, pre-validated road set.  We verify that no phase
-  // mixes north/south with east/west (the only conflicting pairs here).
   const nsRoads = new Set<Road>(['north', 'south']);
   const ewRoads = new Set<Road>(['east', 'west']);
 
@@ -112,7 +149,7 @@ export function checkAllInvariants(state: SimulationState): InvariantResult[] {
     checkNoDuplicateVehicles,
     checkVehicleRoadConsistency,
     checkStepCount,
-    checkLastPhaseIndex,
+    checkSignalControllerState,
     checkPhaseRoadsNonConflicting,
   ];
   return checks.map((fn) => fn(state)).filter((r) => !r.ok);

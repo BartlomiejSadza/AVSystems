@@ -69,7 +69,7 @@ function makeMockCtx(): CanvasRenderingContext2D {
 
 function makeSnapshot(overrides?: Partial<SimulationSnapshot>): SimulationSnapshot {
   return {
-    phase: 'NS_STRAIGHT',
+    phase: 'NS_THROUGH',
     queues: { north: ['v1', 'v2'], south: [], east: ['v3'], west: [] },
     stepCount: 5,
     totalDeparted: 3,
@@ -190,8 +190,20 @@ describe('drawTrafficLights', () => {
     expect(() => drawTrafficLights(rc)).not.toThrow();
   });
 
-  it('does not throw with phase: EW_STRAIGHT', () => {
-    const rc = createMockRenderContext({ phase: 'EW_STRAIGHT' });
+  it('does not throw with phase: EW_THROUGH', () => {
+    const rc = createMockRenderContext({ phase: 'EW_THROUGH' });
+    expect(() => drawTrafficLights(rc)).not.toThrow();
+  });
+
+  it('does not throw with phase: NS_THROUGH_YELLOW', () => {
+    const rc = createMockRenderContext({
+      phase: 'NS_THROUGH_YELLOW' as SimulationSnapshot['phase'],
+    });
+    expect(() => drawTrafficLights(rc)).not.toThrow();
+  });
+
+  it('does not throw with phase: ALL_RED', () => {
+    const rc = createMockRenderContext({ phase: 'ALL_RED' as SimulationSnapshot['phase'] });
     expect(() => drawTrafficLights(rc)).not.toThrow();
   });
 });

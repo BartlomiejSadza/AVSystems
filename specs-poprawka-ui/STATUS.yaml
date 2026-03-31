@@ -1,0 +1,41 @@
+version: 1
+project: ui-audit-fixes
+scope: post-audit GUI corrections (phases, yellow/all-red, emergency queues, responsive)
+updated_at: '2026-03-30'
+
+current_phase: completed
+current_milestone: M3
+
+references:
+  task_board: specs-poprawka-ui/TASKLIST.md
+
+milestones:
+  - id: M1
+    name: phases-and-signal-states
+    tasks: [T1, T2, T3]
+    status: done
+    gate_status: passed
+  - id: M2
+    name: emergency-and-responsive
+    tasks: [T4, T5]
+    status: done
+    gate_status: passed
+  - id: M3
+    name: verification-and-release-gate
+    tasks: [T6, T7]
+    status: done
+    gate_status: passed
+
+task_status:
+  T1: done
+  T2: done
+  T3: done
+  T4: done
+  T5: done
+  T6: done
+  T7: done
+
+notes:
+  - Symulator w src/simulator pozostaje zrodlem prawdy; UI tylko odzwierciedla stan.
+  - Po T7 obowiazkowy gate: testy + krotki checklist audytu.
+  - Gate T7 passed: pnpm lint (0 errors, 3 warnings), pnpm typecheck, pnpm test.

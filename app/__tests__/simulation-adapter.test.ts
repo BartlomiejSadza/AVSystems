@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { runSimulation } from '../lib/simulation-adapter';
+import { DEGENERATE_SIGNAL_TIMINGS } from '../../src/simulator/degenerate-signal-timings';
 import type { Command } from '../lib/simulation-adapter';
 
 describe('simulation-adapter', () => {
@@ -93,10 +94,9 @@ describe('simulation-adapter', () => {
       },
       { type: 'step' },
     ];
-    const result = runSimulation(commands);
+    const result = runSimulation(commands, { signalTimings: DEGENERATE_SIGNAL_TIMINGS });
     expect(result.ok).toBe(true);
     if (result.ok) {
-      // Emergency phase (EW) should be selected first
       expect(result.stepStatuses[0]!.leftVehicles).toContain('EMG');
     }
   });

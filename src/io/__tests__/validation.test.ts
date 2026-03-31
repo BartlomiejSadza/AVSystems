@@ -76,7 +76,7 @@ describe('T6 — missing required fields on addVehicle', () => {
     const input = json({
       commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' }],
     });
-    const commands = parseInput(input);
+    const { commands } = parseInput(input);
     expect(commands).toHaveLength(1);
     expect(commands[0]?.type).toBe('addVehicle');
   });
@@ -275,6 +275,6 @@ describe('T6 — malformed top-level JSON structure', () => {
   it('accepts an empty commands array', () => {
     const input = json({ commands: [] });
     expect(() => parseInput(input)).not.toThrow();
-    expect(parseInput(input)).toHaveLength(0);
+    expect(parseInput(input).commands).toHaveLength(0);
   });
 });

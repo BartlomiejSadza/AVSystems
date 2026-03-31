@@ -9,29 +9,30 @@ import {
   checkNoDuplicateVehicles,
   checkVehicleRoadConsistency,
   checkStepCount,
-  checkLastPhaseIndex,
+  checkSignalControllerState,
   checkPhaseRoadsNonConflicting,
   checkAllInvariants,
   assertInvariants,
 } from '../invariants.js';
-import { createQueues, enqueueVehicle } from '../queue.js';
+import { enqueueVehicle } from '../queue.js';
 import { ROADS, type Command, type SimulationState, type Road } from '../types.js';
-import { simulate } from '../engine.js';
+import { simulate, createInitialState } from '../engine.js';
+import { FAST_SIGNAL_TIMINGS } from './fast-signal-timings.js';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+const fast = { signalTimings: FAST_SIGNAL_TIMINGS };
 
 function makeValidState(): SimulationState {
-  return {
-    queues: createQueues(),
-    stepCount: 0,
-    lastPhaseIndex: -1,
-  };
+  return createInitialState(FAST_SIGNAL_TIMINGS);
 }
 
 function addVehicleToState(state: SimulationState, id: string, road: Road): void {
-  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: 'north' });
+  const opposite: Record<Road, Road> = {
+    north: 'south',
+    south: 'north',
+    east: 'west',
+    west: 'east',
+  };
+  enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: opposite[road] });
 }
 
 // ---------------------------------------------------------------------------
@@ -71,7 +72,6 @@ describe('checkNoDuplicateVehicles', () => {
 
   it('fails when the same vehicleId appears on two roads', () => {
     const state = makeValidState();
-    // Manually push to bypass the normal enqueue guard
     state.queues.get('north')!.push({ vehicleId: 'DUP', startRoad: 'north', endRoad: 'south' });
     state.queues.get('south')!.push({ vehicleId: 'DUP', startRoad: 'south', endRoad: 'north' });
     const result = checkNoDuplicateVehicles(state);
@@ -95,7 +95,6 @@ describe('checkVehicleRoadConsistency', () => {
 
   it('fails when a vehicle is in the wrong road queue', () => {
     const state = makeValidState();
-    // Inject a vehicle whose startRoad does not match the queue
     state.queues.get('north')!.push({ vehicleId: 'WRONG', startRoad: 'south', endRoad: 'east' });
     const result = checkVehicleRoadConsistency(state);
     expect(result.ok).toBe(false);
@@ -134,28 +133,25 @@ describe('checkStepCount', () => {
 });
 
 // ---------------------------------------------------------------------------
-// checkLastPhaseIndex
+// checkSignalControllerState
 // ---------------------------------------------------------------------------
 
-describe('checkLastPhaseIndex', () => {
-  it('passes for -1 (pre-simulation)', () => {
-    expect(checkLastPhaseIndex(makeValidState()).ok).toBe(true);
+describe('checkSignalControllerState', () => {
+  it('passes for createInitialState', () => {
+    expect(checkSignalControllerState(makeValidState()).ok).toBe(true);
   });
 
-  it('passes for valid phase indices 0 and 1', () => {
-    const s0 = makeValidState();
-    s0.lastPhaseIndex = 0;
-    expect(checkLastPhaseIndex(s0).ok).toBe(true);
-
-    const s1 = makeValidState();
-    s1.lastPhaseIndex = 1;
-    expect(checkLastPhaseIndex(s1).ok).toBe(true);
-  });
-
-  it('fails for an out-of-range index', () => {
+  it('fails for an invalid lastServedPhaseIndex', () => {
     const state = makeValidState();
-    state.lastPhaseIndex = 99;
-    expect(checkLastPhaseIndex(state).ok).toBe(false);
+    state.lastServedPhaseIndex = 99;
+    expect(checkSignalControllerState(state).ok).toBe(false);
+  });
+
+  it('fails for unknown currentSignalPhaseId', () => {
+    const state = makeValidState();
+    // @ts-expect-error — inject invalid id
+    state.currentSignalPhaseId = 'INVALID';
+    expect(checkSignalControllerState(state).ok).toBe(false);
   });
 });
 
@@ -182,8 +178,8 @@ describe('checkAllInvariants', () => {
 
   it('returns failures for an obviously broken state', () => {
     const state = makeValidState();
-    state.stepCount = -1; // trigger checkStepCount
-    state.queues.delete('north'); // trigger checkQueuesComplete
+    state.stepCount = -1;
+    state.queues.delete('north');
     const failures = checkAllInvariants(state);
     expect(failures.length).toBeGreaterThanOrEqual(2);
   });
@@ -205,14 +201,8 @@ describe('assertInvariants', () => {
 // Property-based tests (fast-check)
 // ---------------------------------------------------------------------------
 
-/**
- * Arbitrary: generate a valid road name.
- */
 const arbRoad = fc.constantFrom(...ROADS);
 
-/**
- * Arbitrary: generate a Vehicle with a unique-enough ID prefix.
- */
 const arbVehicleId = fc
   .tuple(fc.string({ minLength: 1, maxLength: 8 }), fc.nat(999))
   .map(([s, n]) => `${s}-${n}`);
@@ -237,8 +227,14 @@ describe('property-based invariant tests', () => {
         }),
         (entries) => {
           const state = makeValidState();
+          const opposite: Record<Road, Road> = {
+            north: 'south',
+            south: 'north',
+            east: 'west',
+            west: 'east',
+          };
           for (const { id, road } of entries) {
-            enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: 'north' });
+            enqueueVehicle(state, { vehicleId: id, startRoad: road, endRoad: opposite[road] });
           }
           const failures = checkAllInvariants(state);
           expect(failures).toHaveLength(0);
@@ -263,9 +259,8 @@ describe('property-based invariant tests', () => {
           { minLength: 0, maxLength: 30 }
         ),
         (commands) => {
-          // simulate should never throw and stepCount should equal the number of step commands
           const stepCommandCount = commands.filter((c) => c.type === 'step').length;
-          const results = simulate(commands);
+          const results = simulate(commands, fast);
           expect(results).toHaveLength(stepCommandCount);
         }
       )
@@ -291,9 +286,8 @@ describe('property-based invariant tests', () => {
               type: 'step' as const,
             })),
           ];
-          const results = simulate(commands);
+          const results = simulate(commands, fast);
           const allLeft = results.flatMap((s: { leftVehicles: string[] }) => s.leftVehicles);
-          // No duplicate departures
           expect(new Set(allLeft).size).toBe(allLeft.length);
         }
       )
@@ -316,7 +310,7 @@ describe('property-based invariant tests', () => {
             })),
             ...Array.from({ length: ids.length + extraSteps }, () => ({ type: 'step' as const })),
           ];
-          const results = simulate(commands);
+          const results = simulate(commands, fast);
           const allLeft = results.flatMap((s: { leftVehicles: string[] }) => s.leftVehicles);
           const idSet = new Set(ids);
           for (const departed of allLeft) {
@@ -329,24 +323,11 @@ describe('property-based invariant tests', () => {
 });
 
 // ---------------------------------------------------------------------------
-// T8 — Transition phase safety
-//
-// This simulation models phase transitions as instantaneous (no yellow/all-red
-// intermediate ticks).  The invariants below verify that vehicles are never
-// dequeued during a transition, i.e. only vehicles from the SELECTED phase
-// ever appear in a step's leftVehicles list.
+// T8 — same-phase departures (movement-qualified green)
 // ---------------------------------------------------------------------------
 
-describe('T8 — transition phase safety', () => {
-  /**
-   * After every step, the vehicles that departed must all have started on
-   * roads that belong to the phase that was active for that step.
-   * We verify this by reconstructing which roads were green per step.
-   *
-   * Implementation note: we run with invariant checks enabled so any
-   * structural violation is caught immediately.
-   */
-  it('vehicles only depart on roads belonging to their active phase', () => {
+describe('T8 — departures under movement-qualified green', () => {
+  it('vehicles only depart when their movement matches the active sub-phase', () => {
     const commands = [
       {
         type: 'addVehicle' as const,
@@ -376,21 +357,17 @@ describe('T8 — transition phase safety', () => {
       { type: 'step' as const },
     ];
 
-    // Phase 0 (NS): roads north + south
-    // Phase 1 (EW): roads east  + west
     const nsVehicles = new Set(['N1', 'S1']);
     const ewVehicles = new Set(['E1', 'W1']);
 
-    const result = simulate(commands, { enableInvariantChecks: true });
+    const result = simulate(commands, { ...fast, enableInvariantChecks: true });
     expect(result).toHaveLength(2);
 
     for (const stepResult of result) {
       for (const id of stepResult.leftVehicles) {
-        // Each departed vehicle must belong to exactly one phase — either NS or EW
         const inNS = nsVehicles.has(id);
         const inEW = ewVehicles.has(id);
         expect(inNS || inEW).toBe(true);
-        // Within a single step, all departures must be from the same phase
         if (stepResult.leftVehicles.length > 0) {
           const firstId = stepResult.leftVehicles[0]!;
           const firstInNS = nsVehicles.has(firstId);
@@ -410,20 +387,25 @@ describe('T8 — transition phase safety', () => {
         }),
         fc.nat({ max: 20 }),
         (entries, extraSteps) => {
+          const opposite: Record<Road, Road> = {
+            north: 'south',
+            south: 'north',
+            east: 'west',
+            west: 'east',
+          };
           const commands = [
             ...entries.map(({ id, road }) => ({
               type: 'addVehicle' as const,
               vehicleId: id,
               startRoad: road,
-              endRoad: 'north' as Road,
+              endRoad: opposite[road],
             })),
             ...Array.from({ length: entries.length + extraSteps }, () => ({
               type: 'step' as const,
             })),
           ];
-          const results = simulate(commands, { enableInvariantChecks: true });
+          const results = simulate(commands, { ...fast, enableInvariantChecks: true });
           const allLeft = results.flatMap((s) => s.leftVehicles);
-          // Each vehicleId must appear at most once — no vehicle dequeued twice
           expect(new Set(allLeft).size).toBe(allLeft.length);
         }
       )
@@ -431,10 +413,9 @@ describe('T8 — transition phase safety', () => {
   });
 
   it('invariants hold at every step boundary with transition-heavy scenarios', () => {
-    // Alternate addVehicle and step to stress the transition between phases
     const commands: Command[] = [];
+    const roads: Road[] = ['north', 'south', 'east', 'west'];
     for (let i = 0; i < 20; i++) {
-      const roads: Road[] = ['north', 'south', 'east', 'west'];
       commands.push({
         type: 'addVehicle' as const,
         vehicleId: `V${i}`,
@@ -443,11 +424,10 @@ describe('T8 — transition phase safety', () => {
       });
       commands.push({ type: 'step' as const });
     }
-    // Running with invariant checks enabled ensures every post-step state is valid
-    expect(() => simulate(commands, { enableInvariantChecks: true })).not.toThrow();
+    expect(() => simulate(commands, { ...fast, enableInvariantChecks: true })).not.toThrow();
   });
 
-  it('phase transitions are deterministic — same input produces same phase sequence', () => {
+  it('same input produces same step results (determinism)', () => {
     const commands = [
       {
         type: 'addVehicle' as const,
@@ -466,8 +446,8 @@ describe('T8 — transition phase safety', () => {
       { type: 'step' as const },
     ];
 
-    const run1 = simulate(commands);
-    const run2 = simulate(commands);
+    const run1 = simulate(commands, fast);
+    const run2 = simulate(commands, fast);
 
     expect(run1).toEqual(run2);
   });

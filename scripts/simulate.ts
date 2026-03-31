@@ -16,6 +16,12 @@ import { resolve } from 'path';
 import { parseInput } from '../src/io/parser.js';
 import { writeOutput } from '../src/io/writer.js';
 import { simulate } from '../src/simulator/engine.js';
+import type { SimulateOptions } from '../src/simulator/types.js';
+
+const CLI_DEFAULT_OPTIONS: SimulateOptions = {
+  enableInvariantChecks: false,
+  enableTelemetry: false,
+};
 
 // ---------------------------------------------------------------------------
 // Argument parsing (no external dep — keep it simple for a CLI script)
@@ -86,15 +92,18 @@ function main(): void {
 
   // Parse + validate
   let commands;
+  let mergedOptions: SimulateOptions;
   try {
-    commands = parseInput(rawJson);
+    const parsed = parseInput(rawJson);
+    commands = parsed.commands;
+    mergedOptions = { ...CLI_DEFAULT_OPTIONS, ...parsed.options };
   } catch (err) {
     console.error(`Error: ${(err as Error).message}`);
     process.exit(1);
   }
 
   // Simulate
-  const stepStatuses = simulate(commands);
+  const stepStatuses = simulate(commands, mergedOptions);
 
   // Serialise
   let outputJson: string;

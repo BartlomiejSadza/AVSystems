@@ -1,36 +1,34 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useSimulationContext } from './SimulationProvider';
 import { CanvasViewport } from './canvas/CanvasViewport';
 import { HudBar } from './hud/HudBar';
 import { ControlBar } from './controls/ControlBar';
 import { Tooltip } from './overlay/Tooltip';
 import { NpcDialog } from './overlay/NpcDialog';
+import { EmergencyQueuePanel } from './overlay/EmergencyQueuePanel';
 import { StepLog, type StepLogEntry } from './overlay/StepLog';
 import { useNpcDialog } from '../hooks/useNpcDialog';
-import { derivePhasePerStep, deriveQueuesAtStep } from '../lib/derive-phase';
+import { selectSimulationUiState } from '../lib/derive-phase';
 import type { TooltipState } from '../hooks/useHitDetection';
+import {
+  generateEmergencyMessage,
+  generateErrorMessage,
+  generateStepMessage,
+  generateVehicleMessage,
+  generateWelcomeMessage,
+} from '../lib/npc-messages';
 
 export function PixelSimulatorApp() {
   const { state } = useSimulationContext();
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const hasWelcomedRef = useRef(false);
+  const prevStepCountRef = useRef(0);
+  const prevCommandCountRef = useRef(0);
+  const prevErrorRef = useRef<string | null>(null);
 
-  // Derive display data
-  const phases = derivePhasePerStep(state.commands, state.stepStatuses);
-  const activePhase = state.currentStepIndex >= 0 ? (phases[state.currentStepIndex] ?? null) : null;
-  const queues =
-    state.currentStepIndex >= 0
-      ? deriveQueuesAtStep(state.commands, state.stepStatuses, state.currentStepIndex)
-      : {
-          north: [] as string[],
-          south: [] as string[],
-          east: [] as string[],
-          west: [] as string[],
-        };
-
-  const totalQueued = Object.values(queues).reduce((s, q) => s + q.length, 0);
-  const totalDeparted = state.stepStatuses.reduce((s, st) => s + st.leftVehicles.length, 0);
+  const uiState = selectSimulationUiState(state);
 
   // NPC dialog
   const npcDialog = useNpcDialog(state.isPlaying);
@@ -38,7 +36,7 @@ export function PixelSimulatorApp() {
   // Step log entries
   const stepLogEntries: StepLogEntry[] = state.stepStatuses.map((st, i) => ({
     stepIndex: i,
-    phase: phases[i] ?? null,
+    phase: uiState.phases[i] ?? null,
     departed: st.leftVehicles,
   }));
 
@@ -46,14 +44,49 @@ export function PixelSimulatorApp() {
     setTooltip(t);
   }, []);
 
+  useEffect(() => {
+    if (hasWelcomedRef.current) return;
+    hasWelcomedRef.current = true;
+    npcDialog.enqueue(generateWelcomeMessage());
+  }, [npcDialog]);
+
+  useEffect(() => {
+    if (state.commands.length <= prevCommandCountRef.current) return;
+    const latestCommand = state.commands[state.commands.length - 1];
+    prevCommandCountRef.current = state.commands.length;
+    if (!latestCommand || latestCommand.type !== 'addVehicle') return;
+
+    if ((latestCommand.priority ?? 'normal') === 'emergency') {
+      npcDialog.enqueue(generateEmergencyMessage());
+      return;
+    }
+    npcDialog.enqueue(generateVehicleMessage(latestCommand.startRoad));
+  }, [state.commands, npcDialog]);
+
+  useEffect(() => {
+    if (uiState.stepCount <= prevStepCountRef.current) return;
+    for (let step = prevStepCountRef.current; step < uiState.stepCount; step += 1) {
+      npcDialog.enqueue(generateStepMessage(step));
+    }
+    prevStepCountRef.current = uiState.stepCount;
+  }, [uiState.stepCount, npcDialog]);
+
+  useEffect(() => {
+    if (state.error === prevErrorRef.current) return;
+    prevErrorRef.current = state.error;
+    if (state.error) {
+      npcDialog.enqueue(generateErrorMessage(state.error));
+    }
+  }, [state.error, npcDialog]);
+
   return (
-    <div className="relative mx-auto flex max-w-[960px] flex-col bg-[#1D2B53]">
+    <div className="relative mx-auto flex w-full min-w-0 max-w-[960px] flex-col bg-[#1D2B53]">
       {/* HUD — top */}
       <HudBar
-        steps={state.stepStatuses.length}
-        queued={totalQueued}
-        departed={totalDeparted}
-        phase={activePhase}
+        steps={uiState.stepCount}
+        queued={uiState.totalQueued}
+        departed={uiState.totalDeparted}
+        phase={uiState.activePhase}
       />
 
       {/* Canvas — center */}
@@ -66,8 +99,13 @@ export function PixelSimulatorApp() {
       <ControlBar />
 
       {/* Step log — below controls */}
-      <div className="px-4 pb-4">
-        <StepLog entries={stepLogEntries} />
+      <div className="grid gap-2 px-2 pb-4 sm:px-4 md:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="min-w-0">
+          <StepLog entries={stepLogEntries} />
+        </div>
+        <div className="min-w-0">
+          <EmergencyQueuePanel emergencyQueues={uiState.emergencyQueues} />
+        </div>
       </div>
 
       {/* NPC Dialog — floating overlay */}

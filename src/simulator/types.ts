@@ -45,9 +45,13 @@ export type Command = AddVehicleCommand | StepCommand;
 /**
  * The result produced by a single step tick.
  * `leftVehicles` holds the IDs of vehicles that cleared the intersection.
+ * `displayPhase` carries the full signal state at the tick start, including
+ * YELLOW and ALL_RED segments that are invisible to the leftVehicles heuristic.
+ * Format: 'NS_THROUGH' | 'NS_THROUGH_YELLOW' | 'ALL_RED' | null (null = phase unknown / idle).
  */
 export interface StepStatus {
   leftVehicles: string[];
+  displayPhase?: string | null;
 }
 
 /**
@@ -56,6 +60,47 @@ export interface StepStatus {
  * for the purpose of phase selection.  Default weight is 1.0.
  */
 export type RoadPriorities = Partial<Record<Road, number>>;
+
+/** Subset of phase ids used in timing overrides (avoids circular imports with signal-phases). */
+export type SignalPhaseTimingKey = 'NS_THROUGH' | 'NS_LEFT' | 'EW_THROUGH' | 'EW_LEFT';
+
+export interface PerPhaseTimingOverride {
+  minGreenTicks?: number;
+  maxGreenTicks?: number;
+}
+
+/**
+ * Configurable signal timing (ticks). Non-negative integers.
+ * Realistic defaults match specs/REALISTIC-SIGNALIZATION.md §9 example.
+ */
+export interface SignalTimingConfig {
+  minGreenTicks: number;
+  maxGreenTicks: number;
+  yellowTicks: number;
+  allRedTicks: number;
+  skipEmptyPhases: boolean;
+  perPhase: Partial<Record<SignalPhaseTimingKey, PerPhaseTimingOverride>>;
+}
+
+export const DEFAULT_SIGNAL_TIMING_CONFIG: SignalTimingConfig = {
+  minGreenTicks: 5,
+  maxGreenTicks: 60,
+  yellowTicks: 3,
+  allRedTicks: 2,
+  skipEmptyPhases: false,
+  perPhase: {},
+};
+
+export function mergeSignalTimingConfig(partial?: Partial<SignalTimingConfig>): SignalTimingConfig {
+  const p = partial ?? {};
+  return {
+    ...DEFAULT_SIGNAL_TIMING_CONFIG,
+    ...p,
+    perPhase: { ...DEFAULT_SIGNAL_TIMING_CONFIG.perPhase, ...p.perPhase },
+  };
+}
+
+export type SignalSegmentKind = 'GREEN' | 'YELLOW' | 'ALL_RED';
 
 /**
  * Configuration options passed to the simulate() function.
@@ -67,6 +112,10 @@ export interface SimulateOptions {
    * Roads not listed default to 1.0.
    */
   roadPriorities?: RoadPriorities;
+  /**
+   * Signal timing profile (merged with defaults).
+   */
+  signalTimings?: Partial<SignalTimingConfig>;
   /**
    * When true, runtime invariant assertions run after every mutation.
    * Disable on hot paths; default is false.
@@ -88,10 +137,29 @@ export interface SimulationState {
   queues: Map<Road, Vehicle[]>;
   /** Total number of `step` commands processed so far. */
   stepCount: number;
+  /** Merged signal configuration for this run. */
+  signalTiming: SignalTimingConfig;
+  /** Active protected phase (sub-phase row). */
+  currentSignalPhaseId: SignalPhaseTimingKey;
+  segmentKind: SignalSegmentKind;
   /**
-   * Index (0 or 1) of the phase that was active in the most recent step.
-   * Used as tie-breaker when both phases have equal vehicle counts.
-   * Starts at -1 (no phase yet run).
+   * Countdown for YELLOW and ALL_RED (ticks left including the current tick's decrement).
+   * Unused when segmentKind is GREEN (use greenTicksElapsedInCurrentGreen).
    */
-  lastPhaseIndex: number;
+  segmentTicksRemaining: number;
+  /**
+   * Number of ticks already completed in the current GREEN segment for `currentSignalPhaseId`.
+   * Incremented at the end of each tick while in GREEN (after discharge).
+   */
+  greenTicksElapsedInCurrentGreen: number;
+  /**
+   * Ring index (0..3) of the last phase that entered GREEN from selection.
+   * Used for round-robin tie-break among equal weighted demand. -1 = none yet.
+   */
+  lastServedPhaseIndex: number;
+  /**
+   * When non-null, completing ALL_RED must enter GREEN for this phase (emergency preemption)
+   * instead of adaptive selection. Cleared when entering GREEN.
+   */
+  forcedPhaseAfterAllRed: SignalPhaseTimingKey | null;
 }

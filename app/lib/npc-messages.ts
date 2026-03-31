@@ -103,6 +103,22 @@ const PHASE_MESSAGES: ReadonlyMap<string, string> = new Map([
   ['EW', 'Green light for east and west! Those drivers have been waiting patiently.'],
   ['north-south', 'North and south roads are clear to go. Watch the queue shrink!'],
   ['east-west', 'East-west traffic gets its turn now. Every road deserves fair time.'],
+  [
+    'NS_THROUGH',
+    'North and south: straight and right turns may go. Left turns wait for their protected phase.',
+  ],
+  [
+    'NS_LEFT',
+    'Protected left on north and south — left turns and U-turns from those approaches may go.',
+  ],
+  [
+    'EW_THROUGH',
+    'East and west: straight and right turns may go. Left turns wait for their protected phase.',
+  ],
+  [
+    'EW_LEFT',
+    'Protected left on east and west — left turns and U-turns from those approaches may go.',
+  ],
 ]);
 
 const PHASE_FALLBACK_TEMPLATES: readonly ((phase: string) => string)[] = [

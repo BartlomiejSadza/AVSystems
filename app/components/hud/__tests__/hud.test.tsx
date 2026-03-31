@@ -48,4 +48,35 @@ describe('HudBar', () => {
     render(<HudBar steps={0} queued={0} departed={0} phase="EW_STRAIGHT" />);
     expect(screen.getByText('EW')).toBeInTheDocument();
   });
+
+  it('formats NS_LEFT and NS_THROUGH distinctly', () => {
+    const { rerender } = render(<HudBar steps={1} queued={0} departed={1} phase="NS_LEFT" />);
+    expect(screen.getByText('NS left')).toBeInTheDocument();
+    rerender(<HudBar steps={1} queued={0} departed={1} phase="NS_THROUGH" />);
+    expect(screen.getByText('NS thru')).toBeInTheDocument();
+  });
+
+  it('formats EW_LEFT and EW_THROUGH distinctly', () => {
+    const { rerender } = render(<HudBar steps={1} queued={0} departed={1} phase="EW_LEFT" />);
+    expect(screen.getByText('EW left')).toBeInTheDocument();
+    rerender(<HudBar steps={1} queued={0} departed={1} phase="EW_THROUGH" />);
+    expect(screen.getByText('EW thru')).toBeInTheDocument();
+  });
+
+  it('formats YELLOW transition labels for display', () => {
+    render(<HudBar steps={0} queued={0} departed={0} phase="NS_THROUGH_YELLOW" />);
+    expect(screen.getByText('NS thru yellow')).toBeInTheDocument();
+  });
+
+  it('formats ALL_RED label for display', () => {
+    render(<HudBar steps={0} queued={0} departed={0} phase="ALL_RED" />);
+    expect(screen.getByText('ALL RED')).toBeInTheDocument();
+  });
+
+  it('uses responsive wrapping classes for compact widths', () => {
+    const { container } = render(<HudBar steps={0} queued={0} departed={0} phase={null} />);
+    const row = container.querySelector('.mx-auto');
+    expect(row?.className).toContain('flex-wrap');
+    expect(row?.className).toContain('sm:justify-evenly');
+  });
 });

@@ -12,7 +12,8 @@ import { parseInput, ParseError } from '../parser.js';
 describe('parseInput — valid JSON', () => {
   it('parses an empty commands array', () => {
     const result = parseInput(JSON.stringify({ commands: [] }));
-    expect(result).toEqual([]);
+    expect(result.commands).toEqual([]);
+    expect(result.options).toBeUndefined();
   });
 
   it('parses a single addVehicle command', () => {
@@ -20,15 +21,15 @@ describe('parseInput — valid JSON', () => {
       commands: [{ type: 'addVehicle', vehicleId: 'V1', startRoad: 'north', endRoad: 'south' }],
     });
     const result = parseInput(raw);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ type: 'addVehicle', vehicleId: 'V1' });
+    expect(result.commands).toHaveLength(1);
+    expect(result.commands[0]).toMatchObject({ type: 'addVehicle', vehicleId: 'V1' });
   });
 
   it('parses a single step command', () => {
     const raw = JSON.stringify({ commands: [{ type: 'step' }] });
     const result = parseInput(raw);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ type: 'step' });
+    expect(result.commands).toHaveLength(1);
+    expect(result.commands[0]).toMatchObject({ type: 'step' });
   });
 
   it('parses mixed commands in order', () => {
@@ -41,11 +42,11 @@ describe('parseInput — valid JSON', () => {
       ],
     });
     const result = parseInput(raw);
-    expect(result).toHaveLength(4);
-    expect(result[0]?.type).toBe('addVehicle');
-    expect(result[1]?.type).toBe('step');
-    expect(result[2]?.type).toBe('addVehicle');
-    expect(result[3]?.type).toBe('step');
+    expect(result.commands).toHaveLength(4);
+    expect(result.commands[0]?.type).toBe('addVehicle');
+    expect(result.commands[1]?.type).toBe('step');
+    expect(result.commands[2]?.type).toBe('addVehicle');
+    expect(result.commands[3]?.type).toBe('step');
   });
 
   it('parses the canonical specification example', () => {
@@ -58,7 +59,71 @@ describe('parseInput — valid JSON', () => {
       ],
     });
     const result = parseInput(raw);
-    expect(result).toHaveLength(4);
+    expect(result.commands).toHaveLength(4);
+  });
+
+  it('accepts optional options.signalTimings with partial fields', () => {
+    const raw = JSON.stringify({
+      commands: [{ type: 'step' }],
+      options: {
+        signalTimings: {
+          minGreenTicks: 1,
+          maxGreenTicks: 1,
+          yellowTicks: 0,
+          allRedTicks: 0,
+          skipEmptyPhases: true,
+          perPhase: { NS_THROUGH: { minGreenTicks: 2 } },
+        },
+      },
+    });
+    const result = parseInput(raw);
+    expect(result.commands).toHaveLength(1);
+    expect(result.options?.signalTimings).toMatchObject({
+      minGreenTicks: 1,
+      maxGreenTicks: 1,
+      yellowTicks: 0,
+      allRedTicks: 0,
+      skipEmptyPhases: true,
+      perPhase: { NS_THROUGH: { minGreenTicks: 2 } },
+    });
+  });
+
+  it('accepts optional options.roadPriorities with partial roads', () => {
+    const raw = JSON.stringify({
+      commands: [{ type: 'step' }],
+      options: { roadPriorities: { north: 2, east: 0.5 } },
+    });
+    const result = parseInput(raw);
+    expect(result.options?.roadPriorities).toEqual({ north: 2, east: 0.5 });
+    expect(result.options?.signalTimings).toBeUndefined();
+  });
+
+  it('returns both signalTimings and roadPriorities when both are non-empty', () => {
+    const raw = JSON.stringify({
+      commands: [],
+      options: {
+        signalTimings: { yellowTicks: 1 },
+        roadPriorities: { west: 0 },
+      },
+    });
+    const result = parseInput(raw);
+    expect(result.options?.signalTimings).toMatchObject({ yellowTicks: 1 });
+    expect(result.options?.roadPriorities).toEqual({ west: 0 });
+  });
+
+  it('omits options when options is empty or both option sections are empty', () => {
+    expect(parseInput(JSON.stringify({ commands: [], options: {} })).options).toBeUndefined();
+    expect(
+      parseInput(JSON.stringify({ commands: [], options: { signalTimings: {} } })).options
+    ).toBeUndefined();
+    expect(
+      parseInput(JSON.stringify({ commands: [], options: { roadPriorities: {} } })).options
+    ).toBeUndefined();
+    expect(
+      parseInput(
+        JSON.stringify({ commands: [], options: { signalTimings: {}, roadPriorities: {} } })
+      ).options
+    ).toBeUndefined();
   });
 });
 
@@ -115,6 +180,38 @@ describe('parseInput — schema violations', () => {
   it('throws ParseError when addVehicle has an empty vehicleId', () => {
     const raw = JSON.stringify({
       commands: [{ type: 'addVehicle', vehicleId: '', startRoad: 'north', endRoad: 'south' }],
+    });
+    expect(() => parseInput(raw)).toThrow(ParseError);
+  });
+
+  it('throws ParseError for negative signal timing ticks', () => {
+    const raw = JSON.stringify({
+      commands: [],
+      options: { signalTimings: { yellowTicks: -1 } },
+    });
+    expect(() => parseInput(raw)).toThrow(ParseError);
+  });
+
+  it('throws ParseError for unknown keys under options', () => {
+    const raw = JSON.stringify({
+      commands: [],
+      options: { unknownOption: true },
+    });
+    expect(() => parseInput(raw)).toThrow(ParseError);
+  });
+
+  it('throws ParseError for unknown keys under roadPriorities', () => {
+    const raw = JSON.stringify({
+      commands: [],
+      options: { roadPriorities: { north: 1, diagonal: 2 } },
+    });
+    expect(() => parseInput(raw)).toThrow(ParseError);
+  });
+
+  it('throws ParseError for negative road priority weights', () => {
+    const raw = JSON.stringify({
+      commands: [],
+      options: { roadPriorities: { south: -0.1 } },
     });
     expect(() => parseInput(raw)).toThrow(ParseError);
   });

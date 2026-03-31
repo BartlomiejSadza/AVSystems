@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 import { Tooltip } from '../Tooltip';
 import { NpcDialog } from '../NpcDialog';
 import { StepLog, type StepLogEntry } from '../StepLog';
+import { EmergencyQueuePanel } from '../EmergencyQueuePanel';
 
 // ---------------------------------------------------------------------------
 // Tooltip
@@ -71,14 +72,14 @@ describe('StepLog', () => {
 
   it('renders step entries with step number and phase', () => {
     const entries: StepLogEntry[] = [
-      { stepIndex: 1, phase: 'NS_STRAIGHT', departed: [] },
-      { stepIndex: 2, phase: 'EW_STRAIGHT', departed: [] },
+      { stepIndex: 1, phase: 'NS_THROUGH', departed: [] },
+      { stepIndex: 2, phase: 'EW_THROUGH', departed: [] },
     ];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/Step 1/)).toBeInTheDocument();
-    expect(screen.getByText('NS_STRAIGHT')).toBeInTheDocument();
+    expect(screen.getByText('NS thru')).toBeInTheDocument();
     expect(screen.getByText(/Step 2/)).toBeInTheDocument();
-    expect(screen.getByText('EW_STRAIGHT')).toBeInTheDocument();
+    expect(screen.getByText('EW thru')).toBeInTheDocument();
   });
 
   it('renders null phase as "NONE"', () => {
@@ -87,18 +88,80 @@ describe('StepLog', () => {
     expect(screen.getByText('NONE')).toBeInTheDocument();
   });
 
+  it('renders yellow and all-red phase labels explicitly', () => {
+    const entries: StepLogEntry[] = [
+      { stepIndex: 1, phase: 'EW_LEFT_YELLOW', departed: [] },
+      { stepIndex: 2, phase: 'ALL_RED', departed: [] },
+    ];
+    render(<StepLog entries={entries} />);
+    expect(screen.getByText('EW left yellow')).toBeInTheDocument();
+    expect(screen.getByText('ALL RED')).toBeInTheDocument();
+  });
+
   it('shows departed vehicle IDs in entries', () => {
     const entries: StepLogEntry[] = [
-      { stepIndex: 3, phase: 'NS_STRAIGHT', departed: ['car-1', 'car-2'] },
+      { stepIndex: 3, phase: 'NS_THROUGH', departed: ['car-1', 'car-2'] },
     ];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/car-1/)).toBeInTheDocument();
     expect(screen.getByText(/car-2/)).toBeInTheDocument();
   });
 
+  it('applies text wrapping classes for long departed ids', () => {
+    const entries: StepLogEntry[] = [
+      { stepIndex: 3, phase: 'NS_THROUGH', departed: ['VERY-LONG-ID-1'] },
+    ];
+    render(<StepLog entries={entries} />);
+    const departedLine = screen.getByText(/Departed:/i);
+    expect(departedLine.className).toContain('break-all');
+  });
+
   it('shows "No vehicles departed" when departed array is empty', () => {
-    const entries: StepLogEntry[] = [{ stepIndex: 4, phase: 'EW_STRAIGHT', departed: [] }];
+    const entries: StepLogEntry[] = [{ stepIndex: 4, phase: 'EW_THROUGH', departed: [] }];
     render(<StepLog entries={entries} />);
     expect(screen.getByText(/No vehicles departed/i)).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// EmergencyQueuePanel
+// ---------------------------------------------------------------------------
+describe('EmergencyQueuePanel', () => {
+  it('renders stable empty state when there are no emergency vehicles', () => {
+    render(<EmergencyQueuePanel emergencyQueues={{ north: [], south: [], east: [], west: [] }} />);
+    expect(screen.getByLabelText('Emergency queues')).toBeInTheDocument();
+    expect(screen.getByText('No emergency vehicles waiting.')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  it('renders emergency vehicle ids in per-road order', () => {
+    render(
+      <EmergencyQueuePanel
+        emergencyQueues={{
+          north: ['E-1', 'E-2'],
+          south: [],
+          east: ['E-3'],
+          west: [],
+        }}
+      />
+    );
+    expect(screen.queryByText('No emergency vehicles waiting.')).not.toBeInTheDocument();
+    expect(screen.getByText('E-1, E-2')).toBeInTheDocument();
+    expect(screen.getByText('E-3')).toBeInTheDocument();
+  });
+
+  it('wraps long queue ids to prevent panel overflow', () => {
+    render(
+      <EmergencyQueuePanel
+        emergencyQueues={{
+          north: ['EMERGENCY-VERY-LONG-IDENTIFIER-1'],
+          south: [],
+          east: [],
+          west: [],
+        }}
+      />
+    );
+    const queueText = screen.getByText('EMERGENCY-VERY-LONG-IDENTIFIER-1');
+    expect(queueText.className).toContain('break-all');
   });
 });

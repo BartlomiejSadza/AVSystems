@@ -24,11 +24,11 @@ export function ControlBar() {
   const sliderValue = intervalToSlider(state.speed);
 
   return (
-    <div className="w-full bg-[#1D2B53] border-t-2 border-[#374151]">
+    <div className="w-full border-t-2 border-[#374151] bg-[#1D2B53]">
       <div className="max-w-[960px] mx-auto px-4 py-3">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-end gap-2 md:flex-nowrap md:items-center md:gap-3">
           {/* Left: action buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-1">
             <PixelButton
               label="Step"
               variant="primary"
@@ -48,7 +48,7 @@ export function ControlBar() {
           </div>
 
           {/* Center: speed slider — 1 (slow/1000ms) to 10 (fast/100ms) */}
-          <div className="flex-1 min-w-[120px] max-w-[200px]">
+          <div className="w-full min-w-0 md:min-w-[120px] md:max-w-[200px] md:flex-1">
             <SpeedSlider
               value={sliderValue}
               onChange={(value) =>
@@ -61,7 +61,7 @@ export function ControlBar() {
           </div>
 
           {/* Right: add vehicle panel */}
-          <div className="ml-auto">
+          <div className="min-w-0 w-full md:ml-auto md:w-auto">
             <AddVehiclePanel />
           </div>
         </div>

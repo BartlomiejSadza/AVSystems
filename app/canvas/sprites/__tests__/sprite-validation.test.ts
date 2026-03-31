@@ -439,25 +439,25 @@ describe('Traffic light sprites', () => {
     expect(GREEN_LAMP_WEST).toBeDefined();
   });
 
-  it('GREEN_LAMP_NORTH shows a green arrow pointing up (top-center pixel is green)', () => {
+  it('GREEN_LAMP_NORTH is a solid green circle (top-center pixel is green)', () => {
     // Row 0, col 3 (center top of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_NORTH.frames[0]!;
     expect(frame[3]).toBe(12); // row 0, col 3
   });
 
-  it('GREEN_LAMP_SOUTH shows a green arrow pointing down (bottom-center pixel is green)', () => {
+  it('GREEN_LAMP_SOUTH is a solid green circle (bottom-center pixel is green)', () => {
     // Row 6 (bottom of 7-tall), col 3 (center of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_SOUTH.frames[0]!;
     expect(frame[6 * 7 + 3]).toBe(12); // row 6, col 3
   });
 
-  it('GREEN_LAMP_EAST shows a green arrow pointing right (right-center pixel is green)', () => {
+  it('GREEN_LAMP_EAST is a solid green circle (right-center pixel is green)', () => {
     // Row 3 (middle of 7-tall), col 6 (rightmost of 7-wide) should be 12 (green)
     const frame = GREEN_LAMP_EAST.frames[0]!;
     expect(frame[3 * 7 + 6]).toBe(12); // row 3, col 6
   });
 
-  it('GREEN_LAMP_WEST shows a green arrow pointing left (left-center pixel is green)', () => {
+  it('GREEN_LAMP_WEST is a solid green circle (left-center pixel is green)', () => {
     // Row 3 (middle of 7-tall), col 0 (leftmost) should be 12 (green)
     const frame = GREEN_LAMP_WEST.frames[0]!;
     expect(frame[3 * 7 + 0]).toBe(12); // row 3, col 0

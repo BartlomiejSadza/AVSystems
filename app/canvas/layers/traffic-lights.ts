@@ -1,9 +1,11 @@
 import type { RenderContext } from '../types';
 import { PALETTE } from '../sprites/types';
 import { drawSprite } from '../sprites/draw-sprite';
+import { resolveSignalStateForDisplayPhase } from '../../lib/phase-display';
 import {
   LIGHT_HOUSING,
   RED_LAMP_ACTIVE,
+  AMBER_LAMP_ACTIVE,
   GREEN_LAMP_NORTH,
   GREEN_LAMP_SOUTH,
   GREEN_LAMP_EAST,
@@ -67,15 +69,8 @@ const LIGHTS: TrafficLightConfig[] = [
   },
 ];
 
-/** Determine if a given light facing direction should show green for the current phase. */
-function isGreen(
-  facing: TrafficLightConfig['facing'],
-  phase: RenderContext['simulationSnapshot']['phase']
-): boolean {
-  if (phase === null) return false;
-  if (phase === 'NS_STRAIGHT') return facing === 'south' || facing === 'north';
-  if (phase === 'EW_STRAIGHT') return facing === 'east' || facing === 'west';
-  return false;
+function axisForFacing(facing: TrafficLightConfig['facing']): 'NS' | 'EW' {
+  return facing === 'south' || facing === 'north' ? 'NS' : 'EW';
 }
 
 /**
@@ -123,8 +118,9 @@ function drawHorizontalLamps(
   ctx.globalAlpha = redSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
   drawSprite(ctx, redSprite, 0, x + 2, y + 2);
 
-  // Amber lamp (always inactive)
-  ctx.globalAlpha = 1.0;
+  // Amber lamp
+  ctx.globalAlpha = amberSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
+
   drawSprite(ctx, amberSprite, 0, x + 11, y + 2);
 
   // Green lamp
@@ -138,19 +134,20 @@ export function drawTrafficLights(rc: RenderContext): void {
   const { ctx, simulationSnapshot, animationState } = rc;
   const phase = simulationSnapshot.phase;
   const glowIntensity = 0.7 + 0.3 * Math.sin(animationState.lightGlowPhase);
+  const signalState = resolveSignalStateForDisplayPhase(phase);
 
   for (const light of LIGHTS) {
     ctx.save();
 
-    const active = isGreen(light.facing, phase);
-    // phase === null => all inactive; otherwise inactive facing gets RED
-    const showRed = phase !== null && !active;
-    const showGreen = active;
+    const isActiveAxis =
+      signalState.activeAxis !== null && axisForFacing(light.facing) === signalState.activeAxis;
+    const showGreen = signalState.mode === 'GREEN' && isActiveAxis;
+    const showAmber = signalState.mode === 'YELLOW' && isActiveAxis;
+    const showRed = signalState.mode === 'ALL_RED' || (signalState.mode !== 'OFF' && !isActiveAxis);
 
     const redSprite = showRed ? RED_LAMP_ACTIVE : LAMP_INACTIVE;
     const greenSprite = showGreen ? light.greenSprite : LAMP_INACTIVE;
-    // Amber is always inactive (transitions not yet implemented)
-    const amberSprite = LAMP_INACTIVE;
+    const amberSprite = showAmber ? AMBER_LAMP_ACTIVE : LAMP_INACTIVE;
 
     // ── Draw pole ──────────────────────────────────────────────────────────
     if (light.pole !== null) {
@@ -182,8 +179,8 @@ export function drawTrafficLights(rc: RenderContext): void {
       ctx.globalAlpha = redSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
       drawSprite(ctx, redSprite, 0, light.x + RED_LAMP_OFFSET.dx, light.y + RED_LAMP_OFFSET.dy);
 
-      // Amber lamp (always inactive, no glow)
-      ctx.globalAlpha = 1.0;
+      // Amber lamp
+      ctx.globalAlpha = amberSprite === LAMP_INACTIVE ? 1.0 : glowIntensity;
       drawSprite(
         ctx,
         amberSprite,

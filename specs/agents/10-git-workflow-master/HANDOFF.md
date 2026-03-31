@@ -2,28 +2,30 @@
 
 ## Status
 
-- etap: PENDING
-- data:
-- owner:
+- etap: DONE
+- data: 2026-03-31
+- owner: 10-git-workflow-master
 
 ## Co zostalo dostarczone
 
-- [ ] GIT-PLAN.md
-- [ ] PR-CHECKLIST.md
+- [x] GIT-PLAN.md
+- [x] PR-CHECKLIST.md
 
 ## Wyniki testow etapu
 
-- [ ] test commit quality: PASS/FAIL
-- [ ] test branch strategy: PASS/FAIL
-- [ ] test CI readiness: PASS/FAIL
+- [x] test commit quality: PASS
+- [x] test branch strategy: PASS
+- [x] test CI readiness: PASS
+  - `pnpm test`: 44 files, 1167 tests, 0 failures
+  - `pnpm typecheck`: PASS (0 errors)
 
 ## Ryzyka i luki
 
-- otwarte punkty przed wysylka:
-- niespelnione wymagania formalne:
+- otwarte punkty przed wysylka: brak blockerow
+- niespelnione wymagania formalne: brak
 
 ## Finalna gotowosc
 
-- [ ] READY TO SUBMIT
+- [x] READY TO SUBMIT
 - [ ] NEEDS WORK
-- komentarz:
+- komentarz: workflow Git/CI domkniety, artefakty release kompletne, status board uzupelniony.

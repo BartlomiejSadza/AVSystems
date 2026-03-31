@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { PixelSimulatorApp } from '../PixelSimulatorApp';
 import { SimulationProvider } from '../SimulationProvider';
+import { resetNpcMessageCounter } from '../../lib/npc-messages';
 
 // Mock simulation-adapter
 vi.mock('../../lib/simulation-adapter', () => ({
@@ -38,6 +39,10 @@ function renderInProvider(ui: React.ReactElement) {
 }
 
 describe('PixelSimulatorApp', () => {
+  beforeEach(() => {
+    resetNpcMessageCounter();
+  });
+
   it('renders HUD bar with initial stats', () => {
     renderInProvider(<PixelSimulatorApp />);
     expect(screen.getByText('Steps')).toBeTruthy();
@@ -59,5 +64,49 @@ describe('PixelSimulatorApp', () => {
   it('renders step log section', () => {
     renderInProvider(<PixelSimulatorApp />);
     expect(screen.getByText('No steps yet. Click Step to begin!')).toBeTruthy();
+  });
+
+  it('renders welcome NPC dialog message on startup', () => {
+    renderInProvider(<PixelSimulatorApp />);
+    expect(
+      screen.getByText("Welcome! I'm Officer Pixel. I'll help you learn about traffic lights!")
+    ).toBeTruthy();
+  });
+
+  it('shows emergency queue panel and keeps it visible when empty', () => {
+    renderInProvider(<PixelSimulatorApp />);
+    expect(screen.getByLabelText('Emergency queues')).toBeTruthy();
+    expect(screen.getByText('No emergency vehicles waiting.')).toBeTruthy();
+  });
+
+  it('updates emergency queue order after adding SOS vehicles', () => {
+    renderInProvider(<PixelSimulatorApp />);
+    const sosButton = screen.getByText('SOS');
+    fireEvent.click(sosButton);
+    fireEvent.click(sosButton);
+    expect(screen.queryByText('No emergency vehicles waiting.')).toBeNull();
+    expect(screen.getByText(/V\d{3}, V\d{3}/)).toBeTruthy();
+  });
+
+  it('shows emergency NPC comment after adding SOS vehicle', () => {
+    renderInProvider(<PixelSimulatorApp />);
+
+    fireEvent.click(screen.getByRole('button', { name: /dismiss/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'SOS' }));
+
+    expect(
+      screen.getByText(
+        /Emergency vehicle incoming!|Lights and sirens ahead!|An ambulance or fire truck is approaching\./
+      )
+    ).toBeTruthy();
+  });
+
+  it('uses responsive layout classes for app shell and bottom panels', () => {
+    const { container } = renderInProvider(<PixelSimulatorApp />);
+    const appShell = container.firstElementChild as HTMLElement | null;
+    const bottomGrid = container.querySelector('.grid');
+    expect(appShell?.className).toContain('w-full');
+    expect(appShell?.className).toContain('min-w-0');
+    expect(bottomGrid?.className).toContain('md:grid-cols-[minmax(0,1fr)_220px]');
   });
 });
